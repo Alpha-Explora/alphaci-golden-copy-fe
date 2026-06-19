@@ -17,6 +17,25 @@ html::-webkit-scrollbar {
   --bg-panel:     #0f172a;
   --bg-elevated:  #1e293b;
 
+  /* ── Surface elevation ladder (dark) ───────────────────────── */
+  /* Opaque, stepped values so shell < card < nested tile reads as
+     distinct layers with real contrast. Use these for any container
+     hierarchy instead of stacking low-alpha rgba(15,23,42,...) values. */
+  --layer-0:        #020617;   /* shell / page background      */
+  --layer-1:        #0d1526;   /* card surface (above shell)   */
+  --layer-1-hover:  #111c33;   /* card hover                   */
+  --layer-2:        #18233b;   /* nested tile (elevated)       */
+  --layer-2-hover:  #1f2d49;   /* nested tile hover            */
+  --border-layer:   rgba(148, 163, 184, 0.16);  /* card edge   */
+  --border-tile:    rgba(148, 163, 184, 0.22);  /* tile edge   */
+
+  /* ── Pipeline loader idle/track surfaces (theme-aware) ─────── */
+  /* Idle dots, connectors and the pulse track on the full-screen
+     loader. White-alpha on the dark shell; dark-alpha in light mode. */
+  --loader-track-strong: rgba(255, 255, 255, 0.15);  /* idle node border        */
+  --loader-track-mid:    rgba(255, 255, 255, 0.08);  /* idle node fill / line   */
+  --loader-track-faint:  rgba(255, 255, 255, 0.04);  /* pulse-line track        */
+
   /* ── Text ──────────────────────────────────────────────────── */
   --text-primary:   #f8fafc;
   --text-secondary: #94a3b8;
@@ -119,12 +138,26 @@ html::-webkit-scrollbar {
 }
 
 [data-theme="light"] {
-  --bg-base:      #f1f5f9;
-  --bg-soft:      #ffffff;
-  --bg-frost:     rgba(255, 255, 255, 0.7);
-  --bg-surface:   rgba(255, 255, 255, 0.85);
-  --bg-panel:     #ffffff;
-  --bg-elevated:  #f8fafc;
+  --bg-base:      #eef2f7;
+  --bg-soft:      #f6f8fc;
+  --bg-frost:     rgba(246, 248, 252, 0.7);
+  --bg-surface:   rgba(246, 248, 252, 0.85);
+  --bg-panel:     #f6f8fc;
+  --bg-elevated:  #eef3fb;
+
+  /* ── Surface elevation ladder (light) ──────────────────────── */
+  --layer-0:        #e7ecf3;   /* shell / page background       */
+  --layer-1:        #f6f8fc;   /* card surface                  */
+  --layer-1-hover:  #f1f5fb;   /* card hover                    */
+  --layer-2:        #eef3fb;   /* nested tile (slightly recessed)*/
+  --layer-2-hover:  #e6edf7;   /* nested tile hover             */
+  --border-layer:   rgba(15, 23, 42, 0.10);   /* card edge      */
+  --border-tile:    rgba(15, 23, 42, 0.08);   /* tile edge      */
+
+  /* Loader idle/track surfaces — dark-alpha so they read on the light shell */
+  --loader-track-strong: rgba(15, 23, 42, 0.18);
+  --loader-track-mid:    rgba(15, 23, 42, 0.10);
+  --loader-track-faint:  rgba(15, 23, 42, 0.06);
 
   --text-primary:   #0f172a;
   --text-secondary: #475569;
@@ -200,7 +233,7 @@ html[data-theme="light"] {
 }
 
 [data-theme="light"] .app-sidebar {
-  background: linear-gradient(180deg, #ffffff 0%, #f8fafc 100%);
+  background: linear-gradient(180deg, #f6f8fc 0%, #eef3fb 100%);
   box-shadow:
     inset -1px 0 0 rgba(0, 0, 0, 0.06),
     2px 0 20px rgba(79, 70, 229, 0.06),
@@ -223,20 +256,20 @@ html[data-theme="light"] {
 }
 
 [data-theme="light"] .notification-center-panel {
-  background: rgba(255, 255, 255, 0.99);
+  background: rgba(246, 248, 252, 0.99);
   border-color: rgba(79, 70, 229, 0.15);
   box-shadow: 0 16px 40px rgba(0, 0, 0, 0.14), 0 0 0 1px rgba(0, 0, 0, 0.04);
 }
 
 [data-theme="light"] .glass-panel {
-  background: rgba(255, 255, 255, 0.85);
+  background: rgba(246, 248, 252, 0.85);
   border-color: rgba(0, 0, 0, 0.08);
   backdrop-filter: blur(12px);
 }
 
 [data-theme="light"] .workspace-member-input,
 [data-theme="light"] .workspace-member-select {
-  background-color: rgba(255, 255, 255, 0.95);
+  background-color: rgba(246, 248, 252, 0.95);
   border-color: rgba(0, 0, 0, 0.12);
   color: var(--text-primary);
 }
@@ -264,13 +297,13 @@ html[data-theme="light"] {
 }
 
 [data-theme="light"] .public-site-nav {
-  background: rgba(255, 255, 255, 0.92);
+  background: rgba(246, 248, 252, 0.92);
   border-bottom-color: rgba(0, 0, 0, 0.07);
   color: var(--text-primary);
 }
 
 [data-theme="light"] .public-site-nav--scrolled {
-  background: rgba(255, 255, 255, 0.97);
+  background: rgba(246, 248, 252, 0.97);
   box-shadow: 0 1px 12px rgba(0, 0, 0, 0.08);
 }
 
@@ -286,18 +319,18 @@ html[data-theme="light"] {
 [data-theme="light"] .bento-card-activity,
 [data-theme="light"] .bento-card-quick-actions,
 [data-theme="light"] .bento-card {
-  background: rgba(255, 255, 255, 0.9);
+  background: rgba(246, 248, 252, 0.9);
   border-color: rgba(0, 0, 0, 0.07);
   box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
 }
 
 [data-theme="light"] .repo-card {
-  background: rgba(255, 255, 255, 0.9);
+  background: rgba(246, 248, 252, 0.9);
   border-color: rgba(0, 0, 0, 0.08);
 }
 
 [data-theme="light"] .dash-repo-row {
-  background: rgba(255, 255, 255, 0.7);
+  background: rgba(246, 248, 252, 0.7);
   border-color: rgba(0, 0, 0, 0.06);
 }
 
@@ -360,7 +393,7 @@ html[data-theme="light"] {
 [data-theme="light"] input,
 [data-theme="light"] select,
 [data-theme="light"] textarea {
-  background: rgba(255, 255, 255, 0.9);
+  background: rgba(246, 248, 252, 0.9);
   border-color: rgba(0, 0, 0, 0.12);
   color: var(--text-primary);
 }
@@ -453,7 +486,7 @@ html[data-theme="light"] {
 
 /* ── Guest banner ────────────────────────────────────────────── */
 [data-theme="light"] .guest-banner {
-  background: linear-gradient(135deg, rgba(2, 132, 199, 0.06) 0%, rgba(255, 255, 255, 0.8) 100%) !important;
+  background: linear-gradient(135deg, rgba(2, 132, 199, 0.06) 0%, rgba(246, 248, 252, 0.8) 100%) !important;
   border-color: rgba(2, 132, 199, 0.2) !important;
 }
 
@@ -495,7 +528,7 @@ html[data-theme="light"] {
 
 /* ── Repo search input ───────────────────────────────────────── */
 [data-theme="light"] .repo-search {
-  background: rgba(255, 255, 255, 0.8);
+  background: rgba(246, 248, 252, 0.8);
   border-color: rgba(0, 0, 0, 0.1);
 }
 
@@ -506,7 +539,7 @@ html[data-theme="light"] {
 
 /* ── Subscribe / plan cards ──────────────────────────────────── */
 [data-theme="light"] .plan-card {
-  background: rgba(255, 255, 255, 0.9);
+  background: rgba(246, 248, 252, 0.9);
   border-color: rgba(0, 0, 0, 0.08);
   box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
 }
@@ -528,7 +561,7 @@ html[data-theme="light"] {
 
 /* ── Landing hero YAML block ─────────────────────────────────── */
 [data-theme="light"] .hero-yaml-block {
-  background: rgba(255, 255, 255, 0.9);
+  background: rgba(246, 248, 252, 0.9);
   border-color: rgba(0, 0, 0, 0.08);
   box-shadow: 0 4px 24px rgba(0, 0, 0, 0.1);
 }
@@ -541,7 +574,7 @@ html[data-theme="light"] {
 }
 
 [data-theme="light"] .workspace-switcher-panel {
-  background: rgba(255, 255, 255, 0.99);
+  background: rgba(246, 248, 252, 0.99);
   border-color: rgba(0, 0, 0, 0.1);
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
 }
@@ -550,16 +583,16 @@ html[data-theme="light"] {
 
 /* Hero floating cards (stages + deployments metric) */
 [data-theme="light"] .hero-float-card {
-  background: rgba(255, 255, 255, 0.97) !important;
+  background: rgba(246, 248, 252, 0.97) !important;
   border-color: rgba(0, 0, 0, 0.08) !important;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1), inset 0 1px 0 rgba(255, 255, 255, 0.9) !important;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1), inset 0 1px 0 rgba(255, 255, 255, 0.6) !important;
 }
 
 /* Hero main pipeline card */
 [data-theme="light"] .hero-main-card {
-  background: rgba(255, 255, 255, 0.96) !important;
+  background: rgba(246, 248, 252, 0.96) !important;
   border-color: rgba(0, 0, 0, 0.07) !important;
-  box-shadow: 0 24px 64px rgba(0, 0, 0, 0.1), inset 0 1px 0 rgba(255, 255, 255, 0.9) !important;
+  box-shadow: 0 24px 64px rgba(0, 0, 0, 0.1), inset 0 1px 0 rgba(255, 255, 255, 0.6) !important;
 }
 
 /* Hero YAML terminal mockup */
@@ -642,21 +675,21 @@ html[data-theme="light"] {
 
 /* ── Hero floating + main cards: make them read as distinct elevated surfaces ── */
 [data-theme="light"] .hero-float-card {
-  background: rgba(255, 255, 255, 0.98) !important;
+  background: rgba(246, 248, 252, 0.98) !important;
   border: 1px solid rgba(15, 23, 42, 0.1) !important;
   box-shadow:
     0 6px 28px rgba(15, 23, 42, 0.12),
     0 1px 4px rgba(15, 23, 42, 0.06),
-    inset 0 1px 0 rgba(255, 255, 255, 0.9) !important;
+    inset 0 1px 0 rgba(255, 255, 255, 0.6) !important;
 }
 
 [data-theme="light"] .hero-main-card {
-  background: rgba(255, 255, 255, 0.97) !important;
+  background: rgba(246, 248, 252, 0.97) !important;
   border: 1px solid rgba(15, 23, 42, 0.09) !important;
   box-shadow:
     0 16px 50px rgba(15, 23, 42, 0.13),
     0 4px 14px rgba(15, 23, 42, 0.07),
-    inset 0 1px 0 rgba(255, 255, 255, 0.9) !important;
+    inset 0 1px 0 rgba(255, 255, 255, 0.6) !important;
 }
 
 /* Inner accent surfaces inside the hero main card (branch chip, badges, rows)
@@ -674,7 +707,7 @@ html[data-theme="light"] {
 /* ── Feature value cards (Source-backed generation, etc.) ── */
 [data-theme="light"] .feature-strip-item,
 [data-theme="light"] .feature-card-enhanced {
-  background: rgba(255, 255, 255, 0.92) !important;
+  background: rgba(246, 248, 252, 0.92) !important;
   border-color: rgba(15, 23, 42, 0.09) !important;
   box-shadow: 0 2px 14px rgba(15, 23, 42, 0.06) !important;
 }
@@ -699,7 +732,7 @@ html[data-theme="light"] {
 
 /* ── Pricing split card (the dark glass card on the right of pricing) ── */
 [data-theme="light"] .pricing-split-card {
-  background: rgba(255, 255, 255, 0.95) !important;
+  background: rgba(246, 248, 252, 0.95) !important;
   border: 1px solid rgba(2, 132, 199, 0.22) !important;
   box-shadow:
     0 16px 50px rgba(15, 23, 42, 0.1),
@@ -741,7 +774,7 @@ html[data-theme="light"] {
    light .bento-card rule loses. Re-declare each variant with !important and a
    crisp white surface + a faint accent wash for identity. ── */
 [data-theme="light"] .bento-card {
-  background: #ffffff !important;
+  background: #f6f8fc !important;
   border: 1px solid rgba(15, 23, 42, 0.08) !important;
   box-shadow: 0 2px 14px rgba(15, 23, 42, 0.06) !important;
 }
@@ -752,32 +785,32 @@ html[data-theme="light"] {
 
 [data-theme="light"] .bento-card-dominant {
   background:
-    linear-gradient(140deg, rgba(2, 132, 199, 0.06) 0%, #ffffff 55%) !important;
+    linear-gradient(140deg, rgba(2, 132, 199, 0.06) 0%, #f6f8fc 55%) !important;
   border-color: rgba(2, 132, 199, 0.22) !important;
 }
 
 [data-theme="light"] .bento-card-brand {
   background:
-    linear-gradient(140deg, rgba(2, 132, 199, 0.07) 0%, #ffffff 60%) !important;
+    linear-gradient(140deg, rgba(2, 132, 199, 0.07) 0%, #f6f8fc 60%) !important;
   border-color: rgba(2, 132, 199, 0.2) !important;
 }
 
 [data-theme="light"] .bento-card-violet {
   background:
-    linear-gradient(140deg, rgba(124, 58, 237, 0.06) 0%, #ffffff 60%) !important;
+    linear-gradient(140deg, rgba(124, 58, 237, 0.06) 0%, #f6f8fc 60%) !important;
   border-color: rgba(124, 58, 237, 0.18) !important;
 }
 
 [data-theme="light"] .bento-card-teal {
   background:
-    linear-gradient(140deg, rgba(13, 148, 136, 0.06) 0%, #ffffff 60%) !important;
+    linear-gradient(140deg, rgba(13, 148, 136, 0.06) 0%, #f6f8fc 60%) !important;
   border-color: rgba(13, 148, 136, 0.18) !important;
 }
 
 [data-theme="light"] .bento-card-activity,
 [data-theme="light"] .bento-card-quick-actions,
 [data-theme="light"] .bento-card-accent {
-  background: #ffffff !important;
+  background: #f6f8fc !important;
   border-color: rgba(15, 23, 42, 0.08) !important;
 }
 
@@ -815,7 +848,7 @@ html[data-theme="light"] {
 /* Dashboard inline glass/empty/skeleton panels that hardcode rgba(15,23,42,*) */
 [data-theme="light"] .dash-shell .glass-panel,
 [data-theme="light"] .dash-shell .skeleton-card {
-  background: rgba(255, 255, 255, 0.92) !important;
+  background: rgba(246, 248, 252, 0.92) !important;
   border-color: rgba(15, 23, 42, 0.08) !important;
 }
 
@@ -823,12 +856,12 @@ html[data-theme="light"] {
    The auth card and its supporting panels use hardcoded dark navy fills. ── */
 [data-theme="light"] .auth-card-shell {
   background:
-    linear-gradient(180deg, rgba(255, 255, 255, 0.98), rgba(248, 250, 252, 0.96)) !important;
+    linear-gradient(180deg, rgba(246, 248, 252, 0.98), rgba(238, 243, 251, 0.96)) !important;
   border: 1px solid rgba(2, 132, 199, 0.18) !important;
   box-shadow:
     0 20px 60px rgba(15, 23, 42, 0.12),
     0 6px 18px rgba(15, 23, 42, 0.06),
-    inset 0 1px 0 rgba(255, 255, 255, 0.9) !important;
+    inset 0 1px 0 rgba(255, 255, 255, 0.6) !important;
 }
 
 [data-theme="light"] .auth-card-sweep {
@@ -844,21 +877,21 @@ html[data-theme="light"] {
 [data-theme="light"] .auth-access-showcase {
   background:
     linear-gradient(135deg, rgba(2, 132, 199, 0.07), rgba(13, 148, 136, 0.04)),
-    rgba(255, 255, 255, 0.85) !important;
+    rgba(246, 248, 252, 0.85) !important;
   border-color: rgba(2, 132, 199, 0.18) !important;
   box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.9),
+    inset 0 1px 0 rgba(255, 255, 255, 0.6),
     0 12px 36px rgba(15, 23, 42, 0.08) !important;
 }
 
 [data-theme="light"] .auth-access-node {
   background: linear-gradient(135deg, rgba(2, 132, 199, 0.14), rgba(13, 148, 136, 0.1)) !important;
   border-color: rgba(2, 132, 199, 0.28) !important;
-  box-shadow: 0 0 22px rgba(2, 132, 199, 0.12), inset 0 1px 0 rgba(255, 255, 255, 0.8) !important;
+  box-shadow: 0 0 22px rgba(2, 132, 199, 0.12), inset 0 1px 0 rgba(255, 255, 255, 0.6) !important;
 }
 
 [data-theme="light"] .auth-pipeline-stage-shell {
-  background: rgba(255, 255, 255, 0.85) !important;
+  background: rgba(246, 248, 252, 0.85) !important;
   border-color: rgba(15, 23, 42, 0.08) !important;
 }
 
@@ -868,7 +901,7 @@ html[data-theme="light"] {
 }
 
 [data-theme="light"] .editorial-glass-panel {
-  background: rgba(255, 255, 255, 0.9) !important;
+  background: rgba(246, 248, 252, 0.9) !important;
   border-color: rgba(15, 23, 42, 0.08) !important;
 }
 
@@ -915,7 +948,7 @@ html[data-theme="light"] {
 }
 
 [data-theme="light"] .public-site-nav--fixed.public-site-nav--scrolled {
-  background: rgba(255, 255, 255, 0.92) !important;
+  background: rgba(246, 248, 252, 0.92) !important;
   border-bottom-color: rgba(0, 0, 0, 0.07) !important;
   box-shadow: 0 2px 16px rgba(0, 0, 0, 0.08), inset 0 -1px 0 rgba(15, 23, 42, 0.03) !important;
 }
@@ -961,7 +994,7 @@ html[data-theme="light"] {
    bleeding through. Make both panels light. ── */
 [data-theme="light"] .auth-right-panel {
   background:
-    linear-gradient(180deg, rgba(255, 255, 255, 0.6), rgba(248, 250, 252, 0.92)),
+    linear-gradient(180deg, rgba(246, 248, 252, 0.6), rgba(238, 243, 251, 0.92)),
     var(--bg-base) !important;
 }
 
@@ -973,7 +1006,7 @@ html[data-theme="light"] {
 
 [data-theme="light"] .auth-left-panel {
   background:
-    linear-gradient(135deg, rgba(255, 255, 255, 0.96) 0%, rgba(241, 245, 249, 0.94) 100%),
+    linear-gradient(135deg, rgba(246, 248, 252, 0.96) 0%, rgba(238, 243, 251, 0.94) 100%),
     var(--bg-soft) !important;
   border-right: 1px solid rgba(15, 23, 42, 0.08) !important;
 }
@@ -1006,7 +1039,7 @@ html[data-theme="light"] {
     0 24px 70px rgba(15, 23, 42, 0.16),
     0 8px 24px rgba(15, 23, 42, 0.08),
     0 0 52px rgba(2, 132, 199, 0.08),
-    inset 0 1px 0 rgba(255, 255, 255, 0.9) !important;
+    inset 0 1px 0 rgba(255, 255, 255, 0.6) !important;
   border-color: rgba(2, 132, 199, 0.3) !important;
 }
 
@@ -1119,10 +1152,10 @@ html[data-theme="light"] {
    Badges use rgba(255,255,255,0.75) text + near-transparent dark fills —
    completely invisible on a light page background. ── */
 [data-theme="light"] .marquee-badge {
-  background: rgba(255, 255, 255, 0.92) !important;
+  background: rgba(246, 248, 252, 0.92) !important;
   border-color: rgba(15, 23, 42, 0.1) !important;
   color: var(--text-secondary) !important;
-  box-shadow: 0 2px 10px rgba(15, 23, 42, 0.06), inset 0 1px 0 rgba(255, 255, 255, 0.8) !important;
+  box-shadow: 0 2px 10px rgba(15, 23, 42, 0.06), inset 0 1px 0 rgba(255, 255, 255, 0.6) !important;
 }
 
 [data-theme="light"] .marquee-badge:nth-child(odd) {
@@ -6909,9 +6942,10 @@ select option {
 
 .project-list,
 .project-detail-panel {
-  border: 1px solid var(--border-soft);
+  border: 1px solid var(--border-layer);
   border-radius: 8px;
-  background: rgba(15, 23, 42, 0.58);
+  background: var(--layer-1);
+  box-shadow: var(--shadow-soft);
 }
 
 .project-list {
@@ -6957,8 +6991,13 @@ select option {
 
 .project-list-item:hover,
 .project-list-item.selected {
-  border-color: var(--border);
-  background: rgba(255, 255, 255, 0.04);
+  border-color: var(--border-tile);
+  background: var(--layer-2);
+}
+
+.project-list-item.selected {
+  border-color: var(--border-brand);
+  box-shadow: inset 2px 0 0 var(--brand);
 }
 
 .project-list-item.selected {
@@ -7034,15 +7073,23 @@ select option {
 .project-detail-grid div {
   min-width: 0;
   padding: 0.75rem;
-  border: 1px solid var(--border-subtle);
+  border: 1px solid var(--border-tile);
   border-radius: 6px;
-  background: rgba(0, 0, 0, 0.16);
+  background: var(--layer-2);
+  transition: background 0.2s ease, border-color 0.2s ease;
+}
+
+.project-detail-grid div:hover {
+  background: var(--layer-2-hover);
+  border-color: var(--border-strong);
 }
 
 .project-detail-grid dt {
   margin-bottom: 0.3rem;
-  color: var(--text-muted);
+  color: var(--text-secondary);
   font-size: 0.74rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
 }
 
 .project-detail-grid dd {
@@ -9959,7 +10006,7 @@ select option {
 [data-theme="light"] .settings-sidebar-surface,
 [data-theme="light"] .settings-card,
 [data-theme="light"] .settings-profile-header {
-  background: rgba(255, 255, 255, 0.9);
+  background: rgba(246, 248, 252, 0.9);
   border-color: rgba(0, 0, 0, 0.07);
   box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
 }
@@ -10985,6 +11032,10 @@ select option {
   align-items: center;
   justify-content: center;
   min-height: 100dvh;
+  /* The full-screen loader has no sidebar, so cancel the .dash-shell
+     left gutter (var(--sidebar-width)) that would otherwise push the
+     centred content right of the true viewport centre. */
+  padding: 0;
 }
 
 .pipeline-loader-center {
@@ -11044,7 +11095,7 @@ select option {
   width: 10px;
   height: 10px;
   border-radius: 50%;
-  border: 1.5px solid rgba(255,255,255,0.15);
+  border: 1.5px solid var(--loader-track-strong);
   flex-shrink: 0;
 }
 
@@ -11067,7 +11118,7 @@ select option {
   display: inline-block;
   width: clamp(2.5rem, 6vw, 4rem);
   height: 1px;
-  background: rgba(255,255,255,0.08);
+  background: var(--loader-track-mid);
   flex-shrink: 0;
   margin-bottom: 0;
 }
@@ -11077,7 +11128,7 @@ select option {
   position: relative;
   width: clamp(200px, 50vw, 360px);
   height: 2px;
-  background: rgba(255,255,255,0.04);
+  background: var(--loader-track-faint);
   border-radius: 1px;
   overflow: hidden;
   margin-top: 0.5rem;

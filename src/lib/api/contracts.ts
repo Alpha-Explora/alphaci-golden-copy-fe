@@ -69,6 +69,39 @@ export interface CapabilitiesResponse {
     environments: EnvEnvironment[];
     modes: EnvOwnershipMode[];
   };
+  deploymentProviders?: {
+    gcp: {
+      provider: "gcp";
+      enabled: boolean;
+      disabledReason: "gcp_deployments_disabled" | "missing_gcp_runtime_config" | null;
+      deploymentStrategy: "gcp_cloud_run";
+      runtimeScopes: Array<"shared_project" | "dedicated_customer_project">;
+      supportsPreviewDeployments: boolean;
+      supportsCustomDomains: boolean;
+      requiresProviderConnection: false;
+      customerDatabaseManagedByAlphaCI: false;
+      defaults: {
+        projectId: string | null;
+        region: string;
+        artifactRegistryRepository: string | null;
+      };
+    };
+    legacyProviders: {
+      vercel: {
+        provider: "vercel";
+        enabledForNewTargets: boolean;
+        requiresProviderConnection: false;
+      };
+      render: {
+        provider: "render";
+        enabledForNewTargets: boolean;
+        requiresProviderConnection: false;
+      };
+      byoDeploymentProviders: {
+        enabledForNewConnections: boolean;
+      };
+    };
+  };
   projectSyncSnapshots: {
     enabled: boolean;
     liveGithubEnabled?: boolean;

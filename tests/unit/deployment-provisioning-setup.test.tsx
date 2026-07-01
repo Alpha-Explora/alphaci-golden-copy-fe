@@ -104,8 +104,8 @@ describe("DeploymentProvisioningSetup", () => {
         {
           slot: "backend",
           provider: "render",
-          ownershipMode: "byo",
-          renderDeployMethod: "native_git",
+          ownershipMode: "flowci_managed",
+          renderDeployMethod: "managed_image",
           renderRuntime: "node",
           projectName: "orders-api-test",
           branchName: "test",
@@ -297,35 +297,15 @@ describe("DeploymentProvisioningSetup", () => {
     rendered.unmount();
   });
 
-  it("selects saved provider connections for BYO Vercel setup", () => {
+  it("does not expose BYO ownership or provider-connection controls for new setup", () => {
     const onChange = jest.fn();
-    mockedUseProviderConnections.mockReturnValue({
-      connections: [
-        {
-          id: "connection-1",
-          provider: "vercel",
-          label: "Personal Vercel",
-          tokenLastFour: "abcd",
-          status: "active",
-          metadata: {},
-          createdAt: "2026-06-10T00:00:00.000Z",
-          updatedAt: "2026-06-10T00:00:00.000Z",
-          lastUsedAt: null,
-        },
-      ],
-      loadConnections: jest.fn(),
-      loading: false,
-      revokeConnection: jest.fn(),
-      saveConnection: jest.fn(),
-      saving: false,
-    });
     const value: DeploymentProvisioningRequest = {
       enabled: true,
       targets: [
         {
           slot: "frontend",
           provider: "vercel",
-          ownershipMode: "byo",
+          ownershipMode: "flowci_managed",
           projectName: "orders-ui-test",
           branchName: "test",
           rootDirectory: ".",
@@ -345,14 +325,53 @@ describe("DeploymentProvisioningSetup", () => {
       />,
     );
 
-    expect(rendered.container.querySelector<HTMLSelectElement>("select[aria-label='Provider connection']")).toHaveValue("connection-1");
-    expect(rendered.container.textContent).toContain("Personal Vercel - abcd");
-    expect(rendered.container.querySelector("input[placeholder='Vercel connection UUID']")).toBeNull();
+    expect(rendered.container.textContent).not.toContain("Use my Vercel account");
+    expect(rendered.container.textContent).not.toContain("Use my Render account");
+    expect(rendered.container.querySelector<HTMLSelectElement>("select[aria-label='Provider ownership']")).toBeNull();
+    expect(rendered.container.querySelector<HTMLSelectElement>("select[aria-label='Provider connection']")).toBeNull();
+    expect(mockedUseProviderConnections).not.toHaveBeenCalled();
+
+    rendered.unmount();
+  });
+
+  it("normalizes stale BYO target values before emitting setup edits", () => {
+    const onChange = jest.fn();
+    const value: DeploymentProvisioningRequest = {
+      enabled: true,
+      targets: [
+        {
+          slot: "frontend",
+          provider: "vercel",
+          ownershipMode: "byo",
+          providerConnectionId: "connection-1",
+          projectName: "orders-ui-test",
+          branchName: "test",
+          rootDirectory: ".",
+          buildCommand: "npm run build",
+          env: [{ environment: "test", vars: [] }],
+        },
+      ],
+    };
+
+    const rendered = render(
+      <DeploymentProvisioningSetup
+        enabled
+        repoShape="single-app"
+        selectedProjectKind="frontend"
+        value={value}
+        onChange={onChange}
+      />,
+    );
+
+    changeValue(rendered.container.querySelector<HTMLInputElement>("input[aria-label='Provider project name']")!, "orders-ui-uat");
+
     expect(onChange).toHaveBeenCalledWith(
       expect.objectContaining({
         targets: [
           expect.objectContaining({
-            providerConnectionId: "connection-1",
+            ownershipMode: "flowci_managed",
+            providerConnectionId: undefined,
+            projectName: "orders-ui-uat",
           }),
         ],
       }),

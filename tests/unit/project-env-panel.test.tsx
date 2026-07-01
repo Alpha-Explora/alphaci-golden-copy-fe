@@ -2296,7 +2296,7 @@ describe("Project env provisioning UI", () => {
     expect(loadingRendered.container.querySelectorAll(".skeleton-card")).toHaveLength(3);
   });
 
-  it("registers BYO existing targets from saved provider connections", async () => {
+  it("creates deployment targets as AlphaCI-managed without BYO provider controls", async () => {
     const addTarget = jest.fn().mockResolvedValue({
       id: "target-1",
       providerProjectName: "orders-api-render",
@@ -2321,28 +2321,23 @@ describe("Project env provisioning UI", () => {
     const rendered = render(<ProjectEnvPanel project={provisionedProject} />);
     root = rendered.root;
 
-    const modeSelect = rendered.container.querySelector<HTMLSelectElement>('[aria-label="Target action"]')!;
-    const ownershipSelect = rendered.container.querySelector<HTMLSelectElement>('[aria-label="Ownership mode"]')!;
+    expect(rendered.container.textContent).not.toContain("Bring your own provider");
+    expect(rendered.container.querySelector<HTMLSelectElement>('[aria-label="Ownership mode"]')).toBeNull();
+    expect(rendered.container.querySelector<HTMLSelectElement>('[aria-label="Provider connection"]')).toBeNull();
 
-    changeValue(modeSelect, "register_existing");
-    changeValue(ownershipSelect, "byo");
-    const providerProjectId = rendered.container.querySelector<HTMLInputElement>('input[placeholder="Provider project ID"]')!;
-    const providerProjectName = rendered.container.querySelector<HTMLInputElement>('input[placeholder="Provider project name"]')!;
-    changeValue(providerProjectId, "srv-123");
-    changeValue(providerProjectName, "orders-api-render");
     await act(async () => {
       rendered.container.querySelector<HTMLButtonElement>('button[data-testid="save-target"]')!.click();
     });
 
     expect(addTarget).toHaveBeenCalledWith(
       expect.objectContaining({
-        action: "register_existing",
-        ownershipMode: "byo",
-        providerConnectionId: "connection-1",
-        providerProjectId: "srv-123",
-        providerProjectName: "orders-api-render",
+        action: "create",
+        ownershipMode: "flowci_managed",
+        provider: "render",
+        projectName: "orders-api-test",
       }),
     );
+    expect(addTarget).toHaveBeenCalledWith(expect.not.objectContaining({ providerConnectionId: expect.any(String) }));
   });
 
   it("shows clean deployment target setup errors", async () => {

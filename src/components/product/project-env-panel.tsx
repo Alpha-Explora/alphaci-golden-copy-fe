@@ -5,7 +5,6 @@ import { FormEvent, useEffect, useMemo, useState } from "react";
 import { useProjectEnvProvisioning } from "@/hooks/use-project-env-provisioning";
 import type {
   EnvEnvironment,
-  EnvOwnershipMode,
   EnvProvider,
   RenderRuntime,
   EnvTargetSlot,
@@ -51,18 +50,16 @@ interface EnvRow {
 }
 
 export function ProjectEnvPanel({ project }: Readonly<{ project: ProvisionedProject }>) {
-  const { addTarget, loading, metadata, providerConnections, provision, removeMetadata, saving, targets, validateEnvText } =
+  const { addTarget, loading, metadata, provision, removeMetadata, saving, targets, validateEnvText } =
     useProjectEnvProvisioning(project.id, project.status === "provisioned");
   const [targetId, setTargetId] = useState("");
   const [targetAction, setTargetAction] = useState<"create" | "register_existing">("create");
-  const [ownershipMode, setOwnershipMode] = useState<EnvOwnershipMode>("flowci_managed");
   const [provider, setProvider] = useState<EnvProvider>("render");
   const [slot, setSlot] = useState<EnvTargetSlot>("backend");
   const [environment, setEnvironment] = useState<EnvEnvironment>("test");
   const [projectName, setProjectName] = useState(`${project.serviceName}-test`);
   const [providerProjectId, setProviderProjectId] = useState("");
   const [providerProjectName, setProviderProjectName] = useState(project.serviceName);
-  const [providerConnectionId, setProviderConnectionId] = useState("");
   const [branchName, setBranchName] = useState("test");
   const [rootDirectory, setRootDirectory] = useState(".");
   const [buildCommand, setBuildCommand] = useState("npm ci && npm run build");
@@ -79,8 +76,6 @@ export function ProjectEnvPanel({ project }: Readonly<{ project: ProvisionedProj
   const [usageItems, setUsageItems] = useState<UsageLimitItem[]>([]);
 
   const activeTargetId = targetId || targets[0]?.id || "";
-  const matchingConnections = providerConnections.filter((connection) => connection.provider === provider);
-  const activeProviderConnectionId = providerConnectionId || matchingConnections[0]?.id || "";
   const envKeyQuota = useMemo(
     () => usageItems.find((item) => item.code === "env_keys") ?? null,
     [usageItems],
@@ -135,10 +130,9 @@ export function ProjectEnvPanel({ project }: Readonly<{ project: ProvisionedProj
     const targetPayload = {
       action: targetAction,
       slot,
-      ownershipMode,
+      ownershipMode: "flowci_managed" as const,
       provider,
       branchName,
-      ...(ownershipMode === "byo" ? { providerConnectionId: activeProviderConnectionId } : {}),
       ...(targetAction === "create"
         ? {
             projectName,
@@ -241,14 +235,10 @@ export function ProjectEnvPanel({ project }: Readonly<{ project: ProvisionedProj
             <option value="register_existing">Use existing target</option>
           </select>
           <select
-            aria-label="Ownership mode"
-            value={ownershipMode}
-            onChange={(event) => setOwnershipMode(event.target.value as EnvOwnershipMode)}
+            aria-label="Provider"
+            value={provider}
+            onChange={(event) => setProvider(event.target.value as EnvProvider)}
           >
-            <option value="flowci_managed">AlphaCI-managed</option>
-            <option value="byo">Bring your own provider</option>
-          </select>
-          <select aria-label="Provider" value={provider} onChange={(event) => setProvider(event.target.value as EnvProvider)}>
             <option value="render">Render</option>
             <option value="vercel">Vercel</option>
           </select>
@@ -257,24 +247,6 @@ export function ProjectEnvPanel({ project }: Readonly<{ project: ProvisionedProj
             <option value="frontend">Frontend</option>
             <option value="standalone">Standalone</option>
           </select>
-          {ownershipMode === "byo" ? (
-            <select
-              aria-label="Provider connection"
-              value={activeProviderConnectionId}
-              onChange={(event) => setProviderConnectionId(event.target.value)}
-              disabled={!matchingConnections.length}
-            >
-              {matchingConnections.length ? (
-                matchingConnections.map((connection) => (
-                  <option key={connection.id} value={connection.id}>
-                    {connection.label} - {connection.tokenLastFour}
-                  </option>
-                ))
-              ) : (
-                <option value="">No saved {provider} connection</option>
-              )}
-            </select>
-          ) : null}
           {targetAction === "create" ? (
             <>
               <input value={projectName} onChange={(event) => setProjectName(event.target.value)} placeholder="Provider project name" />
@@ -311,8 +283,7 @@ export function ProjectEnvPanel({ project }: Readonly<{ project: ProvisionedProj
               saving ||
               !branchName ||
               (targetAction === "create" && !projectName) ||
-              (targetAction === "register_existing" && (!providerProjectId || !providerProjectName)) ||
-              (ownershipMode === "byo" && !activeProviderConnectionId)
+              (targetAction === "register_existing" && (!providerProjectId || !providerProjectName))
             }
             type="button"
             onClick={() => void handleSaveTarget()}

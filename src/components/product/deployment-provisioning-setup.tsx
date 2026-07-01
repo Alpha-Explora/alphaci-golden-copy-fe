@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo } from "react";
+import { useMemo } from "react";
 
 import type {
   DeploymentProvisioningEnvSet,
@@ -14,7 +14,6 @@ import type {
   RenderRuntime,
   RenderServiceType,
 } from "@/lib/api/contracts";
-import { useProviderConnections } from "@/hooks/use-provider-connections";
 
 interface DeploymentProvisioningSetupProps {
   enabled: boolean;
@@ -35,6 +34,7 @@ const renderRuntimeOptions: Array<{ value: RenderRuntime; label: string }> = [
   { value: "rust", label: "Rust" },
   { value: "elixir", label: "Elixir" },
 ];
+const legacyRenderDeployMethods: RenderDeployMethod[] = ["native_git", "byo_image", "existing_service"];
 
 function blankEnvSet(environment: EnvEnvironment = "test"): DeploymentProvisioningEnvSet {
   return { environment, vars: [] };
@@ -72,7 +72,7 @@ function updateTargetAt(
   return {
     ...value,
     targets: value.targets.map((target, currentIndex) =>
-      currentIndex === index ? { ...target, ...patch } : target,
+      asAlphaCIManagedTarget(currentIndex === index ? { ...target, ...patch } : target),
     ),
   };
 }
@@ -222,18 +222,27 @@ function defaultProjectPlaceholder(repoShape: string, target: DeploymentProvisio
 
 function ownershipDescription(target: DeploymentProvisioningTargetRequest) {
   if (target.provider === "render") {
-    if (target.ownershipMode === "byo") {
-      return target.renderDeployMethod === "native_git"
-        ? "AlphaCI creates a Render service in your account using Render's native Git build. Render must have access to the repository."
-        : "AlphaCI uses your Render account and deploys through the generated GitHub Actions image workflow.";
-    }
-
     return "AlphaCI packages and deploys this backend automatically.";
   }
 
-  return target.ownershipMode === "byo"
-    ? "AlphaCI creates a Vercel project in your account and deploys through GitHub Actions. You do not need to install Vercel's GitHub integration."
-    : "AlphaCI creates the Vercel project and deploys it through GitHub Actions from the generated workflow.";
+  return "AlphaCI creates the Vercel project and deploys it through GitHub Actions from the generated workflow.";
+}
+
+function asAlphaCIManagedTarget(
+  target: DeploymentProvisioningTargetRequest,
+): DeploymentProvisioningTargetRequest {
+  const renderDeployMethod =
+    target.provider === "render" && (!target.renderDeployMethod || legacyRenderDeployMethods.includes(target.renderDeployMethod))
+      ? "managed_image"
+      : target.renderDeployMethod;
+
+  return {
+    ...target,
+    action: target.action === "register_existing" ? "create" : target.action,
+    ownershipMode: "flowci_managed",
+    providerConnectionId: undefined,
+    renderDeployMethod,
+  };
 }
 
 function withRenderDefaults(
@@ -272,15 +281,8 @@ export function DeploymentProvisioningSetup({
   onEnabledChange,
 }: Readonly<DeploymentProvisioningSetupProps>) {
   const targets = useMemo(
-    () => (value.targets.length > 0 ? value.targets : [fallbackTarget(selectedProjectKind)]),
+    () => (value.targets.length > 0 ? value.targets : [fallbackTarget(selectedProjectKind)]).map(asAlphaCIManagedTarget),
     [selectedProjectKind, value.targets],
-  );
-  const needsProviderConnections = enabled && targets.some((target) => target.ownershipMode === "byo");
-  const { connections: providerConnections, loading: providerConnectionsLoading } =
-    useProviderConnections(needsProviderConnections);
-  const activeProviderConnections = useMemo(
-    () => providerConnections.filter((connection) => connection.status === "active"),
-    [providerConnections],
   );
   const targetProviders = useMemo(
     () => [...new Set(targets.map((target) => target.provider))],
@@ -308,40 +310,6 @@ export function DeploymentProvisioningSetup({
   );
   const groupVarCount = variableGroups.reduce((total, group) => total + countVars(group.env), 0);
   const branchVarCount = targets.reduce((total, target) => total + countVars(target.env), 0);
-
-  useEffect(() => {
-    if (!enabled || providerConnectionsLoading) {
-      return;
-    }
-
-    let changed = false;
-    const nextTargets = targets.map((target) => {
-      if (target.ownershipMode !== "byo") {
-        return target;
-      }
-
-      const matchingConnections = activeProviderConnections.filter(
-        (connection) => connection.provider === target.provider,
-      );
-      const selectedConnection = matchingConnections.find(
-        (connection) => connection.id === target.providerConnectionId,
-      );
-
-      if (selectedConnection) {
-        return target;
-      }
-
-      changed = true;
-      return {
-        ...target,
-        providerConnectionId: matchingConnections[0]?.id,
-      };
-    });
-
-    if (changed) {
-      onChange({ ...value, targets: nextTargets });
-    }
-  }, [activeProviderConnections, enabled, onChange, providerConnectionsLoading, targets, value]);
 
   return (
     <div className="deployment-provisioning-setup">
@@ -634,10 +602,6 @@ export function DeploymentProvisioningSetup({
           {targets.map((target, targetIndex) => {
             const envSet = target.env?.[0] ?? { environment: "test" as EnvEnvironment, vars: [] };
             const vars = envVarsForDisplay(envSet);
-            const matchingConnections = activeProviderConnections.filter(
-              (connection) => connection.provider === target.provider,
-            );
-            const selectedProviderConnectionId = target.providerConnectionId ?? matchingConnections[0]?.id ?? "";
 
             return (
               <section className="env-provisioning-section" key={`${target.slot}-${targetIndex}`}>
@@ -684,17 +648,14 @@ export function DeploymentProvisioningSetup({
                       value={target.provider}
                       onChange={(event) => {
                         const provider = event.target.value as EnvProvider;
-                        const providerConnectionId =
-                          target.ownershipMode === "byo"
-                            ? activeProviderConnections.find((connection) => connection.provider === provider)?.id
-                            : undefined;
                         onChange(
                           updateTargetAt(
                             value,
                             targetIndex,
                             withRenderDefaults(target, {
                               provider,
-                              providerConnectionId,
+                              ownershipMode: "flowci_managed",
+                              providerConnectionId: undefined,
                               ...(provider === "vercel"
                                 ? {
                                     renderDeployMethod: undefined,
@@ -716,55 +677,9 @@ export function DeploymentProvisioningSetup({
                       <option value="vercel">Vercel</option>
                     </select>
                   </label>
-                  <label className="env-target-grid__field env-target-grid__field--wide">
-                    <span>Ownership</span>
-                    <select
-                      aria-label={targetIndex === 0 ? "Provider ownership" : `Provider ownership ${targetIndex + 1}`}
-                      value={target.ownershipMode}
-                      onChange={(event) => {
-                        const ownershipMode = event.target.value as DeploymentProvisioningTargetRequest["ownershipMode"];
-                        const providerConnectionId =
-                          ownershipMode === "byo"
-                            ? matchingConnections[0]?.id ?? target.providerConnectionId
-                            : undefined;
-                        onChange(
-                          updateTargetAt(value, targetIndex, {
-                            ownershipMode,
-                            providerConnectionId,
-                          }),
-                        );
-                      }}
-                    >
-                      <option value="flowci_managed">Managed by AlphaCI</option>
-                      <option value="byo">Use my {target.provider === "render" ? "Render" : "Vercel"} account</option>
-                    </select>
-                    <span className="helper-text env-target-grid__note">
-                      {ownershipDescription(target)}
-                    </span>
-                  </label>
-                  {target.ownershipMode === "byo" ? (
-                    <label className="env-target-grid__field env-target-grid__field--wide">
-                      <span>Provider connection</span>
-                      <select
-                        aria-label={targetIndex === 0 ? "Provider connection" : `Provider connection ${targetIndex + 1}`}
-                        value={selectedProviderConnectionId}
-                        disabled={providerConnectionsLoading || matchingConnections.length === 0}
-                        onChange={(event) =>
-                          onChange(updateTargetAt(value, targetIndex, { providerConnectionId: event.target.value }))
-                        }
-                      >
-                        {matchingConnections.length ? (
-                          matchingConnections.map((connection) => (
-                            <option key={connection.id} value={connection.id}>
-                              {connection.label} - {connection.tokenLastFour}
-                            </option>
-                          ))
-                        ) : (
-                          <option value="">No saved {target.provider} connection</option>
-                        )}
-                      </select>
-                    </label>
-                  ) : null}
+                  <p className="helper-text env-target-grid__field env-target-grid__field--wide" style={{ margin: 0 }}>
+                    {ownershipDescription(target)}
+                  </p>
                   <label className="env-target-grid__field env-target-grid__field--wide">
                     <span>Project name</span>
                     <input
@@ -804,34 +719,20 @@ export function DeploymentProvisioningSetup({
                         <span>Deployment method</span>
                         <select
                           aria-label={targetIndex === 0 ? "Render deployment method" : `Render deployment method ${targetIndex + 1}`}
-                          value={target.renderDeployMethod ?? (target.ownershipMode === "byo" ? "native_git" : "managed_image")}
+                          value={target.renderDeployMethod ?? "managed_image"}
                           onChange={(event) =>
                             onChange(
                               updateTargetAt(value, targetIndex, {
                                 renderDeployMethod: event.target.value as RenderDeployMethod,
-                                action:
-                                  event.target.value === "existing_service"
-                                    ? "register_existing"
-                                    : "create",
+                                action: "create",
                               }),
                             )
                           }
                         >
-                          {target.ownershipMode === "flowci_managed" ? (
-                            <option value="managed_image">Automatic package deploy</option>
-                          ) : null}
-                          {target.ownershipMode === "byo" ? (
-                            <>
-                              <option value="native_git">Native Render build</option>
-                              <option value="byo_image">GitHub Actions image deploy</option>
-                              <option value="existing_service">Existing Render service</option>
-                            </>
-                          ) : null}
+                          <option value="managed_image">Automatic package deploy</option>
                         </select>
                         <span className="helper-text env-target-grid__note">
-                          {target.renderDeployMethod === "native_git"
-                            ? "Uses Render build/start commands and requires Render repository access."
-                            : "AlphaCI packages and deploys this backend automatically."}
+                          AlphaCI packages and deploys this backend automatically.
                         </span>
                       </label>
                       <label className="env-target-grid__field env-target-grid__field--compact">
@@ -873,9 +774,7 @@ export function DeploymentProvisioningSetup({
                           ))}
                         </select>
                         <span className="helper-text env-target-grid__note">
-                          {target.renderDeployMethod === "native_git"
-                            ? "Render uses this runtime for its native Git build."
-                            : "Image-backed deploys run as a Docker image; this records the service runtime intent."}
+                          Image-backed deploys run as a Docker image; this records the service runtime intent.
                         </span>
                       </label>
                       <label className="env-target-grid__field env-target-grid__field--compact">
@@ -894,65 +793,31 @@ export function DeploymentProvisioningSetup({
                           onChange={(event) => onChange(updateTargetAt(value, targetIndex, { renderRegion: event.target.value }))}
                         />
                       </label>
-                      {target.renderDeployMethod === "native_git" ? (
-                        <label className="env-target-grid__field env-target-grid__field--wide">
-                          <span>Start command</span>
-                          <input
-                            aria-label={targetIndex === 0 ? "Provider start command" : `Provider start command ${targetIndex + 1}`}
-                            value={target.startCommand ?? ""}
-                            onChange={(event) => onChange(updateTargetAt(value, targetIndex, { startCommand: event.target.value }))}
-                          />
-                        </label>
-                      ) : null}
-                      {target.renderDeployMethod === "existing_service" ? (
-                        <>
-                          <label className="env-target-grid__field env-target-grid__field--wide">
-                            <span>Service ID</span>
-                            <input
-                              aria-label={targetIndex === 0 ? "Render service ID" : `Render service ID ${targetIndex + 1}`}
-                              value={target.providerProjectId ?? ""}
-                              onChange={(event) => onChange(updateTargetAt(value, targetIndex, { providerProjectId: event.target.value }))}
-                              placeholder="srv-..."
-                            />
-                          </label>
-                          <label className="env-target-grid__field env-target-grid__field--wide">
-                            <span>Service name</span>
-                            <input
-                              aria-label={targetIndex === 0 ? "Render service name" : `Render service name ${targetIndex + 1}`}
-                              value={target.providerProjectName ?? ""}
-                              onChange={(event) => onChange(updateTargetAt(value, targetIndex, { providerProjectName: event.target.value }))}
-                              placeholder="api-test"
-                            />
-                          </label>
-                        </>
-                      ) : null}
                       {target.ownershipMode === "flowci_managed" && (target.renderInstanceType ?? "free") !== "free" ? (
                         <p className="helper-text env-target-grid__field env-target-grid__field--wide" style={{ margin: 0 }}>
-                          Paid managed Render services require AlphaCI approval. Use free or connect your own Render account.
+                          Paid managed Render services require AlphaCI approval. Use free until GCP managed tiers replace this path.
                         </p>
                       ) : null}
-                      {target.renderDeployMethod !== "native_git" && target.renderDeployMethod !== "existing_service" ? (
-                        <details className="env-target-grid__field env-target-grid__field--wide">
-                          <summary>Packaging details</summary>
-                          <p className="helper-text">Uses a generated Dockerfile and GitHub Actions image deployment.</p>
-                          <label>
-                            <span>Docker context</span>
-                            <input
-                              aria-label={targetIndex === 0 ? "Docker context" : `Docker context ${targetIndex + 1}`}
-                              value={target.dockerContext ?? target.rootDirectory ?? "."}
-                              onChange={(event) => onChange(updateTargetAt(value, targetIndex, { dockerContext: event.target.value }))}
-                            />
-                          </label>
-                          <label>
-                            <span>Dockerfile path</span>
-                            <input
-                              aria-label={targetIndex === 0 ? "Dockerfile path" : `Dockerfile path ${targetIndex + 1}`}
-                              value={target.dockerfilePath ?? "Dockerfile"}
-                              onChange={(event) => onChange(updateTargetAt(value, targetIndex, { dockerfilePath: event.target.value }))}
-                            />
-                          </label>
-                        </details>
-                      ) : null}
+                      <details className="env-target-grid__field env-target-grid__field--wide">
+                        <summary>Packaging details</summary>
+                        <p className="helper-text">Uses a generated Dockerfile and GitHub Actions image deployment.</p>
+                        <label>
+                          <span>Docker context</span>
+                          <input
+                            aria-label={targetIndex === 0 ? "Docker context" : `Docker context ${targetIndex + 1}`}
+                            value={target.dockerContext ?? target.rootDirectory ?? "."}
+                            onChange={(event) => onChange(updateTargetAt(value, targetIndex, { dockerContext: event.target.value }))}
+                          />
+                        </label>
+                        <label>
+                          <span>Dockerfile path</span>
+                          <input
+                            aria-label={targetIndex === 0 ? "Dockerfile path" : `Dockerfile path ${targetIndex + 1}`}
+                            value={target.dockerfilePath ?? "Dockerfile"}
+                            onChange={(event) => onChange(updateTargetAt(value, targetIndex, { dockerfilePath: event.target.value }))}
+                          />
+                        </label>
+                      </details>
                     </>
                   ) : null}
                   <label className="env-target-grid__field env-target-grid__field--compact">

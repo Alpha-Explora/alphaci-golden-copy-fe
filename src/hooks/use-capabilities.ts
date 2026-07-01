@@ -45,6 +45,10 @@ export function useCapabilities() {
 
   return {
     capabilities,
+    byoDeploymentProvidersEnabled:
+      capabilities?.deploymentProviders
+        ? capabilities.deploymentProviders.legacyProviders.byoDeploymentProviders.enabledForNewConnections === true
+        : capabilities?.envProvisioning?.modes?.includes("byo") === true,
     envProvisioningEnabled: capabilities?.envProvisioning?.enabled === true,
     projectSyncSnapshotsEnabled: capabilities?.projectSyncSnapshots?.enabled === true,
     workflowSettingsPreviewEnabled: capabilities?.workflowSettingsPreview?.enabled === true,

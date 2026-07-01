@@ -96,6 +96,70 @@ describe("DeploymentProvidersSection", () => {
     expect(rendered.container.textContent).not.toContain("Deployment Providers");
   });
 
+  it("hides provider connection creation when BYO deployment providers are disabled", () => {
+    mockedUseCapabilities.mockReturnValue({
+      capabilities: {
+        envProvisioning: {
+          enabled: true,
+          providers: ["render", "vercel"],
+          environments: ["test", "uat", "production"],
+          modes: ["flowci_managed"],
+        },
+        deploymentProviders: {
+          gcp: {
+            provider: "gcp",
+            enabled: true,
+            disabledReason: null,
+            deploymentStrategy: "gcp_cloud_run",
+            runtimeScopes: ["shared_project"],
+            supportsPreviewDeployments: false,
+            supportsCustomDomains: false,
+            requiresProviderConnection: false,
+            customerDatabaseManagedByAlphaCI: false,
+            defaults: {
+              projectId: "alphaci-runtime",
+              region: "asia-southeast1",
+              artifactRegistryRepository: "alphaci-services",
+            },
+          },
+          legacyProviders: {
+            vercel: {
+              provider: "vercel",
+              enabledForNewTargets: false,
+              requiresProviderConnection: false,
+            },
+            render: {
+              provider: "render",
+              enabledForNewTargets: false,
+              requiresProviderConnection: false,
+            },
+            byoDeploymentProviders: {
+              enabledForNewConnections: false,
+            },
+          },
+        },
+      },
+      byoDeploymentProvidersEnabled: false,
+      envProvisioningEnabled: true,
+      loadCapabilities: jest.fn(),
+      loading: false,
+    });
+    mockedUseProviderConnections.mockReturnValue({
+      connections: [],
+      loadConnections: jest.fn(),
+      loading: false,
+      revokeConnection: jest.fn(),
+      saveConnection: jest.fn(),
+      saving: false,
+    });
+
+    const rendered = renderComponent();
+    root = rendered.root;
+
+    expect(rendered.container.textContent).not.toContain("Deployment Providers");
+    expect(mockedUseProviderConnections).toHaveBeenCalledWith(false);
+  });
+
   it("clears token input and shows saved provider after submit", async () => {
     const saveConnection = jest.fn().mockResolvedValue({
       id: "connection-2",
@@ -117,6 +181,7 @@ describe("DeploymentProvidersSection", () => {
         },
       },
       envProvisioningEnabled: true,
+      byoDeploymentProvidersEnabled: true,
       loadCapabilities: jest.fn(),
       loading: false,
     });
@@ -174,6 +239,7 @@ describe("DeploymentProvidersSection", () => {
         },
       },
       envProvisioningEnabled: true,
+      byoDeploymentProvidersEnabled: true,
       loadCapabilities: jest.fn(),
       loading: false,
     });
@@ -219,6 +285,7 @@ describe("DeploymentProvidersSection", () => {
         },
       },
       envProvisioningEnabled: true,
+      byoDeploymentProvidersEnabled: true,
       loadCapabilities: jest.fn(),
       loading: false,
     });
@@ -263,6 +330,7 @@ describe("DeploymentProvidersSection", () => {
         },
       },
       envProvisioningEnabled: true,
+      byoDeploymentProvidersEnabled: true,
       loadCapabilities: jest.fn(),
       loading: false,
     });

@@ -21,15 +21,16 @@ export function DeploymentProvidersSection({
 }: {
   workspaceRole?: WorkspaceRole | null;
 }) {
-  const { envProvisioningEnabled, loading: loadingCapabilities } = useCapabilities();
+  const { byoDeploymentProvidersEnabled, envProvisioningEnabled, loading: loadingCapabilities } = useCapabilities();
+  const providerConnectionsEnabled = envProvisioningEnabled && byoDeploymentProvidersEnabled;
   const { connections, loading, revokeConnection, saveConnection, saving } =
-    useProviderConnections(envProvisioningEnabled);
+    useProviderConnections(providerConnectionsEnabled);
   const [provider, setProvider] = useState<EnvProvider>("render");
   const [label, setLabel] = useState("");
   const [token, setToken] = useState("");
   const [error, setError] = useState<string | null>(null);
 
-  if (loadingCapabilities || !envProvisioningEnabled) {
+  if (loadingCapabilities || !providerConnectionsEnabled) {
     return null;
   }
 

@@ -25,7 +25,7 @@ export function AdminHeader() {
         </Link>
         <nav style={{ display: "flex", gap: "1rem", fontSize: "0.85rem" }}>
           <Link href="/admin" style={{ color: "var(--text-secondary)", textDecoration: "none" }}>Users</Link>
-          <Link href="/admin/feedback" style={{ color: "var(--text-secondary)", textDecoration: "none" }}>Feedback</Link>
+          <Link href="/admin/feedback" style={{ color: "var(--text-secondary)", textDecoration: "none" }}>Feedback</Link>`r`n          <Link href="/admin/gcp-runtime" style={{ color: "var(--text-secondary)", textDecoration: "none" }}>GCP Runtime</Link>
         </nav>
       </div>
       <div style={{ display: "flex", alignItems: "center", gap: "0.75rem" }}>

@@ -1,0 +1,204 @@
+:root {
+
+
+  --bg-base:      #020617;
+  --bg-soft:      #0f172a;
+  --bg-frost:     rgba(255, 255, 255, 0.03);
+  --bg-surface:   rgba(15, 23, 42, 0.75);
+  --bg-panel:     #0f172a;
+  --bg-elevated:  #1e293b;
+
+
+
+  --text-primary:   #f8fafc;
+  --text-secondary: #94a3b8;
+  --text-muted:     #64748b;
+
+
+
+  --brand:          #38bdf8;
+  --brand-light:    rgba(56, 189, 248, 0.15);
+  --brand-strong:   #0ea5e9;
+  --brand-accent:   #34d399;
+  --brand-glow:     rgba(56, 189, 248, 0.5);
+
+
+
+  --success:  #34d399;
+  --warning:  #fbbf24;
+  --danger:   #f87171;
+
+
+
+  /* Used for secondary actions, highlights, plan badges, hover accents */
+  --accent-violet:       #a78bfa;
+
+  --accent-violet-light: rgba(167, 139, 250, 0.12);
+  --accent-violet-mid:   rgba(167, 139, 250, 0.25);
+  --accent-violet-glow:  rgba(167, 139, 250, 0.4);
+  --border-violet:       rgba(167, 139, 250, 0.35);
+
+
+
+  /* Used for status-active, GitHub-connected indicator, orphaned status */
+  --accent-amber:       #fbbf24;           /* same as --warning, aliased for semantic clarity */
+  --accent-amber-light: rgba(251, 191, 36, 0.12);
+  --border-amber:       rgba(251, 191, 36, 0.3);
+
+
+
+  --accent-teal:        #2dd4bf;
+  --accent-teal-light:  rgba(45, 212, 191, 0.12);
+  --accent-teal-glow:   rgba(45, 212, 191, 0.4);
+  --border-teal:        rgba(45, 212, 191, 0.3);
+
+
+
+  --accent-coral:       #fb7185;
+  --accent-coral-light: rgba(251, 113, 133, 0.12);
+  --accent-coral-glow:  rgba(251, 113, 133, 0.35);
+  --border-coral:       rgba(251, 113, 133, 0.3);
+
+
+
+  --accent-indigo:        #6366f1;
+  --accent-indigo-light:  rgba(99, 102, 241, 0.12);
+  --accent-indigo-glow:   rgba(99, 102, 241, 0.35);
+
+
+
+  --accent-rose:          #f43f5e;
+  --accent-rose-light:    rgba(244, 63, 94, 0.1);
+  --accent-rose-glow:     rgba(244, 63, 94, 0.3);
+
+
+
+  --accent-emerald:       #10b981;
+  --accent-emerald-light: rgba(16, 185, 129, 0.1);
+
+
+
+  --accent-gold:          #f59e0b;
+  --accent-gold-light:    rgba(245, 158, 11, 0.1);
+
+
+
+  --accent-purple:        #7c3aed;
+  --accent-purple-light:  rgba(124, 58, 237, 0.1);
+
+
+
+  --sidebar-width:        220px;
+  --sidebar-collapsed:    64px;
+
+
+
+  /* Subtle background tints for section separators and hover states */
+  --surface-violet: rgba(167, 139, 250, 0.04);
+  --surface-brand:  rgba(56, 189, 248, 0.04);
+
+
+
+  --border:        rgba(255, 255, 255, 0.12);
+  --border-soft:   rgba(255, 255, 255, 0.06);
+  --border-subtle: rgba(255, 255, 255, 0.03);
+  --border-strong: rgba(255, 255, 255, 0.2);
+  --border-brand:  rgba(56, 189, 248, 0.6);
+
+
+
+  --shadow-soft:     0 4px 14px rgba(0, 0, 0, 0.25), 0 1px 3px rgba(0, 0, 0, 0.15);
+  --shadow-card:     0 10px 40px rgba(0, 0, 0, 0.45), 0 4px 12px rgba(0, 0, 0, 0.3);
+  --shadow-elevated: 0 16px 54px rgba(0, 0, 0, 0.65), 0 6px 20px rgba(0, 0, 0, 0.45);
+  --shadow-hard:     0 24px 80px rgba(0, 0, 0, 0.85), 0 8px 24px rgba(0, 0, 0, 0.7);
+  --glow-brand:      0 0 50px rgba(56, 189, 248, 0.35), 0 0 100px rgba(56, 189, 248, 0.2);
+  --glow-success:    0 0 40px rgba(52, 211, 153, 0.3);
+
+
+
+  --radius-card:     1.25rem;
+  --radius-pill:     999px;
+  --layout-max:      100vw;
+  --layout-gutter:   clamp(1.5rem, 3vw, 2.5rem);
+  --stack-gap:       clamp(1.5rem, 2vw, 2rem);
+  --panel-pad:       clamp(1.5rem, 2vw, 2.5rem);
+  --content-measure: 80ch;
+  --tab-min-height:  3rem;
+  --surface:         var(--bg-surface);
+}
+
+[data-theme="light"] {
+  --bg-base:      #f1f5f9;
+  --bg-soft:      #ffffff;
+  --bg-frost:     rgba(255, 255, 255, 0.7);
+  --bg-surface:   rgba(255, 255, 255, 0.85);
+  --bg-panel:     #ffffff;
+  --bg-elevated:  #f8fafc;
+
+  --text-primary:   #0f172a;
+  --text-secondary: #475569;
+  --text-muted:     #94a3b8;
+
+  --brand:          #0284c7;
+  --brand-light:    rgba(2, 132, 199, 0.1);
+  --brand-strong:   #0369a1;
+  --brand-accent:   #059669;
+  --brand-glow:     rgba(2, 132, 199, 0.25);
+
+  --success:  #059669;
+  --warning:  #d97706;
+  --danger:   #dc2626;
+
+  --accent-violet:       #7c3aed;
+  --accent-violet-light: rgba(124, 58, 237, 0.08);
+  --accent-violet-mid:   rgba(124, 58, 237, 0.15);
+  --accent-violet-glow:  rgba(124, 58, 237, 0.2);
+  --border-violet:       rgba(124, 58, 237, 0.25);
+
+  --accent-amber:       #d97706;
+  --accent-amber-light: rgba(217, 119, 6, 0.08);
+  --border-amber:       rgba(217, 119, 6, 0.25);
+
+  --accent-teal:        #0d9488;
+  --accent-teal-light:  rgba(13, 148, 136, 0.08);
+  --accent-teal-glow:   rgba(13, 148, 136, 0.2);
+  --border-teal:        rgba(13, 148, 136, 0.2);
+
+  --accent-coral:       #e11d48;
+  --accent-coral-light: rgba(225, 29, 72, 0.08);
+  --accent-coral-glow:  rgba(225, 29, 72, 0.15);
+  --border-coral:       rgba(225, 29, 72, 0.2);
+
+  --accent-indigo:       #4f46e5;
+  --accent-indigo-light: rgba(79, 70, 229, 0.08);
+  --accent-indigo-glow:  rgba(79, 70, 229, 0.2);
+
+  --accent-rose:         #e11d48;
+  --accent-rose-light:   rgba(225, 29, 72, 0.07);
+  --accent-rose-glow:    rgba(225, 29, 72, 0.15);
+
+  --accent-emerald:       #059669;
+  --accent-emerald-light: rgba(5, 150, 105, 0.08);
+
+  --accent-gold:         #d97706;
+  --accent-gold-light:   rgba(217, 119, 6, 0.08);
+
+  --accent-purple:       #6d28d9;
+  --accent-purple-light: rgba(109, 40, 217, 0.08);
+
+  --surface-violet: rgba(79, 70, 229, 0.03);
+  --surface-brand:  rgba(2, 132, 199, 0.03);
+
+  --border:        rgba(0, 0, 0, 0.08);
+  --border-soft:   rgba(0, 0, 0, 0.05);
+  --border-subtle: rgba(0, 0, 0, 0.03);
+  --border-strong: rgba(0, 0, 0, 0.15);
+  --border-brand:  rgba(2, 132, 199, 0.4);
+
+  --shadow-soft:     0 2px 8px rgba(0, 0, 0, 0.08), 0 1px 2px rgba(0, 0, 0, 0.04);
+  --shadow-card:     0 4px 20px rgba(0, 0, 0, 0.1), 0 2px 6px rgba(0, 0, 0, 0.06);
+  --shadow-elevated: 0 8px 32px rgba(0, 0, 0, 0.14), 0 4px 12px rgba(0, 0, 0, 0.08);
+  --shadow-hard:     0 16px 48px rgba(0, 0, 0, 0.2), 0 6px 16px rgba(0, 0, 0, 0.12);
+  --glow-brand:      0 0 30px rgba(2, 132, 199, 0.15);
+  --glow-success:    0 0 24px rgba(5, 150, 105, 0.15);
+}

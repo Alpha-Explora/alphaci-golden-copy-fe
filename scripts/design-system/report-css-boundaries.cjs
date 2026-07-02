@@ -12,8 +12,21 @@ const {
 
 const rootDir = process.cwd();
 const globalsPath = path.join(rootDir, 'src', 'app', 'globals.css');
+const stylesDir = path.join(rootDir, 'src', 'styles');
 const reportPath = path.join(rootDir, '.design-system', 'reports', 'css-boundaries.json');
 const baselinePath = path.join(rootDir, '.design-system', 'baselines', 'css-boundaries.json');
+
+function globalCssPaths() {
+  const paths = [globalsPath];
+  if (fs.existsSync(stylesDir)) {
+    const styleFiles = fs.readdirSync(stylesDir)
+      .filter((fileName) => fileName.endsWith('.css'))
+      .sort()
+      .map((fileName) => path.join(stylesDir, fileName));
+    paths.push(...styleFiles);
+  }
+  return paths;
+}
 
 function shouldSkipSelector(selector) {
   const normalized = selector.trim();
@@ -25,12 +38,15 @@ function shouldSkipSelector(selector) {
   );
 }
 
-function addSelectorChunk(selectors, chunk, line) {
+function addSelectorChunk(selectors, chunk, line, filePath) {
   const beforeBrace = chunk.slice(0, chunk.indexOf('{')).trim();
   if (shouldSkipSelector(beforeBrace)) return;
   for (const selector of beforeBrace.split(',')) {
     const trimmed = selector.trim();
-    if (!shouldSkipSelector(trimmed) && !selectors.has(trimmed)) selectors.set(trimmed, line);
+    if (!shouldSkipSelector(trimmed)) {
+      const key = `${toPosix(path.relative(rootDir, filePath))}::${trimmed}`;
+      if (!selectors.has(key)) selectors.set(key, { selector: trimmed, line, filePath });
+    }
   }
 }
 
@@ -84,7 +100,7 @@ async function extractSelectorsFromFile(filePath) {
     pending = pending ? `${pending} ${trimmed}` : trimmed;
 
     while (pending.includes('{')) {
-      addSelectorChunk(selectors, pending, pendingLine);
+      addSelectorChunk(selectors, pending, pendingLine, filePath);
       pending = pending.slice(pending.indexOf('{') + 1);
       if (pending.includes('}')) pending = pending.slice(pending.lastIndexOf('}') + 1).trim();
       pendingLine = lineNumber;
@@ -94,18 +110,27 @@ async function extractSelectorsFromFile(filePath) {
     if (trimmed.includes('}')) pending = '';
   }
 
-  return [...selectors.entries()].sort(([a], [b]) => a.localeCompare(b));
+  return [...selectors.values()].sort((a, b) => {
+    const sourceCompare = toPosix(path.relative(rootDir, a.filePath)).localeCompare(toPosix(path.relative(rootDir, b.filePath)));
+    if (sourceCompare !== 0) return sourceCompare;
+    return a.selector.localeCompare(b.selector);
+  });
 }
 
 async function main() {
-  if (!fs.existsSync(globalsPath)) {
-    console.error('CSS boundary report failed: src/app/globals.css was not found');
+  const cssPaths = globalCssPaths();
+  const missing = cssPaths.filter((filePath) => !fs.existsSync(filePath));
+  if (missing.length > 0) {
+    console.error(`CSS boundary report failed: missing CSS files: ${missing.map((filePath) => toPosix(path.relative(rootDir, filePath))).join(', ')}`);
     process.exit(1);
   }
 
-  const selectors = await extractSelectorsFromFile(globalsPath);
-  const items = selectors.map(([selector, line]) => ({
+  const selectors = [];
+  for (const filePath of cssPaths) selectors.push(...await extractSelectorsFromFile(filePath));
+
+  const items = selectors.map(({ selector, line, filePath }) => ({
     selector,
+    source: toPosix(path.relative(rootDir, filePath)),
     line,
     ...classifyGlobalSelectorDetailed(selector),
   }));
@@ -119,6 +144,7 @@ async function main() {
     generatedAt: new Date().toISOString(),
     mode: 'report-only',
     source: toPosix(path.relative(rootDir, globalsPath)),
+    sources: cssPaths.map((filePath) => toPosix(path.relative(rootDir, filePath))),
     uniqueSelectorCount: items.length,
     counts,
     selectors: items,
@@ -134,6 +160,7 @@ async function main() {
   };
   writeJson(reportPath, report);
   console.log(`CSS boundary report: ${items.length} unique selectors scanned`);
+  console.log(`Sources: ${report.sources.join(', ')}`);
   for (const [name, count] of Object.entries(counts)) console.log(`${name}: ${count}`);
   console.log(`New governed selectors vs baseline: ${report.baseline.comparison.newItems.length}`);
   console.log(`Report written: ${toPosix(path.relative(rootDir, reportPath))}`);

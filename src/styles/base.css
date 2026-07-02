@@ -1,0 +1,23 @@
+html::-webkit-scrollbar {
+  display: none;
+}
+
+html,
+body {
+  min-height: 100%;
+  margin: 0;
+  background: var(--bg-base);
+  color: var(--text-primary);
+}
+
+html[data-theme="light"] {
+  background: var(--bg-base);
+}
+
+html {
+  scrollbar-width: none;
+}
+
+body {
+  overflow-x: hidden;
+}

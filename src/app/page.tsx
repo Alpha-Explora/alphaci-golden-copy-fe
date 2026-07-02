@@ -5,9 +5,8 @@ import { motion, useReducedMotion, useScroll, useSpring, useTransform } from "fr
 import type { MotionValue } from "framer-motion";
 import { useRef, useState, useEffect } from "react";
 
-import { FlowBackground } from "@/components/layout/flow-background";
 import { PipelineLogo } from "@/components/layout/pipeline-logo";
-import { PublicSiteNav } from "@/components/layout/public-site-nav";
+import { LandingShell } from "@/features/public-site/landing";
 
 import { useAuthSession } from "@/hooks/use-auth-session";
 import { hasActiveSubscription } from "@/lib/auth/subscription";
@@ -794,13 +793,7 @@ export default function LandingPage() {
   const primaryLabel = status === "signed-in" ? (hasSubscription ? "Open your workspace" : "View plans") : "Get Started";
 
   return (
-    <main className="landing-page-shell">
-      <a href="#main-content" className="skip-link">Skip to main content</a>
-      <FlowBackground />
-
-      <PublicSiteNav active="features" fixed />
-
-      <div id="main-content">
+    <LandingShell active="features">
         {/* -- SECTION 1: Asymmetric Split Hero -------------------------------- */}
         <section className="raw-hero-grid" ref={heroRef} aria-label="Main message" style={{ position: "relative", minHeight: "100vh", display: "grid", gridTemplateColumns: "1fr 1fr", alignItems: "center", alignContent: "center", padding: "80px clamp(2rem, 7vw, 8rem) 4rem", gap: "4rem", overflow: "hidden" }}>
           <div aria-hidden="true" className="editorial-hero-bg" />
@@ -1616,7 +1609,6 @@ export default function LandingPage() {
 
           </div>
         </section>
-      </div>
-    </main>
+    </LandingShell>
   );
 }

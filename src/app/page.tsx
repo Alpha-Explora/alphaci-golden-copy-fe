@@ -6,7 +6,7 @@ import type { MotionValue } from "framer-motion";
 import { useRef, useState, useEffect } from "react";
 
 import { PipelineLogo } from "@/components/layout/pipeline-logo";
-import { LandingShell } from "@/features/public-site/landing";
+import { LandingShell, SupportedStacksSection } from "@/features/public-site/landing";
 
 import { useAuthSession } from "@/hooks/use-auth-session";
 import { hasActiveSubscription } from "@/lib/auth/subscription";
@@ -1243,58 +1243,7 @@ export default function LandingPage() {
 
         </section>
 
-        {/* -- ECOSYSTEM MARQUEE ------------------------------------------ */}
-        <section aria-label="Supported Ecosystems" style={{ position: "relative", paddingTop: "2rem", paddingBottom: "2rem" }}>
-          {/* Top divider */}
-          <div className="marquee-divider" />
-
-          {/* Section label */}
-          <p className="marquee-section-label" style={{ marginTop: "2rem" }}>Supported stacks</p>
-
-          <motion.div className="marquee-container">
-            <div className="marquee-track">
-              {/* Double the list to create the infinite scroll illusion */}
-              {[
-                { name: "Next.js",       dot: "var(--brand)" },
-                { name: "NestJS",        dot: "#e0234e" },
-                { name: "React",         dot: "#61dafb" },
-                { name: "Node.js",       dot: "#68a063" },
-                { name: "React Native",  dot: "var(--brand)" },
-                { name: "Expo",          dot: "rgba(255,255,255,0.5)" },
-                { name: "Kotlin",        dot: "#7f52ff" },
-                { name: "Go",            dot: "#00acd7" },
-                { name: "Python",        dot: "#3572a5" },
-                { name: "Rust",          dot: "#ce422b" },
-                { name: "Vue.js",        dot: "#41b883" },
-                { name: "Svelte",        dot: "#ff3e00" },
-                { name: "Next.js",       dot: "var(--brand)" },
-                { name: "NestJS",        dot: "#e0234e" },
-                { name: "React",         dot: "#61dafb" },
-                { name: "Node.js",       dot: "#68a063" },
-                { name: "React Native",  dot: "var(--brand)" },
-                { name: "Expo",          dot: "rgba(255,255,255,0.5)" },
-                { name: "Kotlin",        dot: "#7f52ff" },
-                { name: "Go",            dot: "#00acd7" },
-                { name: "Python",        dot: "#3572a5" },
-                { name: "Rust",          dot: "#ce422b" },
-                { name: "Vue.js",        dot: "#41b883" },
-                { name: "Svelte",        dot: "#ff3e00" },
-              ].map((stack, idx) => (
-                <div key={`${stack.name}-${idx}`} className="marquee-badge">
-                  <span
-                    className="marquee-dot"
-                    style={{ background: stack.dot, boxShadow: `0 0 6px ${stack.dot}` }}
-                    aria-hidden="true"
-                  />
-                  {stack.name}
-                </div>
-              ))}
-            </div>
-          </motion.div>
-
-          {/* Bottom divider */}
-          <div className="marquee-divider" />
-        </section>
+        <SupportedStacksSection />
 
         {/* -- SECTION 2: Pipeline visualization -------------------------- */}
         <section id="pipeline" className="pipeline-section" aria-label="Live pipeline visualization">

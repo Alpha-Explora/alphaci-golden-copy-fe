@@ -1,0 +1,65 @@
+.badge {
+  align-items: center;
+  border: 1px solid rgba(148, 163, 184, 0.22);
+  border-radius: 999px;
+  display: inline-flex;
+  font-family: var(--font-dash-body), var(--font-body), sans-serif;
+  font-weight: 700;
+  gap: 0.38rem;
+  line-height: 1;
+  white-space: nowrap;
+}
+
+.sm {
+  font-size: 0.72rem;
+  min-height: 1.5rem;
+  padding: 0 0.6rem;
+}
+
+.md {
+  font-size: 0.8rem;
+  min-height: 1.8rem;
+  padding: 0 0.7rem;
+}
+
+.dot {
+  border-radius: 999px;
+  box-shadow: 0 0 10px currentColor;
+  height: 0.4rem;
+  width: 0.4rem;
+}
+
+.neutral {
+  background: rgba(15, 23, 42, 0.62);
+  color: var(--text-muted);
+}
+
+.success {
+  background: rgba(16, 185, 129, 0.13);
+  border-color: rgba(45, 212, 191, 0.32);
+  color: var(--color-emerald-300);
+}
+
+.info {
+  background: rgba(56, 189, 248, 0.13);
+  border-color: rgba(56, 189, 248, 0.32);
+  color: var(--color-cyan-300);
+}
+
+.warning {
+  background: rgba(250, 204, 21, 0.12);
+  border-color: rgba(250, 204, 21, 0.34);
+  color: #fde68a;
+}
+
+.danger {
+  background: rgba(239, 68, 68, 0.13);
+  border-color: rgba(248, 113, 113, 0.36);
+  color: #fecaca;
+}
+
+.accent {
+  background: rgba(167, 139, 250, 0.14);
+  border-color: rgba(167, 139, 250, 0.34);
+  color: var(--color-violet-300);
+}

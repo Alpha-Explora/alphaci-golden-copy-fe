@@ -1,0 +1,10 @@
+.wordmark {
+  color: var(--text-primary);
+  font-family: var(--font-display), var(--font-dash-display), sans-serif;
+  font-size: clamp(1.86rem, 2.6vw, 2.75rem);
+  font-weight: 800;
+  letter-spacing: 0;
+  line-height: 1;
+  text-shadow: 0 0 20px rgba(56, 189, 248, 0.11);
+  white-space: nowrap;
+}

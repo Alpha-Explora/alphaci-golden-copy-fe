@@ -1,0 +1,129 @@
+.button {
+  align-items: center;
+  border: 1px solid transparent;
+  border-radius: 10px;
+  cursor: pointer;
+  display: inline-flex;
+  font-family: var(--font-dash-body), var(--font-body), sans-serif;
+  font-weight: 700;
+  gap: 0.5rem;
+  justify-content: center;
+  line-height: 1;
+  min-height: 2.5rem;
+  transition:
+    background-color 160ms ease,
+    border-color 160ms ease,
+    box-shadow 160ms ease,
+    color 160ms ease,
+    opacity 160ms ease,
+    transform 160ms ease;
+  white-space: nowrap;
+}
+
+.button:focus-visible {
+  outline: 2px solid var(--color-cyan-400);
+  outline-offset: 3px;
+}
+
+.button:disabled {
+  cursor: not-allowed;
+  opacity: 0.58;
+  transform: none;
+}
+
+.button:not(:disabled):hover {
+  transform: translateY(-2px);
+}
+
+.button:not(:disabled):active {
+  transform: scale(0.98);
+}
+
+.sm {
+  font-size: 0.78rem;
+  min-height: 2.25rem;
+  padding: 0 0.9rem;
+}
+
+.md {
+  font-size: 0.875rem;
+  min-height: 2.625rem;
+  padding: 0 1.1rem;
+}
+
+.lg {
+  font-size: 0.95rem;
+  min-height: 3rem;
+  padding: 0 1.35rem;
+}
+
+.public {
+  font-family: var(--font-display), var(--font-dash-display), sans-serif;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.dashboard {
+  letter-spacing: 0;
+}
+
+.primary {
+  background: var(--brand);
+  border-color: rgba(56, 189, 248, 0.72);
+  box-shadow: 0 1px 2px rgba(79, 142, 255, 0.3);
+  color: #ffffff;
+}
+
+.primary:not(:disabled):hover {
+  background: var(--brand-strong);
+  box-shadow: 0 0 24px rgba(121, 192, 255, 0.5), 0 8px 16px rgba(0, 0, 0, 0.4);
+}
+
+.secondary {
+  background: rgba(15, 23, 42, 0.72);
+  border-color: rgba(148, 163, 184, 0.28);
+  color: var(--text-primary);
+}
+
+.secondary:not(:disabled):hover {
+  border-color: rgba(56, 189, 248, 0.36);
+  background: rgba(56, 189, 248, 0.08);
+}
+
+.ghost {
+  background: transparent;
+  border-color: var(--border-strong);
+  color: var(--text-secondary);
+}
+
+.ghost:not(:disabled):hover {
+  background: var(--brand-light);
+  border-color: var(--brand);
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3), 0 0 12px rgba(121, 192, 255, 0.1);
+  color: var(--text-primary);
+}
+
+.danger {
+  background: rgba(239, 68, 68, 0.14);
+  border-color: rgba(248, 113, 113, 0.42);
+  color: #fecaca;
+}
+
+.danger:not(:disabled):hover {
+  background: rgba(239, 68, 68, 0.2);
+  border-color: rgba(248, 113, 113, 0.56);
+}
+
+.loading {
+  cursor: wait;
+}
+
+.label {
+  min-width: 0;
+}
+
+.iconSlot {
+  align-items: center;
+  display: inline-flex;
+  flex: 0 0 auto;
+}

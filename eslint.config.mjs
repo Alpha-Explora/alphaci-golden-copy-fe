@@ -15,9 +15,9 @@ const eslintConfig = defineConfig([
     "next-env.d.ts",
     "coverage/**",
   ]),
-  // Jest config files must use CommonJS require() — disable the rule for them.
+  // CommonJS scripts and Jest support files intentionally use require().
   {
-    files: ["jest.config.js", "jest.setup.js"],
+    files: ["*.config.js", "jest.setup.js", "scripts/**/*.cjs", "tests/**/*.js"],
     rules: {
       "@typescript-eslint/no-require-imports": "off",
     },

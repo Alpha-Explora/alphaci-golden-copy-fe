@@ -2,7 +2,6 @@ import type { Metadata, Viewport } from "next";
 import { Doto, Plus_Jakarta_Sans, Outfit } from "next/font/google";
 import "./globals.css";
 import { ThemeProvider } from "@/lib/theme-context";
-import { ThemeToggle } from "@/components/layout/theme-toggle";
 
 const displayFont = Doto({
   variable: "--font-display",
@@ -27,9 +26,9 @@ const dashDisplayFont = Outfit({
 });
 
 export const metadata: Metadata = {
-  title: "Create Project | AlphaCI",
+  title: "AlphaCI | Governed CI/CD Workspace",
   description:
-    "Create GitHub projects with subscription-gated CI workflows, starter files, and managed Actions secrets.",
+    "Create governed CI/CD workflows, branch gates, environments, and release visibility from one AlphaCI workspace.",
 };
 
 export const viewport: Viewport = {
@@ -47,16 +46,6 @@ export default function RootLayout({
       <body className={`${displayFont.variable} ${bodyFont.variable} ${dashBodyFont.variable} ${dashDisplayFont.variable} antialiased`} suppressHydrationWarning>
         <ThemeProvider>
           {children}
-          <div
-            style={{
-              position: "fixed",
-              bottom: "1.5rem",
-              right: "1.5rem",
-              zIndex: 9999,
-            }}
-          >
-            <ThemeToggle />
-          </div>
         </ThemeProvider>
       </body>
     </html>

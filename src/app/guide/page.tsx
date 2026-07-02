@@ -111,9 +111,9 @@ function PublicGuidePage({ error }: Readonly<{ error: string | null }>) {
       body: "Changes move through test, uat, and main with pull requests, quality gates, and approvals.",
     },
     {
-      label: "Deploy",
-      title: "Deploy to hosting",
-      body: "Connect Vercel or Render and deploy from the same governed pipeline.",
+      label: "Release",
+      title: "Release through governed lanes",
+      body: "Connect release targets and deploy from the same governed pipeline.",
     },
   ];
 
@@ -152,7 +152,7 @@ function PublicGuidePage({ error }: Readonly<{ error: string | null }>) {
         <section className="public-guide-workflow" aria-label="AlphaCI workflow">
           <div className="public-guide-workflow-head">
             <div>
-              <p>Workflow setup preview</p>
+              <p>Workflow setup</p>
               <h2>From setup to governed deploy</h2>
             </div>
             <div className="public-guide-branch-flow" aria-label="Branch promotion path">
@@ -187,7 +187,7 @@ function PublicGuidePage({ error }: Readonly<{ error: string | null }>) {
 
             <motion.aside
               className="public-guide-workflow-panel"
-              aria-label="Generated workflow preview"
+              aria-label="Generated workflow"
               initial={reduced ? false : { opacity: 0, y: 12 }}
               whileInView={reduced ? undefined : { opacity: 1, y: 0 }}
               viewport={{ once: true, margin: "-80px" }}
@@ -209,8 +209,8 @@ checks:
   quality: npm test
   build: npm run build
 
-deploy:
-  provider: vercel
+release:
+  lane: production
   promote: on_approval`}</pre>
             </motion.aside>
           </div>

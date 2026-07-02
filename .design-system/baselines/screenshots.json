@@ -1,22 +1,44 @@
 {
-  "version": 1,
-  "status": "pending-capture",
-  "reviewed": false,
-  "reason": "Phase 0 provides screenshot baseline tooling and route coverage. Capture is intentionally pending until a clean local dev server can start without the current locked .next output.",
-  "captureCommand": "npm run check:routes -- --baseline",
-  "requires": [
-    "npm run dev:clean completes successfully",
-    "route smoke runtime marker exists at .design-system/runtime/dev-server.json"
-  ],
-  "routes": [
-    "/",
-    "/pricing",
-    "/home",
-    "/settings",
-    "/login",
-    "/signup",
-    "/workflows",
-    "/runs",
-    "/subscribe"
-  ]
+    "version":  1,
+    "status":  "captured-public",
+    "reviewed":  true,
+    "capturedAt":  "2026-07-02T21:09:30.279Z",
+    "baseUrl":  "http://127.0.0.1:3000",
+    "routeScope":  [
+                       "/",
+                       "/pricing",
+                       "/login",
+                       "/signup"
+                   ],
+    "browserExecutable":  "C:\\Program Files (x86)\\Microsoft\\Edge\\Application\\msedge.exe",
+    "viewport":  {
+                     "width":  1366,
+                     "height":  900
+                 },
+    "fullPage":  true,
+    "primeScroll":  true,
+    "routes":  [
+                   {
+                       "path":  "/",
+                       "status":  200,
+                       "screenshot":  ".design-system/screenshots/baseline/root.png"
+                   },
+                   {
+                       "path":  "/pricing",
+                       "status":  200,
+                       "screenshot":  ".design-system/screenshots/baseline/pricing.png"
+                   },
+                   {
+                       "path":  "/login",
+                       "status":  200,
+                       "screenshot":  ".design-system/screenshots/baseline/login.png"
+                   },
+                   {
+                       "path":  "/signup",
+                       "status":  200,
+                       "screenshot":  ".design-system/screenshots/baseline/signup.png"
+                   }
+               ],
+    "reviewedAt":  "2026-07-02T21:09:48.5429838Z",
+    "reviewNotes":  "Reviewed public-route baseline for Phase 0: /, /pricing, /login, and /signup. Capture uses 1366x900 viewport, full-page screenshots, and scroll priming so below-fold animated landing sections are visible. Authenticated product routes remain pending an auth fixture; console errors remain report-only while page errors and missing routes fail."
 }

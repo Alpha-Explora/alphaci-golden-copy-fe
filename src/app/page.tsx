@@ -12,7 +12,7 @@ import { PublicSiteNav } from "@/components/layout/public-site-nav";
 import { useAuthSession } from "@/hooks/use-auth-session";
 import { hasActiveSubscription } from "@/lib/auth/subscription";
 
-/* ── Types ─────────────────────────────────────────────────────────────────── */
+/* -- Types ------------------------------------------------------------------- */
 
 type YamlLineType = "comment" | "key" | "indent1" | "indent2" | "keyword" | "step";
 
@@ -33,14 +33,14 @@ interface PipelineStage {
   icon: React.ReactNode;
 }
 
-/* ── Data ──────────────────────────────────────────────────────────────────── */
+/* -- Data -------------------------------------------------------------------- */
 
 const valueCards = [
   {
     icon: "gen" as const,
     eyebrow: "features/generation",
     title: "Source-backed generation",
-    body: "Templates are mapped to real source files in your repo. AlphaCI reads your stack and generates YAML that actually matches your project — not a boilerplate copy-paste.",
+    body: "Templates are mapped to real source files in your repo. AlphaCI reads your stack and generates YAML that actually matches your project - not a boilerplate copy-paste.",
   },
   {
     icon: "cicd" as const,
@@ -51,8 +51,8 @@ const valueCards = [
   {
     icon: "agnt" as const,
     eyebrow: "features/deployment",
-    title: "Deploy to Vercel or Render",
-    body: "Connect your hosting provider token once. AlphaCI provisions environment variables and triggers deployment to Vercel or Render as part of the generated pipeline.",
+    title: "Release through governed lanes",
+    body: "Connect release targets once. AlphaCI keeps environment variables and production release visibility tied to the generated pipeline.",
   },
 ];
 
@@ -80,9 +80,9 @@ const YAML_INDENT: Record<YamlLineType, string> = {
 };
 
 const recentActivity = [
-  { repo: "payments-api",  action: "Deployed to Vercel (prod)", time: "2m ago",  status: "success" },
+  { repo: "payments-api",  action: "Production release approved", time: "2m ago",  status: "success" },
   { repo: "auth-service",  action: "Tests passed (142/142)",    time: "8m ago",  status: "success" },
-  { repo: "frontend",      action: "Deployed to Render",        time: "15m ago", status: "success" },
+  { repo: "frontend",      action: "Release lane healthy",      time: "15m ago", status: "success" },
   { repo: "worker",        action: "Lint + security check",     time: "23m ago", status: "success" },
 ];
 
@@ -91,7 +91,7 @@ const featureRows = [
   { name: "Template access (40+ stacks)", pro: true },
   { name: "Workflow history",            pro: true },
   { name: "GitHub integration",          pro: true },
-  { name: "Vercel + Render deployment",  pro: true },
+  { name: "Managed release lanes",  pro: true },
   { name: "Priority support",            pro: true },
   { name: "Governance defaults",         pro: true },
 ];
@@ -108,7 +108,7 @@ const LOG_LINES = [
   "  Tests: 142 passed, 0 failed",
   "  Coverage: 94% statements",
   "> docker build -t payments-api .",
-  "  Step 7/7 — DONE",
+  "  Step 7/7 - DONE",
   "> trivy image payments-api",
   "  0 critical vulnerabilities",
   "> kubectl apply -f k8s/",
@@ -116,7 +116,7 @@ const LOG_LINES = [
   "  All checks passed.",
 ];
 
-/* ── Icons ─────────────────────────────────────────────────────────────────── */
+/* -- Icons ------------------------------------------------------------------- */
 
 function SourceIcon() {
   return (
@@ -218,7 +218,7 @@ function CardIcon({ type }: Readonly<{ type: "gen" | "cicd" | "agnt" }>) {
   return <AgntIcon />;
 }
 
-/* ── YAML rendering ────────────────────────────────────────────────────────── */
+/* -- YAML rendering ---------------------------------------------------------- */
 
 function YamlLineValue({ value, valueType }: Readonly<{ value: string | null; valueType: "string" | "raw" | null }>) {
   if (value === null) return <>:</>;
@@ -239,7 +239,7 @@ function YamlLineContent({ line }: Readonly<{ line: YamlLine }>) {
   );
 }
 
-/* ── Animated pipeline visualization ─────────────────────────────────────── */
+/* -- Animated pipeline visualization --------------------------------------- */
 
 const PIPELINE_STAGES: PipelineStage[] = [
   { label: "Source",   status: "passing", duration: "3s",      icon: <SourceIcon /> },
@@ -369,14 +369,14 @@ function PipelineVisualization({ reduced }: Readonly<{ reduced: boolean | null }
       >
         <span className="status-passing">passing</span>
         <span style={{ fontSize: "0.72rem", color: "var(--text-muted)", fontFamily: "ui-monospace, monospace" }}>
-          All checks passed · 2m 14s · triggered by push to main
+          All checks passed - 2m 14s - triggered by push to main
         </span>
       </motion.div>
     </div>
   );
 }
 
-/* ── YAML terminal mockup ─────────────────────────────────────────────────── */
+/* -- YAML terminal mockup --------------------------------------------------- */
 
 const yamlLineVariants = {
   hidden: { opacity: 0, x: -10 },
@@ -434,30 +434,14 @@ function HeroYamlTerminal({ reduced }: Readonly<{ reduced: boolean | null }>) {
   );
 }
 
-/* ── Deploy anywhere section ─────────────────────────────────────────────── */
+/* -- Deploy anywhere section ----------------------------------------------- */
 
-function VercelLogo() {
-  return (
-    <svg width="18" height="18" viewBox="0 0 116 100" fill="currentColor" aria-hidden="true">
-      <path d="M57.5 0L115 100H0L57.5 0z"/>
-    </svg>
-  );
-}
-
-function RenderLogo() {
-  return (
-    <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-      <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/>
-    </svg>
-  );
-}
-
-function DeploySection({ reduced }: Readonly<{ reduced: boolean | null }>) {
+function ReleaseLanesSection({ reduced }: Readonly<{ reduced: boolean | null }>) {
   const deploySteps = [
     {
       num: "01",
-      label: "Connect provider",
-      detail: "Add your Vercel or Render token in settings. AlphaCI encrypts it and stores it per workspace.",
+      label: "Connect target",
+      detail: "Connect release targets in settings. AlphaCI keeps release configuration encrypted and attached to the workspace.",
     },
     {
       num: "02",
@@ -467,17 +451,17 @@ function DeploySection({ reduced }: Readonly<{ reduced: boolean | null }>) {
     {
       num: "03",
       label: "Provision env vars",
-      detail: "Environment variables are injected into your Vercel project or Render service automatically during the pipeline run.",
+      detail: "Environment variables are attached to the release lane automatically during the pipeline run.",
     },
     {
       num: "04",
       label: "Deploy fires on merge",
-      detail: "Merge to your target branch and the deploy step runs — vercel --prod or a Render image push, depending on your provider.",
+      detail: "Merge to your target branch and the release step runs through the governed production lane.",
     },
   ];
 
   return (
-    <section id="deploy" className="deploy-section" aria-label="Deployment hosting">
+    <section id="deploy" className="deploy-section" aria-label="Release lanes">
       {/* Section header */}
       <motion.div
         className="deploy-section-header"
@@ -498,15 +482,15 @@ function DeploySection({ reduced }: Readonly<{ reduced: boolean | null }>) {
         }}>
           <span style={{ width: "5px", height: "5px", borderRadius: "50%", background: "var(--brand-accent)", animation: reduced ? undefined : "flowPulse 1.8s ease-in-out infinite" }} />
           <span style={{ fontSize: "0.62rem", fontWeight: 700, textTransform: "uppercase" as const, letterSpacing: "0.12em", color: "var(--brand-accent)", fontFamily: "ui-monospace, monospace" }}>
-            Hosting
+            Release lanes
           </span>
         </div>
-        <p className="file-path-label">deploy/providers.yml</p>
-        <h2>Deploy to Vercel or Render</h2>
-        <p>AlphaCI manages the full deployment leg of your pipeline. Connect your hosting token once — every merge triggers a deploy automatically.</p>
+        <p className="file-path-label">release/lanes.yml</p>
+        <h2>Release through governed lanes</h2>
+        <p>AlphaCI keeps release targets, environment configuration, and production visibility attached to the generated workflow.</p>
       </motion.div>
 
-      {/* Provider cards */}
+      {/* Lane cards */}
       <motion.div
         className="deploy-providers-row"
         initial={reduced ? undefined : { opacity: 0, y: 24 }}
@@ -514,24 +498,22 @@ function DeploySection({ reduced }: Readonly<{ reduced: boolean | null }>) {
         viewport={{ once: true, margin: "-60px" }}
         transition={{ duration: 0.55, delay: 0.1 }}
       >
-        {/* Vercel card */}
+        {/* Production lane card */}
         <div className="deploy-provider-card deploy-provider-card--vercel">
           {/* Noise grain overlay */}
           <div aria-hidden="true" className="deploy-provider-grain" />
           <div style={{ display: "flex", alignItems: "center", gap: "0.75rem", marginBottom: "1.25rem" }}>
-            <span className="deploy-provider-logo deploy-provider-logo--vercel" aria-hidden="true">
-              <VercelLogo />
-            </span>
+            <span className="deploy-provider-logo deploy-provider-logo--vercel" aria-hidden="true"><PipelineLogo size={18} /></span>
             <div>
-              <p style={{ margin: 0, fontSize: "0.62rem", fontFamily: "ui-monospace, monospace", color: "rgba(255,255,255,0.4)", letterSpacing: "0.12em", textTransform: "uppercase" as const }}>Provider</p>
-              <p style={{ margin: 0, fontSize: "1rem", fontWeight: 700, color: "#fff", letterSpacing: "-0.01em" }}>Vercel</p>
+              <p style={{ margin: 0, fontSize: "0.62rem", fontFamily: "ui-monospace, monospace", color: "rgba(255,255,255,0.4)", letterSpacing: "0.12em", textTransform: "uppercase" as const }}>Lane</p>
+              <p style={{ margin: 0, fontSize: "1rem", fontWeight: 700, color: "#fff", letterSpacing: "-0.01em" }}>Production lane</p>
             </div>
             <span className="deploy-provider-badge" style={{ marginLeft: "auto", background: "rgba(255,255,255,0.08)", color: "rgba(255,255,255,0.7)" }}>
-              vercel --prod
+              release production
             </span>
           </div>
           <ul style={{ listStyle: "none", margin: 0, padding: 0, display: "flex", flexDirection: "column", gap: "0.55rem" }}>
-            {["Token-based authentication", "Env vars provisioned per project", "Team ID support", "Preview + production deploys"].map((item) => (
+            {["Token-based authentication", "Env vars provisioned per project", "Team ID support", "Staged production deploys"].map((item) => (
               <li key={item} style={{ display: "flex", alignItems: "center", gap: "0.6rem", fontSize: "0.82rem", color: "rgba(255,255,255,0.6)" }}>
                 <span aria-hidden="true" style={{ width: "4px", height: "4px", borderRadius: "50%", background: "#fff", flexShrink: 0, opacity: 0.5 }} />
                 {item}
@@ -540,27 +522,25 @@ function DeploySection({ reduced }: Readonly<{ reduced: boolean | null }>) {
           </ul>
           <div style={{ marginTop: "1.5rem", paddingTop: "1rem", borderTop: "1px solid rgba(255,255,255,0.07)", display: "flex", alignItems: "center", gap: "0.5rem" }}>
             <span style={{ fontSize: "0.62rem", fontFamily: "ui-monospace, monospace", color: "rgba(255,255,255,0.3)", letterSpacing: "0.1em", textTransform: "uppercase" as const }}>Method</span>
-            <code style={{ fontSize: "0.72rem", fontFamily: "ui-monospace, monospace", color: "rgba(255,255,255,0.55)", background: "rgba(255,255,255,0.05)", padding: "0.15rem 0.5rem", borderRadius: "4px" }}>vercel_git_connected</code>
+            <code style={{ fontSize: "0.72rem", fontFamily: "ui-monospace, monospace", color: "rgba(255,255,255,0.55)", background: "rgba(255,255,255,0.05)", padding: "0.15rem 0.5rem", borderRadius: "4px" }}>production_lane_ready</code>
           </div>
         </div>
 
-        {/* Render card */}
+        {/* Review lane card */}
         <div className="deploy-provider-card deploy-provider-card--render">
           <div aria-hidden="true" className="deploy-provider-grain" />
           <div style={{ display: "flex", alignItems: "center", gap: "0.75rem", marginBottom: "1.25rem" }}>
-            <span className="deploy-provider-logo deploy-provider-logo--render" aria-hidden="true">
-              <RenderLogo />
-            </span>
+            <span className="deploy-provider-logo deploy-provider-logo--render" aria-hidden="true"><PipelineLogo size={18} /></span>
             <div>
-              <p style={{ margin: 0, fontSize: "0.62rem", fontFamily: "ui-monospace, monospace", color: "rgba(52,211,153,0.5)", letterSpacing: "0.12em", textTransform: "uppercase" as const }}>Provider</p>
-              <p style={{ margin: 0, fontSize: "1rem", fontWeight: 700, color: "#34d399", letterSpacing: "-0.01em" }}>Render</p>
+              <p style={{ margin: 0, fontSize: "0.62rem", fontFamily: "ui-monospace, monospace", color: "rgba(52,211,153,0.5)", letterSpacing: "0.12em", textTransform: "uppercase" as const }}>Lane</p>
+              <p style={{ margin: 0, fontSize: "1rem", fontWeight: 700, color: "#34d399", letterSpacing: "-0.01em" }}>Review lane</p>
             </div>
             <span className="deploy-provider-badge" style={{ marginLeft: "auto", background: "rgba(52,211,153,0.1)", color: "#34d399", border: "1px solid rgba(52,211,153,0.25)" }}>
-              image push
+              review gated
             </span>
           </div>
           <ul style={{ listStyle: "none", margin: 0, padding: 0, display: "flex", flexDirection: "column", gap: "0.55rem" }}>
-            {["Git-connected or image deploy", "Service type + region config", "Env vars injected automatically", "Multiple deploy methods"].map((item) => (
+            {["Branch-connected release lane", "Service type + region config", "Env vars injected automatically", "Multiple release methods"].map((item) => (
               <li key={item} style={{ display: "flex", alignItems: "center", gap: "0.6rem", fontSize: "0.82rem", color: "rgba(255,255,255,0.55)" }}>
                 <span aria-hidden="true" style={{ width: "4px", height: "4px", borderRadius: "50%", background: "#34d399", flexShrink: 0, opacity: 0.6 }} />
                 {item}
@@ -569,7 +549,7 @@ function DeploySection({ reduced }: Readonly<{ reduced: boolean | null }>) {
           </ul>
           <div style={{ marginTop: "1.5rem", paddingTop: "1rem", borderTop: "1px solid rgba(52,211,153,0.1)", display: "flex", alignItems: "center", gap: "0.5rem" }}>
             <span style={{ fontSize: "0.62rem", fontFamily: "ui-monospace, monospace", color: "rgba(52,211,153,0.35)", letterSpacing: "0.1em", textTransform: "uppercase" as const }}>Method</span>
-            <code style={{ fontSize: "0.72rem", fontFamily: "ui-monospace, monospace", color: "rgba(52,211,153,0.6)", background: "rgba(52,211,153,0.06)", padding: "0.15rem 0.5rem", borderRadius: "4px" }}>render_git_connected</code>
+            <code style={{ fontSize: "0.72rem", fontFamily: "ui-monospace, monospace", color: "rgba(52,211,153,0.6)", background: "rgba(52,211,153,0.06)", padding: "0.15rem 0.5rem", borderRadius: "4px" }}>review_lane_ready</code>
           </div>
         </div>
       </motion.div>
@@ -601,7 +581,7 @@ function DeploySection({ reduced }: Readonly<{ reduced: boolean | null }>) {
   );
 }
 
-/* ── Activity strip ──────────────────────────────────────────────────────── */
+/* -- Activity strip -------------------------------------------------------- */
 
 function ActivityStrip() {
   return (
@@ -627,9 +607,9 @@ function ActivityStrip() {
   );
 }
 
-/* ── Nav link resolver ───────────────────────────────────────────────────── */
+/* -- Nav link resolver ----------------------------------------------------- */
 
-/* ── Lusion-style Scroll Progress Line ──────────────────────────────────── */
+/* -- Lusion-style Scroll Progress Line ------------------------------------ */
 
 const SECTION_LABELS = ["01", "02", "03", "04", "05"];
 
@@ -703,7 +683,7 @@ function ScrollProgressLine({ progress }: Readonly<{ progress: MotionValue<numbe
           progress={progress}
         />
       ))}
-      {/* Track — thin spine */}
+      {/* Track - thin spine */}
       <div
         style={{
           width: "1px",
@@ -728,7 +708,7 @@ function ScrollProgressLine({ progress }: Readonly<{ progress: MotionValue<numbe
             }}
           />
         ))}
-        {/* Active fill — brand colour gradient */}
+        {/* Active fill - brand colour gradient */}
         <motion.div
           style={{
             position: "absolute",
@@ -763,7 +743,7 @@ function ScrollProgressLine({ progress }: Readonly<{ progress: MotionValue<numbe
   );
 }
 
-/* ── Corner Markers (Lusion viewport frame) ─────────────────────────────── */
+/* -- Corner Markers (Lusion viewport frame) ------------------------------- */
 
 function CornerMarkers() {
   return (
@@ -793,67 +773,7 @@ function CornerMarkers() {
   );
 }
 
-/* ── Scroll-to-Explore Indicator ─────────────────────────────────────────── */
-
-function ScrollHint({ progress }: Readonly<{ progress: MotionValue<number> }>) {
-  const opacity = useTransform(progress, [0, 0.08], [1, 0]);
-
-  return (
-    <motion.div
-      className="scroll-hint"
-      style={{
-        position: "fixed",
-        bottom: "2.5rem",
-        left: "50%",
-        transform: "translateX(-50%)",
-        zIndex: 80,
-        display: "flex",
-        flexDirection: "column",
-        alignItems: "center",
-        gap: "0.75rem",
-        opacity,
-        pointerEvents: "none",
-      }}
-    >
-      {/* Animated line */}
-      <motion.div
-        style={{
-          width: "1px",
-          height: "32px",
-          background: "linear-gradient(to bottom, transparent, rgba(255,255,255,0.5))",
-          position: "relative",
-          overflow: "hidden",
-        }}
-      >
-        <motion.div
-          style={{
-            position: "absolute",
-            top: 0,
-            left: 0,
-            width: "100%",
-            height: "50%",
-            background: "#fff",
-          }}
-          animate={{ y: ["0%", "200%"] }}
-          transition={{ duration: 1.5, repeat: Infinity, ease: "linear" }}
-        />
-      </motion.div>
-      <span
-        style={{
-          fontSize: "0.6rem",
-          fontWeight: 700,
-          letterSpacing: "0.25em",
-          textTransform: "uppercase",
-          color: "rgba(255, 255, 255, 0.4)",
-          fontFamily: "ui-monospace, monospace",
-        }}
-      >
-        Scroll to explore
-      </span>
-    </motion.div>
-  );
-}
-/* ── Page ────────────────────────────────────────────────────────────────── */
+/* -- Page ------------------------------------------------------------------ */
 
 export default function LandingPage() {
   const prefersReducedMotion = useReducedMotion();
@@ -864,42 +784,24 @@ export default function LandingPage() {
 
   // Page-level scroll progress bar
   const { scrollYProgress: pageScrollYProgress } = useScroll();
-  const scaleX = useSpring(pageScrollYProgress, { stiffness: 200, damping: 40 });
+
   const massiveTextOpacity = useTransform(pageScrollYProgress, [0, 1], [0.8, 0.2]);
   const massiveTextX = useTransform(pageScrollYProgress, [0, 1], ["0%", "-20%"]);
   const heroContentY = useTransform(pageScrollYProgress, [0, 1], [0, -150]);
   const dashboardY = useTransform(pageScrollYProgress, [0, 0.5], [0, -80]);
-  const marqueeX = useTransform(pageScrollYProgress, [0, 0.5], ["5%", "-15%"]);
-  const marqueeOpacity = useTransform(pageScrollYProgress, [0, 0.1, 0.2], [0, 0, 1]);
 
   const primaryHref = status === "signed-in" ? (hasSubscription ? "/home" : "/subscribe") : "/signup";
-  const primaryLabel = status === "signed-in" ? (hasSubscription ? "Open your workspace" : "View plans") : "Sign up with GitHub";
+  const primaryLabel = status === "signed-in" ? (hasSubscription ? "Open your workspace" : "View plans") : "Get Started";
 
   return (
     <main className="landing-page-shell">
       <a href="#main-content" className="skip-link">Skip to main content</a>
       <FlowBackground />
 
-      {/* Scroll progress bar */}
-      {!prefersReducedMotion && (
-        <motion.div
-          className="scroll-progress"
-          style={{ scaleX, width: "100%" }}
-          aria-hidden="true"
-        />
-      )}
-      {!prefersReducedMotion && (
-        <>
-          <ScrollProgressLine progress={pageScrollYProgress} />
-          <CornerMarkers />
-          <ScrollHint progress={pageScrollYProgress} />
-        </>
-      )}
-
       <PublicSiteNav active="features" fixed />
 
       <div id="main-content">
-        {/* ── SECTION 1: Asymmetric Split Hero ──────────────────────────────── */}
+        {/* -- SECTION 1: Asymmetric Split Hero -------------------------------- */}
         <section className="raw-hero-grid" ref={heroRef} aria-label="Main message" style={{ position: "relative", minHeight: "100vh", display: "grid", gridTemplateColumns: "1fr 1fr", alignItems: "center", alignContent: "center", padding: "80px clamp(2rem, 7vw, 8rem) 4rem", gap: "4rem", overflow: "hidden" }}>
           <div aria-hidden="true" className="editorial-hero-bg" />
 
@@ -915,7 +817,7 @@ export default function LandingPage() {
             ALPHACI ALPHACI ALPHACI
           </motion.h1>
 
-          {/* LEFT COLUMN — Text Content */}
+          {/* LEFT COLUMN - Text Content */}
           <motion.div
             className="raw-hero-content"
             style={prefersReducedMotion ? { gridColumn: "1 / 2", gridRow: "1 / 2" } : {
@@ -975,8 +877,8 @@ export default function LandingPage() {
               <Link className="primary-button" href={primaryHref} style={{ background: "var(--text-primary)", color: "#020617", border: "none", fontWeight: 700, borderRadius: "999px", padding: "0.9rem 2rem", textTransform: "uppercase", letterSpacing: "0.1em", fontSize: "0.8rem" }}>
                 {primaryLabel}
               </Link>
-              <Link className="ghost-button hero-ghost-btn" href="/home" style={{ borderRadius: "999px", color: "var(--text-primary)", border: "1px solid rgba(255,255,255,0.15)", fontWeight: 600, padding: "0.9rem 2rem", textTransform: "uppercase", letterSpacing: "0.1em", fontSize: "0.8rem", background: "rgba(255,255,255,0.03)", backdropFilter: "blur(10px)" }}>
-                Preview as guest
+              <Link className="ghost-button hero-ghost-btn" href="mailto:sales@alphaci.dev" style={{ borderRadius: "999px", color: "var(--text-primary)", border: "1px solid rgba(255,255,255,0.15)", fontWeight: 600, padding: "0.9rem 2rem", textTransform: "uppercase", letterSpacing: "0.1em", fontSize: "0.8rem", background: "rgba(255,255,255,0.03)", backdropFilter: "blur(10px)" }}>
+                Contact Sales &gt;
               </Link>
             </motion.div>
 
@@ -988,7 +890,7 @@ export default function LandingPage() {
               }}
               aria-label="AlphaCI setup coverage"
             >
-              {["GitHub App", "test to uat to main", "Vercel + Render"].map((item) => (
+              {["GitHub App", "test to uat to main", "Managed release lanes"].map((item) => (
                 <span key={item}>{item}</span>
               ))}
             </motion.div>
@@ -1019,7 +921,7 @@ export default function LandingPage() {
             {/* Removed Language Badges from here per user request */}
           </motion.div>
 
-          {/* RIGHT COLUMN — Multi-layer floating dashboard */}
+          {/* RIGHT COLUMN - Multi-layer floating dashboard */}
           <motion.div
             className="raw-hero-visual"
             style={prefersReducedMotion ? { position: "relative", zIndex: 10, marginTop: "2rem", gridColumn: "2 / 3", gridRow: "1 / 2" } : {
@@ -1034,7 +936,7 @@ export default function LandingPage() {
             animate={prefersReducedMotion ? undefined : { opacity: 1, x: 0, scale: 1 }}
             transition={{ duration: 1.4, delay: 0.6, ease: [0.25, 1, 0.5, 1] }}
           >
-            {/* ── STAGE STATUS FLOATING CARD — top-left, overlapping main card */}
+            {/* -- STAGE STATUS FLOATING CARD - top-left, overlapping main card */}
             <motion.div
               className="hero-float-card"
               initial={prefersReducedMotion ? undefined : { opacity: 0, x: -20, y: -10 }}
@@ -1072,12 +974,12 @@ export default function LandingPage() {
                     animation: stage.done ? undefined : "flowPulse 1.5s ease-in-out infinite",
                   }} />
                   <span style={{ fontSize: "0.72rem", fontWeight: 600, color: stage.done ? "var(--text-secondary)" : "var(--text-primary)", fontFamily: "ui-monospace, monospace" }}>{stage.label}</span>
-                  <span style={{ marginLeft: "auto", fontSize: "0.62rem", color: stage.done ? "#34d399" : "var(--brand)", fontWeight: 700 }}>{stage.done ? "✓" : "..."}</span>
+                  <span style={{ marginLeft: "auto", fontSize: "0.62rem", color: stage.done ? "#34d399" : "var(--brand)", fontWeight: 700 }}>{stage.done ? "OK" : "..."}</span>
                 </div>
               ))}
             </motion.div>
 
-            {/* ── MAIN PIPELINE CARD */}
+            {/* -- MAIN PIPELINE CARD */}
             <div className="hero-main-card" style={{
               position: "relative",
               zIndex: 10,
@@ -1109,7 +1011,7 @@ export default function LandingPage() {
                 pointerEvents: "none",
               }} />
 
-              {/* Top bar — with branch chip and commit hash */}
+              {/* Top bar - with branch chip and commit hash */}
               <div style={{ display: "flex", alignItems: "center", gap: "0.5rem", marginBottom: "1.25rem" }}>
                 <span style={{ width: "8px", height: "8px", borderRadius: "50%", background: "#ef4444", opacity: 0.8 }} />
                 <span style={{ width: "8px", height: "8px", borderRadius: "50%", background: "#eab308", opacity: 0.8 }} />
@@ -1162,14 +1064,14 @@ export default function LandingPage() {
               {/* Animated code lines */}
               {[
                 { indent: 0, key: "name",     value: "deploy-production",       delay: 0.8,  highlight: false },
-                { indent: 0, key: "trigger",  value: "push → main",          delay: 1.0,  highlight: false },
+                { indent: 0, key: "trigger",  value: "push to main",          delay: 1.0,  highlight: false },
                 { indent: 0, key: "steps",    value: "",                         delay: 1.2,  highlight: false },
                 { indent: 1, key: "checkout", value: "v4",                       delay: 1.4,  highlight: false },
                 { indent: 1, key: "install",  value: "npm ci",                   delay: 1.6,  highlight: false },
                 { indent: 1, key: "lint",     value: "eslint .",                 delay: 1.8,  highlight: false },
                 { indent: 1, key: "test",     value: "vitest run",               delay: 2.0,  highlight: false },
                 { indent: 1, key: "build",    value: "next build",               delay: 2.2,  highlight: false },
-                { indent: 1, key: "deploy",   value: "vercel --prod",            delay: 2.4,  highlight: true  },
+                { indent: 1, key: "deploy",   value: "production",            delay: 2.4,  highlight: true  },
               ].map((line) => (
                 <motion.div
                   key={line.key}
@@ -1237,11 +1139,11 @@ export default function LandingPage() {
               >
                 <span style={{ fontSize: "0.58rem", fontFamily: "ui-monospace, monospace", color: "var(--text-muted)", textTransform: "uppercase", letterSpacing: "0.1em" }}>Deploy target</span>
                 <span style={{ marginLeft: "auto", display: "inline-flex", alignItems: "center", gap: "0.35rem" }}>
-                  {/* Vercel triangle motif */}
+                  {/* Release lane marker */}
                   <svg width="10" height="10" viewBox="0 0 116 100" fill="currentColor" aria-hidden="true" className="hero-deploy-vercel-icon">
                     <path d="M57.5 0L115 100H0L57.5 0z"/>
                   </svg>
-                  <span style={{ fontSize: "0.72rem", fontWeight: 700, color: "var(--text-primary)", fontFamily: "ui-monospace, monospace" }}>Vercel</span>
+                  <span style={{ fontSize: "0.72rem", fontWeight: 700, color: "var(--text-primary)", fontFamily: "ui-monospace, monospace" }}>Production</span>
                   <span style={{ fontSize: "0.62rem", color: "var(--text-muted)", marginLeft: "0.1rem" }}>prod</span>
                 </span>
               </motion.div>
@@ -1269,7 +1171,7 @@ export default function LandingPage() {
               </motion.div>
             </div>
 
-            {/* Floating badge — top right, overlapping */}
+            {/* Floating badge - top right, overlapping */}
             <motion.div
               initial={prefersReducedMotion ? undefined : { opacity: 0, scale: 0.8, y: 20 }}
               animate={prefersReducedMotion ? undefined : { opacity: 1, scale: 1, y: 0 }}
@@ -1294,7 +1196,7 @@ export default function LandingPage() {
               <span style={{ fontSize: "0.65rem", fontWeight: 700, color: "var(--brand)", letterSpacing: "0.1em", textTransform: "uppercase", fontFamily: "ui-monospace, monospace" }}>Live</span>
             </motion.div>
 
-            {/* Floating metric card — bottom left, overlapping — with sparkline */}
+            {/* Floating metric card - bottom left, overlapping - with sparkline */}
             <motion.div
               className="hero-float-card"
               initial={prefersReducedMotion ? undefined : { opacity: 0, x: -30, y: 20 }}
@@ -1314,16 +1216,16 @@ export default function LandingPage() {
                 boxShadow: "0 12px 40px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.05)",
               }}
             >
-              <div style={{ fontSize: "0.55rem", color: "var(--text-muted)", letterSpacing: "0.15em", textTransform: "uppercase", fontFamily: "ui-monospace, monospace", marginBottom: "0.3rem" }}>Deployments today</div>
+              <div style={{ fontSize: "0.55rem", color: "var(--text-muted)", letterSpacing: "0.15em", textTransform: "uppercase", fontFamily: "ui-monospace, monospace", marginBottom: "0.3rem" }}>Releases today</div>
               <div style={{ display: "flex", alignItems: "baseline", gap: "0.4rem", marginBottom: "0.4rem" }}>
                 <span style={{ fontSize: "1.5rem", fontWeight: 800, color: "var(--text-primary)" }}>847</span>
                 <span style={{ fontSize: "0.7rem", fontWeight: 700, color: "#34d399" }}>+12.4%</span>
               </div>
-              {/* Provider split */}
+              {/* Lane split */}
               <div style={{ display: "flex", gap: "0.5rem", marginBottom: "0.5rem" }}>
-                <span style={{ fontSize: "0.58rem", color: "var(--text-muted)", fontFamily: "ui-monospace, monospace" }}>Vercel <span style={{ color: "var(--brand)" }}>521</span></span>
+                <span style={{ fontSize: "0.58rem", color: "var(--text-muted)", fontFamily: "ui-monospace, monospace" }}>Auto <span style={{ color: "var(--brand)" }}>521</span></span>
                 <span style={{ fontSize: "0.58rem", color: "rgba(255,255,255,0.15)" }}>|</span>
-                <span style={{ fontSize: "0.58rem", color: "var(--text-muted)", fontFamily: "ui-monospace, monospace" }}>Render <span style={{ color: "var(--brand-accent)" }}>326</span></span>
+                <span style={{ fontSize: "0.58rem", color: "var(--text-muted)", fontFamily: "ui-monospace, monospace" }}>Manual <span style={{ color: "var(--brand-accent)" }}>326</span></span>
               </div>
               {/* Sparkline bars */}
               <div style={{ display: "flex", alignItems: "flex-end", gap: "3px", height: "22px" }} aria-hidden="true">
@@ -1346,32 +1248,9 @@ export default function LandingPage() {
             </motion.div>
           </motion.div>
 
-          {/* Hero bottom edge — Lusion-style section markers */}
-          <motion.div
-            style={{
-              position: "absolute",
-              bottom: "2rem",
-              left: "5vw",
-              right: "5vw",
-              display: "flex",
-              justifyContent: "space-between",
-              alignItems: "center",
-              zIndex: 20,
-            }}
-            initial={prefersReducedMotion ? undefined : { opacity: 0 }}
-            animate={prefersReducedMotion ? undefined : { opacity: 1 }}
-            transition={{ duration: 1.5, delay: 1.8 }}
-          >
-            <span style={{ fontSize: "0.6rem", fontWeight: 700, letterSpacing: "0.2em", color: "rgba(255,255,255,0.2)", textTransform: "uppercase", fontFamily: "ui-monospace, monospace" }}>
-              01 / 05
-            </span>
-            <span style={{ fontSize: "0.6rem", fontWeight: 700, letterSpacing: "0.2em", color: "rgba(255,255,255,0.2)", textTransform: "uppercase", fontFamily: "ui-monospace, monospace" }}>
-              AlphaCI &mdash; {new Date().getFullYear()}
-            </span>
-          </motion.div>
         </section>
 
-        {/* ── ECOSYSTEM MARQUEE ────────────────────────────────────────── */}
+        {/* -- ECOSYSTEM MARQUEE ------------------------------------------ */}
         <section aria-label="Supported Ecosystems" style={{ position: "relative", paddingTop: "2rem", paddingBottom: "2rem" }}>
           {/* Top divider */}
           <div className="marquee-divider" />
@@ -1379,13 +1258,7 @@ export default function LandingPage() {
           {/* Section label */}
           <p className="marquee-section-label" style={{ marginTop: "2rem" }}>Supported stacks</p>
 
-          <motion.div
-            className="marquee-container"
-            style={prefersReducedMotion ? undefined : {
-              x: marqueeX,
-              opacity: marqueeOpacity
-            }}
-          >
+          <motion.div className="marquee-container">
             <div className="marquee-track">
               {/* Double the list to create the infinite scroll illusion */}
               {[
@@ -1430,7 +1303,7 @@ export default function LandingPage() {
           <div className="marquee-divider" />
         </section>
 
-        {/* ── SECTION 2: Pipeline visualization ────────────────────────── */}
+        {/* -- SECTION 2: Pipeline visualization -------------------------- */}
         <section id="pipeline" className="pipeline-section" aria-label="Live pipeline visualization">
           <motion.div
             className="pipeline-section-header"
@@ -1439,7 +1312,7 @@ export default function LandingPage() {
             viewport={{ once: true, margin: "-80px" }}
             transition={{ duration: 0.45 }}
           >
-            {/* Live Demo badge */}
+            {/* Generated workflow badge */}
             <div style={{
               display: "inline-flex",
               alignItems: "center",
@@ -1452,12 +1325,12 @@ export default function LandingPage() {
             }}>
               <span style={{ width: "5px", height: "5px", borderRadius: "50%", background: "var(--brand)", animation: "flowPulse 1.8s ease-in-out infinite" }} />
               <span style={{ fontSize: "0.62rem", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.12em", color: "var(--brand)", fontFamily: "ui-monospace, monospace" }}>
-                Live Demo
+                Generated workflow
               </span>
             </div>
-            <p className="file-path-label">pipeline/live-demo.yml</p>
+            <p className="file-path-label">pipeline/generated-workflow.yml</p>
             <h2>From push to deploy in minutes</h2>
-            <p>AlphaCI generates a GitHub Actions workflow from a template tied to your source files. Every stage — checkout, lint, test, build, security scan, deploy — runs in sequence. Watch it live.</p>
+            <p>AlphaCI generates a GitHub Actions workflow from a template tied to your source files. Every stage - checkout, lint, test, build, security scan, deploy - runs in sequence. Review the generated output.</p>
           </motion.div>
 
           <motion.div
@@ -1476,7 +1349,7 @@ export default function LandingPage() {
           </motion.div>
         </section>
 
-        {/* ── SECTION 3: Features strip ──────────────────────────────────── */}
+        {/* -- SECTION 3: Features strip ------------------------------------ */}
         <section className="features-strip section-mesh" aria-label="Key features">
           {valueCards.map((card, index) => (
             <motion.div
@@ -1556,8 +1429,8 @@ export default function LandingPage() {
           style={{ transformOrigin: "center" }}
         />
 
-        {/* ── SECTION 4: Deploy anywhere ───────────────────────────────── */}
-        <DeploySection reduced={prefersReducedMotion} />
+        {/* -- SECTION 4: Deploy anywhere --------------------------------- */}
+        <ReleaseLanesSection reduced={prefersReducedMotion} />
 
         <motion.hr
           className="section-gradient-divider"
@@ -1569,7 +1442,7 @@ export default function LandingPage() {
           style={{ transformOrigin: "center" }}
         />
 
-        {/* ── SECTION 5: Activity strip ────────────────────────────────── */}
+        {/* -- SECTION 5: Activity strip ---------------------------------- */}
         <ActivityStrip />
 
         <motion.hr
@@ -1582,7 +1455,7 @@ export default function LandingPage() {
           style={{ transformOrigin: "center" }}
         />
 
-        {/* ── SECTION 6: Pricing ───────────────────────────────────────── */}
+        {/* -- SECTION 6: Pricing ----------------------------------------- */}
         <section
           id="pricing"
           className="pricing-section section-glow-center"
@@ -1590,7 +1463,7 @@ export default function LandingPage() {
         >
           <div className="pricing-split">
 
-            {/* LEFT — Headline, price hero, CTA */}
+            {/* LEFT - Headline, price hero, CTA */}
             <motion.div
               className="pricing-split-left"
               initial={prefersReducedMotion ? undefined : { opacity: 0, x: -24 }}
@@ -1657,13 +1530,13 @@ export default function LandingPage() {
                     href="/home"
                     style={{ borderRadius: "999px", color: "var(--text-primary)", border: "1px solid rgba(255,255,255,0.15)", fontWeight: 600, padding: "0.9rem 2rem", textTransform: "uppercase" as const, letterSpacing: "0.1em", fontSize: "0.8rem", background: "rgba(255,255,255,0.03)", backdropFilter: "blur(10px)" }}
                   >
-                    Preview first
+                    Start Pro
                   </Link>
                 </motion.div>
               </div>
             </motion.div>
 
-            {/* RIGHT — Feature checklist glass card */}
+            {/* RIGHT - Feature checklist glass card */}
             <motion.div
               className="pricing-split-right"
               initial={prefersReducedMotion ? undefined : { opacity: 0, x: 24 }}
@@ -1735,7 +1608,7 @@ export default function LandingPage() {
                     stacks
                   </span>
                   <p style={{ margin: 0, fontSize: "0.8rem", color: "var(--text-muted)", lineHeight: 1.7 }}>
-                    Next.js, NestJS, React, Node.js, React Native, Expo, Kotlin, Go, Python, Rust, Vue.js, Svelte — and more.
+                    Next.js, NestJS, React, Node.js, React Native, Expo, Kotlin, Go, Python, Rust, Vue.js, Svelte - and more.
                   </p>
                 </div>
               </div>

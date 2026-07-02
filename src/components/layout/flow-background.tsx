@@ -8,7 +8,6 @@ import {
   useTransform,
   type MotionValue,
 } from "framer-motion";
-import { useTheme } from "@/lib/theme-context";
 
 /* FlowBackground
    ──────────────
@@ -110,8 +109,7 @@ const DARK_STATIC_GRADIENT =
 
 export function FlowBackground() {
   const reduced = useReducedMotion();
-  const { theme } = useTheme();
-  const isLight = theme === "light";
+  const isLight = false;
 
   // Scroll progress drives every parallax transform below. Hooks must run
   // unconditionally, so we build them before any early return.

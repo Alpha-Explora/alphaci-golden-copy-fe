@@ -32,16 +32,14 @@ const EASE_OUT: [number, number, number, number] = [0.25, 0, 0, 1];
 const planLimits = {
   free: {
     projects: "3",
-    render: "1 managed Render service",
-    vercel: "1 managed Vercel project",
-    targets: "5 deployment targets",
+    releaseLanes: "Starter credits included",
+    targets: "5 release targets",
     env: "25 environment keys",
     prs: "5 workflow PRs",
   },
   pro: {
     projects: "50",
-    render: "10 managed Render services",
-    vercel: "10 managed Vercel projects",
+    releaseLanes: "Included until finalized",
     targets: "100 deployment targets",
     env: "500 environment keys",
     prs: "100 workflow PRs",
@@ -50,9 +48,8 @@ const planLimits = {
 
 const compareRows = [
   ["Projects", planLimits.free.projects, planLimits.pro.projects, "Custom"],
-  ["Managed Render services", "1", "10", "Custom"],
-  ["Managed Vercel projects", "1", "10", "Custom"],
-  ["Deployment targets", "5", "100", "Custom"],
+  ["Release lane credits", planLimits.free.releaseLanes, planLimits.pro.releaseLanes, "Custom"],
+  ["Release targets", "5", "100", "Custom"],
   ["Environment keys", "25", "500", "Custom"],
   ["Workflow PRs", "5", "100", "Custom"],
 ];
@@ -139,7 +136,7 @@ function PublicSubscribePage({ error }: { error: string | null }) {
           <h1>Plans for CI/CD builders</h1>
           <p>
             Start on Free, then upgrade when your workflow automation needs more projects,
-            deployment targets, environment keys, and managed hosting integrations.
+            release targets, environment keys, and monthly credits.
           </p>
         </section>
 
@@ -162,8 +159,7 @@ function PublicSubscribePage({ error }: { error: string | null }) {
             }
             features={[
               `${planLimits.free.projects} projects`,
-              planLimits.free.render,
-              planLimits.free.vercel,
+              planLimits.free.releaseLanes,
               planLimits.free.targets,
               planLimits.free.env,
               planLimits.free.prs,
@@ -185,8 +181,7 @@ function PublicSubscribePage({ error }: { error: string | null }) {
             features={[
               "Everything in Free, and:",
               `${planLimits.pro.projects} projects`,
-              planLimits.pro.render,
-              planLimits.pro.vercel,
+              planLimits.pro.releaseLanes,
               planLimits.pro.targets,
               planLimits.pro.env,
               planLimits.pro.prs,
@@ -504,8 +499,7 @@ function SubscribePageContent() {
             action={freeAction}
             features={[
               `${planLimits.free.projects} projects`,
-              planLimits.free.render,
-              planLimits.free.vercel,
+              planLimits.free.releaseLanes,
               planLimits.free.targets,
               planLimits.free.env,
               planLimits.free.prs,
@@ -524,8 +518,7 @@ function SubscribePageContent() {
             features={[
               "Everything in Free, and:",
               `${planLimits.pro.projects} projects`,
-              planLimits.pro.render,
-              planLimits.pro.vercel,
+              planLimits.pro.releaseLanes,
               planLimits.pro.targets,
               planLimits.pro.env,
               planLimits.pro.prs,

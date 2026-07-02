@@ -43,12 +43,19 @@ export function PublicSiteNav({ active, fixed = false, showActions = true }: Rea
         </span>
         <span>AlphaCI</span>
       </Link>
-
       {showActions && (
-        <div className="public-site-actions">
-          <Link className="public-site-login" href="/login">Login</Link>
-          <Link className="public-site-cta" href="/subscribe"><span aria-hidden="true" />Pricing</Link>
-        </div>
+        <>
+          <nav className="public-site-links" aria-label="Primary navigation">
+            <Link className="public-site-link" href="/pricing" aria-current={active === "pricing" ? "page" : undefined}>
+              Pricing
+            </Link>
+          </nav>
+
+          <div className="public-site-actions">
+            <Link className="public-site-login" href="/login">Sign In</Link>
+            <Link className="public-site-cta" href="/signup"><span aria-hidden="true" />Sign Up</Link>
+          </div>
+        </>
       )}
     </header>
   );

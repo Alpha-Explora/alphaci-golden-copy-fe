@@ -1,19 +1,23 @@
 import Image from "next/image";
 
+const LOGO_ASPECT_RATIO = 942 / 834;
+
 export function PipelineLogo({ size = 28 }: { size?: number }) {
+  const width = Math.round(size * LOGO_ASPECT_RATIO);
+
   return (
     <Image
-      src="/alphaci-logo.png"
+      src="/alphaci-logo-blue-transparent-v3.png"
       alt=""
       aria-hidden="true"
-      width={size}
+      width={width}
       height={size}
       unoptimized
       style={{
         display: "block",
-        width: size,
+        width,
         height: size,
-        borderRadius: Math.max(4, Math.round(size * 0.22)),
+        objectFit: "contain",
       }}
     />
   );

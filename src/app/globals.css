@@ -475,33 +475,6 @@
 
 
 
-[data-theme="light"] .feature-strip-item,
-[data-theme="light"] .feature-card-enhanced {
-  background: rgba(255, 255, 255, 0.92) !important;
-  border-color: rgba(15, 23, 42, 0.09) !important;
-  box-shadow: 0 2px 14px rgba(15, 23, 42, 0.06) !important;
-}
-
-[data-theme="light"] .feature-strip-item:last-child {
-  border-right: 1px solid rgba(15, 23, 42, 0.09) !important;
-}
-
-[data-theme="light"] .feature-strip-item:hover,
-[data-theme="light"] .feature-card-enhanced:hover {
-  border-color: rgba(2, 132, 199, 0.35) !important;
-  box-shadow:
-    0 12px 36px rgba(15, 23, 42, 0.12),
-    0 0 24px rgba(2, 132, 199, 0.08) !important;
-}
-
-@media (max-width: 700px) {
-  [data-theme="light"] .feature-strip-item {
-    border-right: 1px solid rgba(15, 23, 42, 0.09) !important;
-  }
-}
-
-
-
 [data-theme="light"] .pricing-split-card {
   background: rgba(255, 255, 255, 0.95) !important;
   border: 1px solid rgba(2, 132, 199, 0.22) !important;
@@ -1088,8 +1061,7 @@
 .raw-hero-grid,
 .public-guide-shell,
 .deploy-section,
-.activity-section,
-.features-strip {
+.activity-section {
   background-color: var(--bg-base);
 }
 
@@ -4121,87 +4093,6 @@ select option {
 
 
 
-.features-strip {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: clamp(1rem, 2vw, 1.5rem);
-  padding: clamp(3rem, 5vw, 5rem) clamp(2rem, 7vw, 8rem);
-  background: transparent;
-  width: 100%;
-  position: relative;
-}
-
-.features-strip::before,
-.features-strip::after {
-  display: none;
-}
-
-@media (max-width: 700px) {
-  .features-strip {
-    grid-template-columns: 1fr;
-  }
-  .feature-strip-item {
-    border-right: 1px solid rgba(255, 255, 255, 0.08) !important;
-    border-bottom: none;
-  }
-}
-
-.feature-strip-item {
-  background: rgba(15, 23, 42, 0.6);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  border-radius: 1rem;
-  padding: 2.5rem 2rem;
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
-  position: relative;
-  overflow: hidden;
-  transition: border-color 0.3s ease, box-shadow 0.3s ease, transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
-  min-height: 240px;
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-}
-
-.feature-strip-item:last-child {
-  border-right: 1px solid rgba(255, 255, 255, 0.08);
-}
-
-.feature-strip-item:hover {
-  border-color: rgba(56, 189, 248, 0.25);
-  box-shadow: 0 12px 48px rgba(0, 0, 0, 0.4), 0 0 32px rgba(56, 189, 248, 0.08);
-  transform: translateY(-4px);
-}
-
-.feature-strip-item::before {
-  display: none;
-}
-
-.feature-strip-item h3 {
-  font-size: 1.05rem;
-  font-weight: 700;
-  color: var(--text-primary);
-  margin: 0;
-  letter-spacing: -0.01em;
-}
-
-.feature-strip-item p {
-  font-size: 0.85rem;
-  color: var(--text-secondary);
-  margin: 0;
-  line-height: 1.6;
-}
-
-.feature-number {
-  font-family: ui-monospace, monospace;
-  font-size: 0.65rem;
-  color: var(--brand);
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-  font-weight: 700;
-}
-
-
-
 .branch-chip {
   display: inline-flex;
   align-items: center;
@@ -4785,27 +4676,6 @@ select option {
 }
 
 /* Grid mesh background pattern for feature sections */
-.section-mesh {
-  position: relative;
-}
-
-.section-mesh::before {
-  content: '';
-  position: absolute;
-  inset: 0;
-  background-image:
-    linear-gradient(rgba(79,142,255,0.03) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(79,142,255,0.03) 1px, transparent 1px);
-  background-size: 40px 40px;
-  pointer-events: none;
-  z-index: 0;
-}
-
-.section-mesh > * {
-  position: relative;
-  z-index: 1;
-}
-
 /* Radial highlight for pricing / CTA sections */
 .section-glow-center {
   position: relative;
@@ -7676,17 +7546,6 @@ select option {
 
 .stat-block-enhanced:last-child {
   border-right: none;
-}
-
-
-
-.feature-card-enhanced {
-  transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.3s ease, box-shadow 0.3s ease !important;
-}
-
-.feature-card-enhanced:hover {
-  border-color: rgba(56, 189, 248, 0.3) !important;
-  box-shadow: var(--shadow-card), 0 0 40px rgba(56, 189, 248, 0.1) !important;
 }
 
 

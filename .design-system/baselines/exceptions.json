@@ -1,0 +1,10 @@
+{
+    "version":  1,
+    "exceptions":  [
+                       {
+                           "path":  "src/app/globals.css",
+                           "reason":  "Pre-existing oversized global stylesheet and mojibake debt; Phase 1 and later migrations must reduce this, not add to it.",
+                           "owner":  "design-system-migration"
+                       }
+                   ]
+}

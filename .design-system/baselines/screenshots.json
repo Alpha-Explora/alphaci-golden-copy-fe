@@ -1,0 +1,22 @@
+{
+  "version": 1,
+  "status": "pending-capture",
+  "reviewed": false,
+  "reason": "Phase 0 provides screenshot baseline tooling and route coverage. Capture is intentionally pending until a clean local dev server can start without the current locked .next output.",
+  "captureCommand": "npm run check:routes -- --baseline",
+  "requires": [
+    "npm run dev:clean completes successfully",
+    "route smoke runtime marker exists at .design-system/runtime/dev-server.json"
+  ],
+  "routes": [
+    "/",
+    "/pricing",
+    "/home",
+    "/settings",
+    "/login",
+    "/signup",
+    "/workflows",
+    "/runs",
+    "/subscribe"
+  ]
+}

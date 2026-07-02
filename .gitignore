@@ -47,3 +47,8 @@ next-env.d.ts
 # Testing artifacts
 test-results/
 playwright-report/
+
+# Design system generated reports
+.design-system/reports/
+.design-system/screenshots/current/
+.design-system/runtime/

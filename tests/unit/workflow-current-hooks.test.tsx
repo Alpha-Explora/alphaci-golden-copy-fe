@@ -1,6 +1,7 @@
 import { act, useEffect } from "react";
 import { createRoot, type Root } from "react-dom/client";
 
+import { useWorkflowDeploymentTargets } from "../../src/components/product/use-workflow-deployment-targets";
 import { useWorkflowProjectOverview } from "../../src/components/product/use-workflow-project-overview";
 import { useWorkflowProjectTelemetry } from "../../src/components/product/use-workflow-project-telemetry";
 import { useWorkflowSettingsPreview } from "../../src/components/product/use-workflow-settings-preview";
@@ -14,6 +15,7 @@ import type {
 
 jest.mock("../../src/lib/api/projects", () => ({
   createWorkflowUpdatePullRequest: jest.fn(),
+  detachDeploymentTarget: jest.fn(),
   getProjectAuditEvents: jest.fn(),
   getProjectCiRuns: jest.fn(),
   getProjectDeployments: jest.fn(),
@@ -24,10 +26,13 @@ jest.mock("../../src/lib/api/projects", () => ({
   repairProjectDriftFinding: jest.fn(),
   runProjectDriftDetection: jest.fn(),
   syncProjectSnapshot: jest.fn(),
+  syncDeploymentTarget: jest.fn(),
+  updateDeploymentTarget: jest.fn(),
 }));
 
 const mockedProjectApi = jest.requireMock("../../src/lib/api/projects") as {
   createWorkflowUpdatePullRequest: jest.Mock;
+  detachDeploymentTarget: jest.Mock;
   getProjectAuditEvents: jest.Mock;
   getProjectCiRuns: jest.Mock;
   getProjectDeployments: jest.Mock;
@@ -38,6 +43,8 @@ const mockedProjectApi = jest.requireMock("../../src/lib/api/projects") as {
   repairProjectDriftFinding: jest.Mock;
   runProjectDriftDetection: jest.Mock;
   syncProjectSnapshot: jest.Mock;
+  syncDeploymentTarget: jest.Mock;
+  updateDeploymentTarget: jest.Mock;
 };
 
 const projectA: ProvisionedProject = {
@@ -627,5 +634,196 @@ describe("workflow current extracted hooks", () => {
 
     const projectBRenders = renderedDrift.filter((entry) => entry.projectId === "project-b");
     expect(projectBRenders.some((entry) => entry.findingProjectId === "project-a")).toBe(false);
+  });
+
+  it("updates and syncs deployment targets through the target hook", async () => {
+    let current: ReturnType<typeof useWorkflowDeploymentTargets> | null = null;
+    const onTargetChanged = jest.fn();
+    const onDetached = jest.fn();
+    const container = document.createElement("div");
+    document.body.appendChild(container);
+    root = createRoot(container);
+
+    function Probe() {
+      const value = useWorkflowDeploymentTargets({
+        onDetached,
+        onTargetChanged,
+        projectId: "project-a",
+      });
+      useEffect(() => {
+        current = value;
+      }, [value]);
+      return null;
+    }
+
+    await act(async () => {
+      root?.render(<Probe />);
+    });
+
+    mockedProjectApi.updateDeploymentTarget.mockResolvedValueOnce({
+      ...targetA,
+      branchName: "uat",
+      providerProjectName: "orders-api-uat",
+      rootDirectory: null,
+    });
+
+    await act(async () => {
+      current?.openEdit(targetA);
+    });
+    await act(async () => {
+      current?.updateEditValue("providerProjectName", "orders-api-uat");
+      current?.updateEditValue("branchName", "uat");
+      current?.updateEditValue("rootDirectory", "   ");
+      current?.updateEditValue("buildCommand", "   ");
+      current?.updateEditValue("startCommand", "   ");
+      await current?.saveEdit();
+    });
+
+    expect(mockedProjectApi.updateDeploymentTarget).toHaveBeenCalledWith("project-a", "target-a", {
+      branchName: "uat",
+      buildCommand: null,
+      providerProjectName: "orders-api-uat",
+      renderEnvironmentName: "test",
+      rootDirectory: null,
+      slot: "backend",
+      startCommand: null,
+    });
+    expect(onTargetChanged).toHaveBeenCalledWith(expect.objectContaining({ providerProjectName: "orders-api-uat" }));
+    expect(current?.editingTarget).toBeNull();
+    expect(current?.targetMessage).toBe("Target metadata updated.");
+
+    mockedProjectApi.syncDeploymentTarget.mockResolvedValueOnce({
+      findings: [{ code: "branch_mismatch" }, { code: "missing_env" }],
+      target: { ...targetA, branchName: "uat" },
+    });
+
+    await act(async () => {
+      await current?.runSync(targetA);
+    });
+
+    expect(mockedProjectApi.syncDeploymentTarget).toHaveBeenCalledWith("project-a", "target-a");
+    expect(onTargetChanged).toHaveBeenCalledWith(expect.objectContaining({ branchName: "uat" }));
+    expect(current?.targetMessage).toBe("Local metadata sync completed with 2 findings.");
+  });
+
+  it("normalizes cleared Render environment metadata before saving", async () => {
+    let current: ReturnType<typeof useWorkflowDeploymentTargets> | null = null;
+    const container = document.createElement("div");
+    document.body.appendChild(container);
+    root = createRoot(container);
+
+    function Probe() {
+      const value = useWorkflowDeploymentTargets({
+        onDetached: jest.fn(),
+        onTargetChanged: jest.fn(),
+        projectId: "project-a",
+      });
+      useEffect(() => {
+        current = value;
+      }, [value]);
+      return null;
+    }
+
+    await act(async () => {
+      root?.render(<Probe />);
+    });
+
+    mockedProjectApi.updateDeploymentTarget.mockResolvedValueOnce(targetA);
+
+    await act(async () => {
+      current?.openEdit(targetA);
+    });
+    await act(async () => {
+      current?.updateEditValue("renderEnvironmentName", "");
+      await current?.saveEdit();
+    });
+
+    expect(mockedProjectApi.updateDeploymentTarget).toHaveBeenCalledWith(
+      "project-a",
+      "target-a",
+      expect.objectContaining({ renderEnvironmentName: null }),
+    );
+  });
+
+  it("clears deployment target edit state when the project changes", async () => {
+    let current: ReturnType<typeof useWorkflowDeploymentTargets> | null = null;
+    const container = document.createElement("div");
+    document.body.appendChild(container);
+    root = createRoot(container);
+
+    function Probe({ projectId }: Readonly<{ projectId: string }>) {
+      const value = useWorkflowDeploymentTargets({
+        onDetached: jest.fn(),
+        onTargetChanged: jest.fn(),
+        projectId,
+      });
+      useEffect(() => {
+        current = value;
+      }, [value]);
+      return null;
+    }
+
+    await act(async () => {
+      root?.render(<Probe projectId="project-a" />);
+    });
+    await act(async () => {
+      current?.openEdit(targetA);
+      current?.updateEditValue("branchName", "uat");
+    });
+
+    expect(current?.editingTarget?.id).toBe("target-a");
+    expect(current?.editValues.branchName).toBe("uat");
+
+    await act(async () => {
+      root?.render(<Probe projectId="project-b" />);
+    });
+
+    expect(current?.editingTarget).toBeNull();
+    expect(current?.editValues).toEqual({});
+    expect(current?.targetMessage).toBeNull();
+  });
+
+  it("requires confirmation before detaching a deployment target", async () => {
+    let current: ReturnType<typeof useWorkflowDeploymentTargets> | null = null;
+    const onTargetChanged = jest.fn();
+    const onDetached = jest.fn();
+    const container = document.createElement("div");
+    document.body.appendChild(container);
+    root = createRoot(container);
+
+    function Probe() {
+      const value = useWorkflowDeploymentTargets({
+        onDetached,
+        onTargetChanged,
+        projectId: "project-a",
+      });
+      useEffect(() => {
+        current = value;
+      }, [value]);
+      return null;
+    }
+
+    await act(async () => {
+      root?.render(<Probe />);
+    });
+
+    await act(async () => {
+      await current?.detachTarget(targetA);
+    });
+
+    expect(mockedProjectApi.detachDeploymentTarget).not.toHaveBeenCalled();
+    expect(current?.detachConfirmTargetId).toBe("target-a");
+    expect(current?.targetMessage).toBe("Confirm detach to remove this target from AlphaCI only.");
+
+    mockedProjectApi.detachDeploymentTarget.mockResolvedValueOnce({ detached: true });
+
+    await act(async () => {
+      await current?.detachTarget(targetA);
+    });
+
+    expect(mockedProjectApi.detachDeploymentTarget).toHaveBeenCalledWith("project-a", "target-a");
+    expect(onDetached).toHaveBeenCalledWith("target-a");
+    expect(current?.detachConfirmTargetId).toBeNull();
+    expect(current?.targetMessage).toBe("Target detached from AlphaCI. Provider resource was not deleted.");
   });
 });

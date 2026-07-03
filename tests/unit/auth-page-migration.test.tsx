@@ -174,8 +174,6 @@ describe("OAuth auth page migration", () => {
       card.dispatchEvent(new MouseEvent("mouseleave", { bubbles: true }));
       githubLink.dispatchEvent(new MouseEvent("mouseover", { bubbles: true }));
       githubLink.dispatchEvent(new MouseEvent("mouseout", { bubbles: true }));
-      document.documentElement.setAttribute("data-theme", "light");
-      githubLink.dispatchEvent(new MouseEvent("mouseout", { bubbles: true }));
 
       const pricingLink = result.container.querySelector<HTMLAnchorElement>("a[href='/subscribe']")!;
       const homeLink = result.container.querySelector<HTMLAnchorElement>("a[href='/']")!;

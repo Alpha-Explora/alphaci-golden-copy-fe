@@ -323,8 +323,7 @@ export function OAuthAuthPage({
               }}
               onMouseLeave={(e) => {
                 const el = e.currentTarget as HTMLAnchorElement;
-                const isLight = document.documentElement.getAttribute("data-theme") === "light";
-                el.style.borderColor = isLight ? "rgba(0,0,0,0.12)" : "rgba(255,255,255,0.12)";
+                el.style.borderColor = "rgba(255,255,255,0.12)";
                 el.style.boxShadow = "none";
               }}
               onClick={async (e) => {

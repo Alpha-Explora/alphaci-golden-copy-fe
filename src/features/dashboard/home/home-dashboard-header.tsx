@@ -4,6 +4,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { motion } from "framer-motion";
 
+import { Badge } from "@/components/ui/badge";
 import type { AuthMeResponse } from "@/lib/api/contracts";
 
 import { PipelineTrack, sectionVariants } from "./home-bento-grid";
@@ -94,9 +95,9 @@ export function HomeDashboardHeader({
             ? "You are browsing in guest mode. Sign up to unlock all features."
             : (
               <>Connected on{" "}
-                <span className="dash-badge-violet" style={{ display: "inline-flex" }}>
+                <Badge tone="accent" dot>
                   {session?.subscription.plan ?? "pro"}
-                </span>
+                </Badge>
               </>
             )}
         </p>

@@ -47,6 +47,9 @@ describe("home route migration", () => {
       if (componentPath.endsWith("home-activity-panel.tsx")) {
         expect(componentSource).not.toContain("status-chip");
       }
+      if (componentPath.endsWith("home-dashboard-header.tsx")) {
+        expect(componentSource).not.toContain("dash-badge");
+      }
     }
     for (const stylePath of stylePaths) {
       const styleSource = fs.readFileSync(stylePath, "utf8");

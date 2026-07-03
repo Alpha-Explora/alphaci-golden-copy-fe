@@ -11,7 +11,6 @@ import type {
   WorkflowHistoryItem,
 } from "@/lib/api/contracts";
 import { ProjectEnvPanel } from "./project-env-panel";
-import { FlowExplainer } from "./flow-explainer";
 import { HelpTip } from "./help-tip";
 import { DeploymentTargetsList } from "./workflow-deployment-targets-list";
 import { WorkflowCurrentSubtabBar, type WorkflowCurrentSubtab } from "./workflow-current-navigation";
@@ -25,6 +24,11 @@ import {
 import { selectedChecks, statusVariant } from "./workflow-current-formatters";
 import { WorkflowLatestResultBanner } from "./workflow-current-result-banner";
 import { WorkflowHistoryPanel } from "./workflow-history-panel";
+import {
+  WorkflowProjectList,
+  WorkflowProjectsEmptyState,
+  WorkflowProjectsLoadingState,
+} from "./workflow-projects-panel";
 import { useWorkflowProjectOverview } from "./use-workflow-project-overview";
 import { useWorkflowProjectTelemetry } from "./use-workflow-project-telemetry";
 import { useWorkflowSettingsPreview } from "./use-workflow-settings-preview";
@@ -189,31 +193,9 @@ export function WorkflowCurrentTab({
           aria-labelledby="subtab-projects"
         >
           {loadingProjects ? (
-            <div className="repo-grid">
-              {[0, 1, 2].map((i) => (
-                <div key={i} className="skeleton-card glass-panel" style={{ minHeight: "12rem", background: "rgba(15, 23, 42, 0.3)", animation: "state-pulse 1.5s infinite" }} />
-              ))}
-            </div>
+            <WorkflowProjectsLoadingState />
           ) : projects.length === 0 ? (
-            <div className="glass-panel" style={{ padding: "2.5rem 1.5rem", textAlign: "center", background: "rgba(15, 23, 42, 0.3)", display: "flex", flexDirection: "column", gap: "1.5rem", alignItems: "center" }}>
-              <div>
-                <p style={{ color: "var(--text-primary)", margin: "0 0 0.5rem", fontSize: "0.95rem", fontWeight: 700 }}>
-                  No provisioned projects yet.
-                </p>
-                <p style={{ color: "var(--text-secondary)", margin: 0, fontSize: "0.85rem", maxWidth: "32rem" }}>
-                  When you create one, AlphaCI provisions the repository and commits a workflow that runs through
-                  the gated stages below on every change. A read-only demo project normally appears here too —
-                  open the <Link href="/guide" className="inline-link">guide</Link> to see how it all fits together.
-                </p>
-              </div>
-              <div style={{ width: "100%", maxWidth: "32rem", padding: "1rem", borderRadius: "var(--radius-card)", background: "rgba(255, 255, 255, 0.02)", border: "1px solid var(--border-soft)" }}>
-                <FlowExplainer variant="compact" />
-              </div>
-              <button className="primary-button" type="button" onClick={onOpenSetup}
-                      style={{ padding: "0.6rem 1.4rem", fontSize: "0.88rem", minHeight: "2.5rem" }}>
-                Create your first project
-              </button>
-            </div>
+            <WorkflowProjectsEmptyState onOpenSetup={onOpenSetup} />
           ) : selectedProject ? (
             <motion.div
               className="project-workspace"
@@ -221,41 +203,15 @@ export function WorkflowCurrentTab({
               initial="hidden"
               animate="show"
             >
-              <aside className="project-list" aria-label="Provisioned projects" data-tour="projects-list">
-                <div className="project-list-header">
-                  <span>Projects</span>
-                  <button className="ghost-button" type="button" onClick={onOpenSetup}>
-                    New
-                  </button>
-                </div>
-                {projects.map((project) => {
-                  const isSelected = selectedProject.id === project.id;
-                  return (
-                    <button
-                      key={project.id}
-                      className={`project-list-item${isSelected ? " selected" : ""}`}
-                      data-project-id={project.id}
-                      type="button"
-                      aria-pressed={isSelected}
-                      onClick={() => {
-                        setSelectedProjectId(project.id);
-                        setProjectDetailTab("overview");
-                      }}
-                    >
-                      <span className="project-list-title">
-                        {project.repoFullName.split("/")[1] ?? project.repoFullName}
-                      </span>
-                      <span className="project-list-meta">{project.serviceName}</span>
-                      <span className="project-list-badges">
-                        {project.isExample ? <span className="project-demo-badge">Demo</span> : null}
-                        <span className={`project-status-badge ${statusVariant(project.status)}`}>
-                          {project.status}
-                        </span>
-                      </span>
-                    </button>
-                  );
-                })}
-              </aside>
+              <WorkflowProjectList
+                onOpenSetup={onOpenSetup}
+                onProjectSelected={(projectId) => {
+                  setSelectedProjectId(projectId);
+                  setProjectDetailTab("overview");
+                }}
+                projects={projects}
+                selectedProject={selectedProject}
+              />
 
               <motion.article
                 key={selectedProject.id}

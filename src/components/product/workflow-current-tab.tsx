@@ -1,18 +1,12 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import Link from "next/link";
 import { motion } from "framer-motion";
 
 import { useCapabilities } from "@/hooks/use-capabilities";
 import {
   detachDeploymentTarget,
-  getProjectCiRuns,
-  getProjectDeployments,
-  getProjectDrift,
-  getProjectAuditEvents,
-  repairProjectDriftFinding,
-  runProjectDriftDetection,
   syncDeploymentTarget,
   updateDeploymentTarget,
 } from "@/lib/api/projects";
@@ -24,9 +18,8 @@ import type {
   EnvVarMetadata,
   ProjectCiRunsResponse,
   ProjectDeploymentsResponse,
-  ProjectDriftResponse,
   ProjectDriftRepairAction,
-  ProjectAuditEventsResponse,
+  ProjectDriftResponse,
   UpdateDeploymentTargetRequest,
   ProvisionedProject,
   WorkflowFileMetadata,
@@ -37,6 +30,7 @@ import { DeploymentProvisioningSummary } from "./setup-result-panel";
 import { FlowExplainer } from "./flow-explainer";
 import { HelpTip } from "./help-tip";
 import { useWorkflowProjectOverview } from "./use-workflow-project-overview";
+import { useWorkflowProjectTelemetry } from "./use-workflow-project-telemetry";
 import { useWorkflowSettingsPreview } from "./use-workflow-settings-preview";
 
 import { formatDate, toSourcePath } from "./workflow-builder-utils";
@@ -712,19 +706,6 @@ export function WorkflowCurrentTab({
     workflowSettingsPreviewEnabled,
     workflowUpdatePrEnabled,
   } = useCapabilities();
-  const [ciRunsResponse, setCiRunsResponse] = useState<ProjectCiRunsResponse | null>(null);
-  const [ciRunsProjectId, setCiRunsProjectId] = useState<string | null>(null);
-  const [ciRunsError, setCiRunsError] = useState<string | null>(null);
-  const [deploymentsResponse, setDeploymentsResponse] = useState<ProjectDeploymentsResponse | null>(null);
-  const [deploymentsProjectId, setDeploymentsProjectId] = useState<string | null>(null);
-  const [deploymentsError, setDeploymentsError] = useState<string | null>(null);
-  const [driftResponse, setDriftResponse] = useState<ProjectDriftResponse | null>(null);
-  const [driftProjectId, setDriftProjectId] = useState<string | null>(null);
-  const [driftError, setDriftError] = useState<string | null>(null);
-  const [runningDriftCheck, setRunningDriftCheck] = useState(false);
-  const [auditResponse, setAuditResponse] = useState<ProjectAuditEventsResponse | null>(null);
-  const [auditProjectId, setAuditProjectId] = useState<string | null>(null);
-  const [auditError, setAuditError] = useState<string | null>(null);
   const {
     deploymentTargets,
     envMetadata,
@@ -761,195 +742,26 @@ export function WorkflowCurrentTab({
     workflowSettingsPreviewEnabled,
     workflowTabActive: projectDetailTab === "workflow",
   });
-
-  useEffect(() => {
-    if (!selectedProject || projectDetailTab !== "audit") {
-      return;
-    }
-    if (auditProjectId === selectedProject.id && auditResponse) {
-      return;
-    }
-
-    let active = true;
-    setAuditResponse(null);
-    setAuditError(null);
-    void getProjectAuditEvents(selectedProject.id)
-      .then((response) => {
-        if (active) {
-          setAuditResponse(response);
-          setAuditProjectId(selectedProject.id);
-        }
-      })
-      .catch(() => {
-        if (active) {
-          setAuditError("Unable to load audit events.");
-        }
-      });
-
-    return () => {
-      active = false;
-    };
-  }, [auditProjectId, auditResponse, projectDetailTab, selectedProject]);
-
-  useEffect(() => {
-    if (
-      !selectedProject ||
-      projectDetailTab !== "overview" ||
-      !driftDetectionEnabled ||
-      selectedOverview?.capabilities.driftDetection !== true
-    ) {
-      return;
-    }
-
-    if (driftProjectId === selectedProject.id && driftResponse) {
-      return;
-    }
-
-    let active = true;
-    setDriftResponse(null);
-    setDriftError(null);
-    void getProjectDrift(selectedProject.id)
-      .then((response) => {
-        if (active) {
-          setDriftResponse(response);
-          setDriftProjectId(selectedProject.id);
-        }
-      })
-      .catch(() => {
-        if (active) {
-          setDriftError("Unable to load drift findings.");
-        }
-      });
-
-    return () => {
-      active = false;
-    };
-  }, [
-    driftDetectionEnabled,
-    driftProjectId,
-    driftResponse,
-    projectDetailTab,
-    selectedOverview,
-    selectedProject,
-  ]);
-
-  useEffect(() => {
-    if (
-      !selectedProject ||
-      projectDetailTab !== "deployments" ||
-      !deploymentHistoryEnabled ||
-      selectedOverview?.capabilities.deploymentHistory !== true
-    ) {
-      return;
-    }
-
-    if (deploymentsProjectId === selectedProject.id && deploymentsResponse) {
-      return;
-    }
-
-    let active = true;
-    setDeploymentsResponse(null);
-    setDeploymentsError(null);
-    void getProjectDeployments(selectedProject.id)
-      .then((response) => {
-        if (active) {
-          setDeploymentsResponse(response);
-          setDeploymentsProjectId(selectedProject.id);
-        }
-      })
-      .catch(() => {
-        if (active) {
-          setDeploymentsError("Unable to load deployment history.");
-        }
-      });
-
-    return () => {
-      active = false;
-    };
-  }, [
-    deploymentHistoryEnabled,
-    deploymentsProjectId,
-    deploymentsResponse,
-    projectDetailTab,
-    selectedOverview,
-    selectedProject,
-  ]);
-
-  useEffect(() => {
-    if (
-      !selectedProject ||
-      projectDetailTab !== "runs" ||
-      !ciRunTrackingEnabled ||
-      selectedOverview?.capabilities.ciRunTracking !== true
-    ) {
-      return;
-    }
-
-    if (ciRunsProjectId === selectedProject.id && ciRunsResponse) {
-      return;
-    }
-
-    let active = true;
-    setCiRunsResponse(null);
-    setCiRunsError(null);
-    void getProjectCiRuns(selectedProject.id)
-      .then((response) => {
-        if (active) {
-          setCiRunsResponse(response);
-          setCiRunsProjectId(selectedProject.id);
-        }
-      })
-      .catch(() => {
-        if (active) {
-          setCiRunsError("Unable to load CI runs.");
-        }
-      });
-
-    return () => {
-      active = false;
-    };
-  }, [
-    ciRunTrackingEnabled,
-    ciRunsProjectId,
+  const {
+    auditError,
+    auditResponse,
+    ciRunsError,
     ciRunsResponse,
+    deploymentsError,
+    deploymentsResponse,
+    driftError,
+    driftResponse,
+    handleRepairDriftFinding,
+    handleRunDriftDetection,
+    runningDriftCheck,
+  } = useWorkflowProjectTelemetry({
+    ciRunTrackingEnabled,
+    deploymentHistoryEnabled,
+    driftDetectionEnabled,
     projectDetailTab,
     selectedOverview,
     selectedProject,
-  ]);
-
-  async function handleRunDriftDetection() {
-    if (!selectedProject) {
-      return;
-    }
-
-    setRunningDriftCheck(true);
-    setDriftError(null);
-    try {
-      const response = await runProjectDriftDetection(selectedProject.id);
-      setDriftResponse(response);
-      setDriftProjectId(selectedProject.id);
-    } catch {
-      setDriftError("Unable to run drift detection.");
-    } finally {
-      setRunningDriftCheck(false);
-    }
-  }
-
-  async function handleRepairDriftFinding(
-    findingId: string,
-    action: ProjectDriftRepairAction,
-  ): Promise<string> {
-    if (!selectedProject) {
-      throw new Error("Project is not selected.");
-    }
-
-    const response = await repairProjectDriftFinding(
-      selectedProject.id,
-      findingId,
-      action,
-    );
-    return response.message;
-  }
+  });
 
   return (
     <motion.section

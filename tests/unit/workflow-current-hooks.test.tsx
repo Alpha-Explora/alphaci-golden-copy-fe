@@ -2,6 +2,7 @@ import { act, useEffect } from "react";
 import { createRoot, type Root } from "react-dom/client";
 
 import { useWorkflowProjectOverview } from "../../src/components/product/use-workflow-project-overview";
+import { useWorkflowProjectTelemetry } from "../../src/components/product/use-workflow-project-telemetry";
 import { useWorkflowSettingsPreview } from "../../src/components/product/use-workflow-settings-preview";
 import type {
   DeploymentTarget,
@@ -13,17 +14,29 @@ import type {
 
 jest.mock("../../src/lib/api/projects", () => ({
   createWorkflowUpdatePullRequest: jest.fn(),
+  getProjectAuditEvents: jest.fn(),
+  getProjectCiRuns: jest.fn(),
+  getProjectDeployments: jest.fn(),
+  getProjectDrift: jest.fn(),
   getProjectOverview: jest.fn(),
   getWorkflowSettings: jest.fn(),
   previewWorkflowSettings: jest.fn(),
+  repairProjectDriftFinding: jest.fn(),
+  runProjectDriftDetection: jest.fn(),
   syncProjectSnapshot: jest.fn(),
 }));
 
 const mockedProjectApi = jest.requireMock("../../src/lib/api/projects") as {
   createWorkflowUpdatePullRequest: jest.Mock;
+  getProjectAuditEvents: jest.Mock;
+  getProjectCiRuns: jest.Mock;
+  getProjectDeployments: jest.Mock;
+  getProjectDrift: jest.Mock;
   getProjectOverview: jest.Mock;
   getWorkflowSettings: jest.Mock;
   previewWorkflowSettings: jest.Mock;
+  repairProjectDriftFinding: jest.Mock;
+  runProjectDriftDetection: jest.Mock;
   syncProjectSnapshot: jest.Mock;
 };
 
@@ -148,6 +161,49 @@ function flushPromises() {
   return new Promise((resolve) => {
     setTimeout(resolve, 0);
   });
+}
+
+function ciRunsResponseFor(workflowName: string) {
+  return {
+    enabled: true,
+    githubActionsUrl: "https://github.test/actions",
+    liveGithubEnabled: false,
+    mode: "local_mock" as const,
+    runs: [{
+      actor: "octocat",
+      branch: "main",
+      canRerun: false,
+      commitSha: "abc123",
+      conclusion: null,
+      createdAt: "2026-07-03T00:00:00.000Z",
+      htmlUrl: "https://github.test/actions/runs/1",
+      id: `run-${workflowName}`,
+      stage: "build" as const,
+      status: "queued" as const,
+      updatedAt: "2026-07-03T00:00:00.000Z",
+      workflowName,
+    }],
+  };
+}
+
+function driftResponseFor(projectId: string) {
+  return {
+    enabled: true,
+    findings: [{
+      code: "target_missing",
+      detectedAt: "2026-07-03T00:00:00.000Z",
+      details: {},
+      id: `finding-${projectId}`,
+      message: "Target missing",
+      projectId,
+      resolvedAt: null,
+      severity: "warning" as const,
+      source: "local_snapshot" as const,
+      status: "active" as const,
+      targetId: null,
+    }],
+    mode: "local_snapshot" as const,
+  };
 }
 
 describe("workflow current extracted hooks", () => {
@@ -320,5 +376,256 @@ describe("workflow current extracted hooks", () => {
 
     expect(current?.workflowPreview?.settings.nodeVersion).toBe("22");
     expect(current?.workflowUpdatePr).toBeNull();
+  });
+
+  it("loads project telemetry by active detail tab and capability gates", async () => {
+    let current: ReturnType<typeof useWorkflowProjectTelemetry> | null = null;
+    const selectedOverview = overviewFor(projectA);
+    const container = document.createElement("div");
+    document.body.appendChild(container);
+    root = createRoot(container);
+
+    function Probe({ tab }: Readonly<{ tab: "runs" | "deployments" | "audit" }>) {
+      const value = useWorkflowProjectTelemetry({
+        ciRunTrackingEnabled: true,
+        deploymentHistoryEnabled: true,
+        driftDetectionEnabled: true,
+        projectDetailTab: tab,
+        selectedOverview,
+        selectedProject: projectA,
+      });
+      useEffect(() => {
+        current = value;
+      }, [value]);
+      return null;
+    }
+
+    mockedProjectApi.getProjectCiRuns.mockResolvedValueOnce({
+      enabled: true,
+      githubActionsUrl: "https://github.test/actions",
+      liveGithubEnabled: false,
+      mode: "local_mock",
+      runs: [],
+    });
+    mockedProjectApi.getProjectDeployments.mockResolvedValueOnce({
+      deployments: [],
+      enabled: true,
+      liveProvidersEnabled: false,
+      mode: "local_mock",
+    });
+    mockedProjectApi.getProjectAuditEvents.mockResolvedValueOnce({
+      enabled: true,
+      items: [{ actorUserId: null, createdAt: "2026-07-03T00:00:00.000Z", eventCode: "project_synced", id: "audit-1", message: "Synced" }],
+    });
+
+    await act(async () => {
+      root?.render(<Probe tab="runs" />);
+      await flushPromises();
+    });
+
+    expect(mockedProjectApi.getProjectCiRuns).toHaveBeenCalledWith("project-a");
+    expect(current?.ciRunsResponse?.enabled).toBe(true);
+
+    await act(async () => {
+      root?.render(<Probe tab="deployments" />);
+      await flushPromises();
+    });
+
+    expect(mockedProjectApi.getProjectDeployments).toHaveBeenCalledWith("project-a");
+    expect(current?.deploymentsResponse?.enabled).toBe(true);
+
+    await act(async () => {
+      root?.render(<Probe tab="audit" />);
+      await flushPromises();
+    });
+
+    expect(mockedProjectApi.getProjectAuditEvents).toHaveBeenCalledWith("project-a");
+    expect(current?.auditResponse?.items[0]?.eventCode).toBe("project_synced");
+  });
+
+  it("does not return telemetry loaded for a previous selected project", async () => {
+    let current: ReturnType<typeof useWorkflowProjectTelemetry> | null = null;
+    const renderedTelemetry: Array<{ projectId: string; workflowName: string | null }> = [];
+    const container = document.createElement("div");
+    document.body.appendChild(container);
+    root = createRoot(container);
+
+    function Probe({ selectedProject }: Readonly<{ selectedProject: ProvisionedProject }>) {
+      const value = useWorkflowProjectTelemetry({
+        ciRunTrackingEnabled: true,
+        deploymentHistoryEnabled: true,
+        driftDetectionEnabled: true,
+        projectDetailTab: "runs",
+        selectedOverview: overviewFor(selectedProject),
+        selectedProject,
+      });
+      renderedTelemetry.push({
+        projectId: selectedProject.id,
+        workflowName: value.ciRunsResponse?.runs[0]?.workflowName ?? null,
+      });
+      useEffect(() => {
+        current = value;
+      }, [value]);
+      return null;
+    }
+
+    mockedProjectApi.getProjectCiRuns
+      .mockResolvedValueOnce(ciRunsResponseFor("project-a-run"))
+      .mockResolvedValue(ciRunsResponseFor("project-b-run"));
+
+    await act(async () => {
+      root?.render(<Probe selectedProject={projectA} />);
+      await flushPromises();
+    });
+
+    expect(current?.ciRunsResponse?.runs[0]?.workflowName).toBe("project-a-run");
+
+    await act(async () => {
+      root?.render(<Probe selectedProject={projectB} />);
+    });
+
+    const projectBRenders = renderedTelemetry.filter((entry) => entry.projectId === "project-b");
+    expect(projectBRenders.some((entry) => entry.workflowName === "project-a-run")).toBe(false);
+  });
+
+  it("runs and repairs drift checks through the telemetry hook", async () => {
+    let current: ReturnType<typeof useWorkflowProjectTelemetry> | null = null;
+    const selectedOverview = overviewFor(projectA);
+    const container = document.createElement("div");
+    document.body.appendChild(container);
+    root = createRoot(container);
+
+    function Probe() {
+      const value = useWorkflowProjectTelemetry({
+        ciRunTrackingEnabled: true,
+        deploymentHistoryEnabled: true,
+        driftDetectionEnabled: true,
+        projectDetailTab: "overview",
+        selectedOverview,
+        selectedProject: projectA,
+      });
+      useEffect(() => {
+        current = value;
+      }, [value]);
+      return null;
+    }
+
+    mockedProjectApi.getProjectDrift.mockResolvedValueOnce({
+      enabled: true,
+      findings: [],
+      mode: "local_snapshot",
+    });
+
+    await act(async () => {
+      root?.render(<Probe />);
+      await flushPromises();
+    });
+
+    expect(mockedProjectApi.getProjectDrift).toHaveBeenCalledWith("project-a");
+
+    mockedProjectApi.runProjectDriftDetection.mockResolvedValueOnce({
+      enabled: true,
+      findings: [{
+        code: "target_missing",
+        detectedAt: "2026-07-03T00:00:00.000Z",
+        details: {},
+        id: "finding-1",
+        message: "Target missing",
+        projectId: "project-a",
+        resolvedAt: null,
+        severity: "warning",
+        source: "local_snapshot",
+        status: "active",
+        targetId: null,
+      }],
+      mode: "local_snapshot",
+    });
+
+    await act(async () => {
+      await current?.handleRunDriftDetection();
+    });
+
+    expect(mockedProjectApi.runProjectDriftDetection).toHaveBeenCalledWith("project-a");
+    expect(current?.driftResponse?.findings).toHaveLength(1);
+
+    mockedProjectApi.repairProjectDriftFinding.mockResolvedValueOnce({
+      action: "mark_ignored",
+      enabled: true,
+      findingId: "finding-1",
+      message: "Marked ignored",
+      mode: "local_safe",
+      status: "completed",
+    });
+
+    await expect(current?.handleRepairDriftFinding("finding-1", "mark_ignored")).resolves.toBe("Marked ignored");
+    expect(mockedProjectApi.repairProjectDriftFinding).toHaveBeenCalledWith("project-a", "finding-1", "mark_ignored");
+  });
+
+  it("ignores drift run results that resolve after the selected project changes", async () => {
+    let current: ReturnType<typeof useWorkflowProjectTelemetry> | null = null;
+    const renderedDrift: Array<{ projectId: string; findingProjectId: string | null }> = [];
+    const container = document.createElement("div");
+    document.body.appendChild(container);
+    root = createRoot(container);
+
+    function Probe({ selectedProject }: Readonly<{ selectedProject: ProvisionedProject }>) {
+      const value = useWorkflowProjectTelemetry({
+        ciRunTrackingEnabled: true,
+        deploymentHistoryEnabled: true,
+        driftDetectionEnabled: true,
+        projectDetailTab: "overview",
+        selectedOverview: overviewFor(selectedProject),
+        selectedProject,
+      });
+      renderedDrift.push({
+        findingProjectId: value.driftResponse?.findings[0]?.projectId ?? null,
+        projectId: selectedProject.id,
+      });
+      useEffect(() => {
+        current = value;
+      }, [value]);
+      return null;
+    }
+
+    mockedProjectApi.getProjectDrift
+      .mockResolvedValueOnce({
+        enabled: true,
+        findings: [],
+        mode: "local_snapshot",
+      })
+      .mockResolvedValue({
+        enabled: true,
+        findings: [],
+        mode: "local_snapshot",
+      });
+
+    let resolveDriftRun: (value: ReturnType<typeof driftResponseFor>) => void = () => {};
+    mockedProjectApi.runProjectDriftDetection.mockReturnValueOnce(new Promise((resolve) => {
+      resolveDriftRun = resolve;
+    }));
+
+    await act(async () => {
+      root?.render(<Probe selectedProject={projectA} />);
+      await flushPromises();
+    });
+
+    let runForProjectA: Promise<void> | undefined;
+    await act(async () => {
+      runForProjectA = current?.handleRunDriftDetection();
+    });
+
+    await act(async () => {
+      root?.render(<Probe selectedProject={projectB} />);
+      await flushPromises();
+    });
+
+    await act(async () => {
+      resolveDriftRun(driftResponseFor("project-a"));
+      await runForProjectA;
+      await flushPromises();
+    });
+
+    const projectBRenders = renderedDrift.filter((entry) => entry.projectId === "project-b");
+    expect(projectBRenders.some((entry) => entry.findingProjectId === "project-a")).toBe(false);
   });
 });

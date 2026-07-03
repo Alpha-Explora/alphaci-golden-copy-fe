@@ -19,6 +19,8 @@ describe("settings route migration", () => {
   const routePath = path.join(process.cwd(), "src/app/settings/page.tsx");
   const featureDir = path.join(process.cwd(), "src/features/dashboard/settings");
   const featurePath = path.join(featureDir, "settings-page.tsx");
+  const guideSectionPath = path.join(featureDir, "settings-guide-section.tsx");
+  const dangerSectionPath = path.join(featureDir, "settings-danger-section.tsx");
   const stylesPath = path.join(featureDir, "settings-page.module.css");
 
   it("keeps the app route as a thin entry point", () => {
@@ -51,11 +53,13 @@ describe("settings route migration", () => {
 
   it("keeps settings feature decomposed into budgeted local modules", () => {
     expect(fs.existsSync(stylesPath)).toBe(true);
+    expect(fs.existsSync(guideSectionPath)).toBe(true);
+    expect(fs.existsSync(dangerSectionPath)).toBe(true);
 
     for (const componentPath of collectFiles(featureDir, ".tsx")) {
       const source = fs.readFileSync(componentPath, "utf8");
       const lineCount = source.trim().split(/\r?\n/).length;
-      const budget = componentPath.endsWith("settings-page.tsx") ? 1000 : 350;
+      const budget = componentPath.endsWith("settings-page.tsx") ? 850 : 350;
 
       expect(lineCount).toBeLessThanOrEqual(budget);
     }

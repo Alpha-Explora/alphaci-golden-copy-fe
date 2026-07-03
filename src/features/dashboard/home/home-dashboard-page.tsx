@@ -12,12 +12,12 @@ import { PipelineLoader } from "@/components/layout/pipeline-loader";
 import { WorkspaceProvider, useWorkspaceSelection } from "@/components/layout/workspace-context";
 import { WelcomeModal } from "@/components/product/welcome-modal";
 import { useAuthSession } from "@/hooks/use-auth-session";
-import { logout, getProjects, getWorkflowHistory, getGithubRepos, disconnectProject, syncProjects } from "@/lib/api/client";
+import { logout } from "@/lib/api/client";
 import { completeOnboarding } from "@/lib/api/auth";
-import type { ProvisionedProject, WorkflowHistoryItem, GitHubRepo } from "@/lib/api/contracts";
 import { isGuest } from "@/lib/auth/subscription";
 
 import { BentoGrid, EASE_OUT, PipelineTrack, sectionVariants, type DashTab } from "./home-bento-grid";
+import { projectBorderClass, projectStatusChipClass, useHomeDashboardData } from "./use-home-dashboard-data";
 
 
 /* Page */
@@ -29,75 +29,36 @@ function HomeDashboardContent() {
   const prefersReducedMotion = useReducedMotion();
   const [isLoggingOut, setIsLoggingOut]     = useState(false);
   const [logoutMessage, setLogoutMessage]   = useState<string | null>(null);
-  const [activeTab, setActiveTab]           = useState<DashTab>("overview");
-  const [history, setHistory]               = useState<WorkflowHistoryItem[]>([]);
-  const [projects, setProjects]             = useState<ProvisionedProject[]>([]);
-  const [historyLoading, setHistoryLoading] = useState(true);
-  const [projectsLoading, setProjectsLoading] = useState(true);
-  const [historyError, setHistoryError]     = useState<string | null>(null);
-  const [projectsError, setProjectsError]   = useState<string | null>(null);
-  const [repos, setRepos]                   = useState<GitHubRepo[]>([]);
-  const [reposLoading, setReposLoading]     = useState(true);
-  const [reposError, setReposError]         = useState<string | null>(null);
-  const [repoQuery, setRepoQuery]           = useState("");
-  const [disconnectingId, setDisconnectingId]     = useState<string | null>(null);
-  const [confirmDisconnectId, setConfirmDisconnectId] = useState<string | null>(null);
-  const [isSyncing, setIsSyncing]               = useState(false);
-  const [syncResult, setSyncResult]             = useState<{ orphaned: number; reachable: number; total: number } | null>(null);
-  // Welcome modal: shown once for new users (onboardingCompleted === false).
-  // Local flag dismisses immediately without waiting for a network response.
   const [welcomeDismissed, setWelcomeDismissed] = useState(false);
-
-  function loadHistory() {
-    setHistoryLoading(true);
-    setHistoryError(null);
-    getWorkflowHistory(25)
-      .then((response) => { setHistory(response.items); setHistoryError(null); })
-      .catch(() => setHistoryError("Could not load workflow history."))
-      .finally(() => setHistoryLoading(false));
-  }
-
-  function loadProjects() {
-    setProjectsLoading(true);
-    setProjectsError(null);
-    setProjects([]);
-    getProjects(25, { workspaceId: selectedWorkspaceId })
-      .then((response) => { setProjects(response.items); setProjectsError(null); })
-      .catch(() => setProjectsError("Could not load projects."))
-      .finally(() => setProjectsLoading(false));
-  }
-
-  function loadRepos() {
-    setReposLoading(true);
-    setReposError(null);
-    getGithubRepos()
-      .then((response) => { setRepos(response.repos); setReposError(null); })
-      .catch(() => setReposError("Could not load GitHub repositories."))
-      .finally(() => setReposLoading(false));
-  }
-
-  useEffect(() => {
-    if (status !== "signed-in") return;
-    loadHistory();
-    loadProjects();
-    loadRepos();
-    // Intentionally re-run only on auth/workspace change, not on loader identity.
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [status, selectedWorkspaceId]);
-
-  useEffect(() => {
-    if (activeTab !== "repositories") return;
-    void (async () => {
-      try {
-        await syncProjects();
-        const updated = await getProjects(25, { workspaceId: selectedWorkspaceId });
-        setProjects(updated.items);
-      } catch {
-        // silently ignore - the manual "Sync with GitHub" button is still available
-      }
-    })();
-  }, [activeTab, selectedWorkspaceId]);
-
+  const {
+    activeTab,
+    confirmDisconnectId,
+    disconnectingId,
+    filteredRepos,
+    handleDisconnect,
+    handleSync,
+    history,
+    historyError,
+    historyLoading,
+    isSyncing,
+    lastActivityValue,
+    loadHistory,
+    loadProjects,
+    loadRepos,
+    normalizedRepoQuery,
+    projects,
+    projectsError,
+    projectsLoading,
+    repoQuery,
+    repos,
+    reposError,
+    reposLoading,
+    setActiveTab,
+    setConfirmDisconnectId,
+    setRepoQuery,
+    syncResult,
+    uniqueServices,
+  } = useHomeDashboardData({ status, selectedWorkspaceId });
   async function handleLogout() {
     setIsLoggingOut(true);
     setLogoutMessage(null);
@@ -112,34 +73,6 @@ function HomeDashboardContent() {
     }
   }
 
-  async function handleSync() {
-    setIsSyncing(true);
-    setSyncResult(null);
-    try {
-      const result = await syncProjects();
-      setSyncResult(result);
-      const updated = await getProjects(25, { workspaceId: selectedWorkspaceId });
-      setProjects(updated.items);
-    } catch {
-      // silently ignore
-    } finally {
-      setIsSyncing(false);
-    }
-  }
-
-  async function handleDisconnect(id: string) {
-    setDisconnectingId(id);
-    try {
-      await disconnectProject(id);
-      setProjects((prev) => prev.filter((p) => p.id !== id));
-      setConfirmDisconnectId(null);
-    } catch {
-      // silently ignore
-    } finally {
-      setDisconnectingId(null);
-    }
-  }
-
   function handleWelcomeDismiss() {
     setWelcomeDismissed(true);
     // Fire-and-forget: mark complete server-side. Idempotent if the tour also
@@ -147,21 +80,6 @@ function HomeDashboardContent() {
     completeOnboarding().catch(() => {
       // Non-fatal - the modal is already hidden optimistically.
     });
-  }
-
-  /* Helpers */
-  function projectBorderClass(status: string) {
-    if (status === "provisioned") return "repo-card-success";
-    if (status === "failed")      return "repo-card-danger";
-    if (status === "orphaned")    return "repo-card-amber";
-    return "repo-card-brand";
-  }
-
-  function projectStatusChipClass(status: string) {
-    if (status === "provisioned") return "status-chip status-chip-success";
-    if (status === "failed")      return "status-chip status-chip-danger";
-    if (status === "orphaned")    return "status-chip status-chip-amber";
-    return "status-chip status-chip-brand";
   }
 
   /* Guard: loading */
@@ -216,18 +134,6 @@ function HomeDashboardContent() {
     !guest &&
     !welcomeDismissed &&
     session?.user.onboardingCompleted === false;
-
-  const normalizedRepoQuery = repoQuery.trim().toLowerCase();
-  const filteredRepos = normalizedRepoQuery
-    ? repos.filter((repo) =>
-        repo.fullName.toLowerCase().includes(normalizedRepoQuery) ||
-        (repo.description ?? "").toLowerCase().includes(normalizedRepoQuery))
-    : repos;
-
-  const uniqueServices = new Set(history.map((h) => h.serviceName)).size;
-  const lastActivityValue = history[0]
-    ? new Intl.DateTimeFormat("en-PH", { dateStyle: "medium" }).format(new Date(history[0].createdAt))
-    : "None yet";
 
   const avatarInitial = (session?.user.name ?? session?.user.login ?? "U").slice(0, 1).toUpperCase();
 

@@ -142,6 +142,53 @@ describe("DeploymentProvisioningSetup", () => {
     rendered.unmount();
   });
 
+  it("persists edits made to the displayed fallback target", () => {
+    const onChange = jest.fn();
+    const value: DeploymentProvisioningRequest = {
+      enabled: true,
+      targets: [],
+    };
+
+    const rendered = render(
+      <DeploymentProvisioningSetup
+        enabled
+        repoShape="single-app"
+        selectedProjectKind="backend"
+        value={value}
+        onChange={onChange}
+      />,
+    );
+
+    changeValue(rendered.container.querySelector<HTMLInputElement>("input[aria-label='Provider project name']")!, "orders-api-test");
+
+    expect(onChange).toHaveBeenCalledWith(
+      expect.objectContaining({
+        targets: [
+          expect.objectContaining({
+            projectName: "orders-api-test",
+            provider: "render",
+            slot: "backend",
+          }),
+        ],
+      }),
+    );
+
+    changeValue(rendered.container.querySelector<HTMLSelectElement>("select[aria-label='Provider']")!, "vercel");
+
+    expect(onChange).toHaveBeenCalledWith(
+      expect.objectContaining({
+        targets: [
+          expect.objectContaining({
+            provider: "vercel",
+            slot: "backend",
+          }),
+        ],
+      }),
+    );
+
+    rendered.unmount();
+  });
+
   it("updates reusable variable groups separately from branch-specific variables", () => {
     const onChange = jest.fn();
     const value: DeploymentProvisioningRequest = {

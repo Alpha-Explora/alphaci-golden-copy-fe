@@ -3,10 +3,7 @@
 import { useMemo } from "react";
 
 import type {
-  DeploymentProvisioningEnvSet,
   DeploymentProvisioningRequest,
-  DeploymentProvisioningTargetRequest,
-  DeploymentProvisioningVariableGroup,
   EnvEnvironment,
   EnvProvider,
   EnvTargetSlot,
@@ -14,6 +11,30 @@ import type {
   RenderRuntime,
   RenderServiceType,
 } from "@/lib/api/contracts";
+import {
+  addVariableGroup,
+  asAlphaCIManagedTarget,
+  blankEnvSet,
+  countVars,
+  defaultProjectPlaceholder,
+  environments,
+  envVarsForDisplay,
+  fallbackTarget,
+  ownershipDescription,
+  providerLabel,
+  removeVariableGroup,
+  renderRuntimeOptions,
+  targetBranchKey,
+  targetBranchLabel,
+  targetScopeIncludes,
+  toggleGroupTargetBranch,
+  updateEnvSet,
+  updateEnvVar,
+  updateTargetAt,
+  updateVariableGroupAt,
+  variableGroupsForValue,
+  withRenderDefaults,
+} from "./deployment-provisioning-utils";
 
 interface DeploymentProvisioningSetupProps {
   enabled: boolean;
@@ -22,254 +43,6 @@ interface DeploymentProvisioningSetupProps {
   value: DeploymentProvisioningRequest;
   onChange: (value: DeploymentProvisioningRequest) => void;
   onEnabledChange?: (enabled: boolean) => void;
-}
-
-const environments: EnvEnvironment[] = ["test", "uat", "production"];
-const renderRuntimeOptions: Array<{ value: RenderRuntime; label: string }> = [
-  { value: "docker", label: "Dockerfile" },
-  { value: "node", label: "Node.js / Bun" },
-  { value: "python", label: "Python" },
-  { value: "ruby", label: "Ruby" },
-  { value: "go", label: "Go" },
-  { value: "rust", label: "Rust" },
-  { value: "elixir", label: "Elixir" },
-];
-const legacyRenderDeployMethods: RenderDeployMethod[] = ["native_git", "byo_image", "existing_service"];
-
-function blankEnvSet(environment: EnvEnvironment = "test"): DeploymentProvisioningEnvSet {
-  return { environment, vars: [] };
-}
-
-function fallbackTarget(selectedProjectKind?: "frontend" | "backend"): DeploymentProvisioningTargetRequest {
-  const slot: EnvTargetSlot =
-    selectedProjectKind === "frontend" ? "frontend" : selectedProjectKind === "backend" ? "backend" : "standalone";
-  const provider: EnvProvider = slot === "frontend" ? "vercel" : "render";
-  return {
-    slot,
-    provider,
-    ownershipMode: "flowci_managed",
-    branchName: "test",
-    rootDirectory: provider === "render" && slot === "backend" ? "backend" : ".",
-    buildCommand: "npm run build",
-    startCommand: provider === "render" ? "npm run start" : undefined,
-    renderDeployMethod: provider === "render" ? "managed_image" : undefined,
-    renderServiceType: provider === "render" ? "web_service" : undefined,
-    renderRuntime: provider === "render" ? "docker" : undefined,
-    renderInstanceType: provider === "render" ? "free" : undefined,
-    renderRegion: provider === "render" ? "singapore" : undefined,
-    renderEnvironmentName: "test",
-    dockerContext: provider === "render" && slot === "backend" ? "backend" : provider === "render" ? "." : undefined,
-    dockerfilePath: provider === "render" && slot === "backend" ? "backend/Dockerfile" : provider === "render" ? "Dockerfile" : undefined,
-    env: [{ environment: "test", vars: [] }],
-  };
-}
-
-function updateTargetAt(
-  value: DeploymentProvisioningRequest,
-  index: number,
-  patch: Partial<DeploymentProvisioningTargetRequest>,
-): DeploymentProvisioningRequest {
-  return {
-    ...value,
-    targets: value.targets.map((target, currentIndex) =>
-      asAlphaCIManagedTarget(currentIndex === index ? { ...target, ...patch } : target),
-    ),
-  };
-}
-
-function updateEnvSet(
-  target: DeploymentProvisioningTargetRequest,
-  envSet: DeploymentProvisioningEnvSet,
-): DeploymentProvisioningTargetRequest {
-  return {
-    ...target,
-    env: [envSet],
-  };
-}
-
-function updateEnvVar(
-  envSet: DeploymentProvisioningEnvSet,
-  index: number,
-  patch: Partial<{ key: string; value: string }>,
-): DeploymentProvisioningEnvSet {
-  const vars = [...envSet.vars];
-  const current = vars[index] ?? { key: "", value: "" };
-  vars[index] = { ...current, ...patch };
-  return { ...envSet, vars };
-}
-
-function envVarsForDisplay(envSet: DeploymentProvisioningEnvSet): Array<{ key: string; value: string }> {
-  return envSet.vars.length > 0 ? envSet.vars : [{ key: "", value: "" }];
-}
-
-function providerLabel(provider: EnvProvider): string {
-  return provider === "render" ? "Render" : "Vercel";
-}
-
-function blankVariableGroup(provider: EnvProvider, index = 1): DeploymentProvisioningVariableGroup {
-  return {
-    name: `${providerLabel(provider)} variable group ${index}`,
-    provider,
-    appliesTo: "all",
-    env: [blankEnvSet()],
-  };
-}
-
-function variableGroupsForValue(
-  value: DeploymentProvisioningRequest,
-  providers: EnvProvider[],
-): DeploymentProvisioningVariableGroup[] {
-  if (value.variableGroups?.length) {
-    const fallbackProvider = providers[0] ?? "render";
-    return value.variableGroups.map((group) => ({
-      ...group,
-      provider: group.provider ?? fallbackProvider,
-    }));
-  }
-
-  if (value.sharedEnv?.length) {
-    const sharedEnv = value.sharedEnv;
-    return providers.map((provider) => ({
-      name: `${providerLabel(provider)} shared variables`,
-      provider,
-      appliesTo: "all",
-      env: sharedEnv,
-    }));
-  }
-
-  return [];
-}
-
-function updateVariableGroupAt(
-  value: DeploymentProvisioningRequest,
-  currentGroups: DeploymentProvisioningVariableGroup[],
-  index: number,
-  group: DeploymentProvisioningVariableGroup,
-): DeploymentProvisioningRequest {
-  const nextGroups = [...currentGroups];
-  nextGroups[index] = group;
-  return { ...value, variableGroups: nextGroups, sharedEnv: undefined };
-}
-
-function addVariableGroup(
-  value: DeploymentProvisioningRequest,
-  currentGroups: DeploymentProvisioningVariableGroup[],
-  provider: EnvProvider,
-): DeploymentProvisioningRequest {
-  const providerGroupCount = currentGroups.filter((group) => group.provider === provider).length;
-  return {
-    ...value,
-    variableGroups: [...currentGroups, blankVariableGroup(provider, providerGroupCount + 1)],
-    sharedEnv: undefined,
-  };
-}
-
-function removeVariableGroup(
-  value: DeploymentProvisioningRequest,
-  currentGroups: DeploymentProvisioningVariableGroup[],
-  index: number,
-): DeploymentProvisioningRequest {
-  const nextGroups = currentGroups.filter((_, currentIndex) => currentIndex !== index);
-  return { ...value, variableGroups: nextGroups, sharedEnv: undefined };
-}
-
-function countVars(envSets: DeploymentProvisioningEnvSet[] | undefined): number {
-  return (envSets ?? []).reduce(
-    (total, envSet) => total + envSet.vars.filter((variable) => variable.key.trim() && variable.value).length,
-    0,
-  );
-}
-
-function targetBranchKey(target: DeploymentProvisioningTargetRequest): string {
-  const branch = target.branchName?.trim() || "test";
-  return `${target.slot}:${target.provider}:${branch}`;
-}
-
-function targetBranchLabel(target: DeploymentProvisioningTargetRequest): string {
-  const branch = target.branchName?.trim() || "test";
-  return `${target.slot} / ${target.provider} / ${branch}`;
-}
-
-function targetScopeIncludes(group: DeploymentProvisioningVariableGroup, targetKey: string): boolean {
-  return group.appliesTo !== "selected" || (group.targetBranches ?? []).includes(targetKey);
-}
-
-function toggleGroupTargetBranch(
-  group: DeploymentProvisioningVariableGroup,
-  targetKey: string,
-  allTargetKeys: string[],
-): DeploymentProvisioningVariableGroup {
-  const selected = new Set(group.targetBranches?.length ? group.targetBranches : allTargetKeys);
-  if (selected.has(targetKey)) {
-    selected.delete(targetKey);
-  } else {
-    selected.add(targetKey);
-  }
-
-  return {
-    ...group,
-    appliesTo: "selected",
-    targetBranches: [...selected],
-  };
-}
-
-function defaultProjectPlaceholder(repoShape: string, target: DeploymentProvisioningTargetRequest) {
-  if (repoShape === "multi" || repoShape === "microservices") {
-    return target.slot === "frontend" ? "app-frontend-test" : "app-backend-test";
-  }
-  return "project-name-test";
-}
-
-function ownershipDescription(target: DeploymentProvisioningTargetRequest) {
-  if (target.provider === "render") {
-    return "AlphaCI packages and deploys this backend automatically.";
-  }
-
-  return "AlphaCI creates the Vercel project and deploys it through GitHub Actions from the generated workflow.";
-}
-
-function asAlphaCIManagedTarget(
-  target: DeploymentProvisioningTargetRequest,
-): DeploymentProvisioningTargetRequest {
-  const renderDeployMethod =
-    target.provider === "render" && (!target.renderDeployMethod || legacyRenderDeployMethods.includes(target.renderDeployMethod))
-      ? "managed_image"
-      : target.renderDeployMethod;
-
-  return {
-    ...target,
-    action: target.action === "register_existing" ? "create" : target.action,
-    ownershipMode: "flowci_managed",
-    providerConnectionId: undefined,
-    renderDeployMethod,
-  };
-}
-
-function withRenderDefaults(
-  target: DeploymentProvisioningTargetRequest,
-  patch: Partial<DeploymentProvisioningTargetRequest>,
-): Partial<DeploymentProvisioningTargetRequest> {
-  const nextProvider = patch.provider ?? target.provider;
-  const nextSlot = patch.slot ?? target.slot;
-  if (nextProvider !== "render") {
-    return patch;
-  }
-
-  const isBackendSubdir = nextSlot === "backend";
-  const rootDirectory = patch.rootDirectory ?? target.rootDirectory ?? (isBackendSubdir ? "backend" : ".");
-
-  return {
-    renderDeployMethod: target.renderDeployMethod ?? "managed_image",
-    renderServiceType: target.renderServiceType ?? "web_service",
-    renderRuntime: target.renderRuntime ?? "docker",
-    renderInstanceType: target.renderInstanceType ?? "free",
-    renderRegion: target.renderRegion ?? "singapore",
-    renderEnvironmentName: target.renderEnvironmentName ?? "test",
-    dockerContext: target.dockerContext ?? rootDirectory,
-    dockerfilePath: target.dockerfilePath ?? (rootDirectory === "." ? "Dockerfile" : `${rootDirectory}/Dockerfile`),
-    startCommand: target.startCommand ?? "npm run start",
-    ...patch,
-  };
 }
 
 export function DeploymentProvisioningSetup({
@@ -283,6 +56,10 @@ export function DeploymentProvisioningSetup({
   const targets = useMemo(
     () => (value.targets.length > 0 ? value.targets : [fallbackTarget(selectedProjectKind)]).map(asAlphaCIManagedTarget),
     [selectedProjectKind, value.targets],
+  );
+  const valueWithTargets = useMemo(
+    () => (value.targets.length > 0 ? value : { ...value, targets }),
+    [targets, value],
   );
   const targetProviders = useMemo(
     () => [...new Set(targets.map((target) => target.provider))],
@@ -622,7 +399,7 @@ export function DeploymentProvisioningSetup({
                       value={target.slot}
                       onChange={(event) =>
                         onChange(
-                          updateTargetAt(value, targetIndex, {
+                          updateTargetAt(valueWithTargets, targetIndex, {
                             slot: event.target.value as EnvTargetSlot,
                             provider: event.target.value === "frontend" ? "vercel" : target.provider,
                             ...(event.target.value === "backend" && target.provider === "render"
@@ -650,7 +427,7 @@ export function DeploymentProvisioningSetup({
                         const provider = event.target.value as EnvProvider;
                         onChange(
                           updateTargetAt(
-                            value,
+                            valueWithTargets,
                             targetIndex,
                             withRenderDefaults(target, {
                               provider,
@@ -685,7 +462,7 @@ export function DeploymentProvisioningSetup({
                     <input
                       aria-label={targetIndex === 0 ? "Provider project name" : `Provider project name ${targetIndex + 1}`}
                       value={target.projectName ?? ""}
-                      onChange={(event) => onChange(updateTargetAt(value, targetIndex, { projectName: event.target.value }))}
+                      onChange={(event) => onChange(updateTargetAt(valueWithTargets, targetIndex, { projectName: event.target.value }))}
                       placeholder={defaultProjectPlaceholder(repoShape, target)}
                     />
                   </label>
@@ -694,7 +471,7 @@ export function DeploymentProvisioningSetup({
                     <input
                       aria-label={targetIndex === 0 ? "Provider branch" : `Provider branch ${targetIndex + 1}`}
                       value={target.branchName ?? "test"}
-                      onChange={(event) => onChange(updateTargetAt(value, targetIndex, { branchName: event.target.value }))}
+                      onChange={(event) => onChange(updateTargetAt(valueWithTargets, targetIndex, { branchName: event.target.value }))}
                     />
                   </label>
                   <label className="env-target-grid__field env-target-grid__field--compact">
@@ -702,7 +479,7 @@ export function DeploymentProvisioningSetup({
                     <input
                       aria-label={targetIndex === 0 ? "Provider root directory" : `Provider root directory ${targetIndex + 1}`}
                       value={target.rootDirectory ?? "."}
-                      onChange={(event) => onChange(updateTargetAt(value, targetIndex, { rootDirectory: event.target.value }))}
+                      onChange={(event) => onChange(updateTargetAt(valueWithTargets, targetIndex, { rootDirectory: event.target.value }))}
                     />
                   </label>
                   <label className="env-target-grid__field env-target-grid__field--wide">
@@ -710,7 +487,7 @@ export function DeploymentProvisioningSetup({
                     <input
                       aria-label={targetIndex === 0 ? "Provider build command" : `Provider build command ${targetIndex + 1}`}
                       value={target.buildCommand ?? ""}
-                      onChange={(event) => onChange(updateTargetAt(value, targetIndex, { buildCommand: event.target.value }))}
+                      onChange={(event) => onChange(updateTargetAt(valueWithTargets, targetIndex, { buildCommand: event.target.value }))}
                     />
                   </label>
                   {target.provider === "render" ? (
@@ -722,7 +499,7 @@ export function DeploymentProvisioningSetup({
                           value={target.renderDeployMethod ?? "managed_image"}
                           onChange={(event) =>
                             onChange(
-                              updateTargetAt(value, targetIndex, {
+                              updateTargetAt(valueWithTargets, targetIndex, {
                                 renderDeployMethod: event.target.value as RenderDeployMethod,
                                 action: "create",
                               }),
@@ -742,7 +519,7 @@ export function DeploymentProvisioningSetup({
                           value={target.renderServiceType ?? "web_service"}
                           onChange={(event) =>
                             onChange(
-                              updateTargetAt(value, targetIndex, {
+                              updateTargetAt(valueWithTargets, targetIndex, {
                                 renderServiceType: event.target.value as RenderServiceType,
                               }),
                             )
@@ -761,7 +538,7 @@ export function DeploymentProvisioningSetup({
                           value={target.renderRuntime ?? "docker"}
                           onChange={(event) =>
                             onChange(
-                              updateTargetAt(value, targetIndex, {
+                              updateTargetAt(valueWithTargets, targetIndex, {
                                 renderRuntime: event.target.value as RenderRuntime,
                               }),
                             )
@@ -782,7 +559,7 @@ export function DeploymentProvisioningSetup({
                         <input
                           aria-label={targetIndex === 0 ? "Render instance type" : `Render instance type ${targetIndex + 1}`}
                           value={target.renderInstanceType ?? "free"}
-                          onChange={(event) => onChange(updateTargetAt(value, targetIndex, { renderInstanceType: event.target.value }))}
+                          onChange={(event) => onChange(updateTargetAt(valueWithTargets, targetIndex, { renderInstanceType: event.target.value }))}
                         />
                       </label>
                       <label className="env-target-grid__field env-target-grid__field--compact">
@@ -790,7 +567,7 @@ export function DeploymentProvisioningSetup({
                         <input
                           aria-label={targetIndex === 0 ? "Render region" : `Render region ${targetIndex + 1}`}
                           value={target.renderRegion ?? "singapore"}
-                          onChange={(event) => onChange(updateTargetAt(value, targetIndex, { renderRegion: event.target.value }))}
+                          onChange={(event) => onChange(updateTargetAt(valueWithTargets, targetIndex, { renderRegion: event.target.value }))}
                         />
                       </label>
                       {target.ownershipMode === "flowci_managed" && (target.renderInstanceType ?? "free") !== "free" ? (
@@ -806,7 +583,7 @@ export function DeploymentProvisioningSetup({
                           <input
                             aria-label={targetIndex === 0 ? "Docker context" : `Docker context ${targetIndex + 1}`}
                             value={target.dockerContext ?? target.rootDirectory ?? "."}
-                            onChange={(event) => onChange(updateTargetAt(value, targetIndex, { dockerContext: event.target.value }))}
+                            onChange={(event) => onChange(updateTargetAt(valueWithTargets, targetIndex, { dockerContext: event.target.value }))}
                           />
                         </label>
                         <label>
@@ -814,7 +591,7 @@ export function DeploymentProvisioningSetup({
                           <input
                             aria-label={targetIndex === 0 ? "Dockerfile path" : `Dockerfile path ${targetIndex + 1}`}
                             value={target.dockerfilePath ?? "Dockerfile"}
-                            onChange={(event) => onChange(updateTargetAt(value, targetIndex, { dockerfilePath: event.target.value }))}
+                            onChange={(event) => onChange(updateTargetAt(valueWithTargets, targetIndex, { dockerfilePath: event.target.value }))}
                           />
                         </label>
                       </details>
@@ -827,7 +604,7 @@ export function DeploymentProvisioningSetup({
                       value={envSet.environment}
                       onChange={(event) =>
                         onChange(
-                          updateTargetAt(value, targetIndex, {
+                          updateTargetAt(valueWithTargets, targetIndex, {
                             env: [{ ...envSet, environment: event.target.value as EnvEnvironment }],
                           }),
                         )
@@ -854,7 +631,7 @@ export function DeploymentProvisioningSetup({
                     className="ghost-button"
                     onClick={() =>
                       onChange(
-                        updateTargetAt(value, targetIndex, {
+                        updateTargetAt(valueWithTargets, targetIndex, {
                           env: [{ ...envSet, vars: [...vars, { key: "", value: "" }] }],
                         }),
                       )
@@ -883,7 +660,7 @@ export function DeploymentProvisioningSetup({
                         value={variable.key}
                         onChange={(event) => {
                           const nextEnvSet = updateEnvVar(envSet, variableIndex, { key: event.target.value.toUpperCase() });
-                          onChange(updateTargetAt(value, targetIndex, updateEnvSet(target, nextEnvSet)));
+                          onChange(updateTargetAt(valueWithTargets, targetIndex, updateEnvSet(target, nextEnvSet)));
                         }}
                         placeholder="DATABASE_URL"
                       />
@@ -900,7 +677,7 @@ export function DeploymentProvisioningSetup({
                         value={variable.value}
                         onChange={(event) => {
                           const nextEnvSet = updateEnvVar(envSet, variableIndex, { value: event.target.value });
-                          onChange(updateTargetAt(value, targetIndex, updateEnvSet(target, nextEnvSet)));
+                          onChange(updateTargetAt(valueWithTargets, targetIndex, updateEnvSet(target, nextEnvSet)));
                         }}
                         placeholder="value"
                       />
@@ -917,7 +694,7 @@ export function DeploymentProvisioningSetup({
                       onClick={() => {
                         const nextVars = vars.filter((_, currentIndex) => currentIndex !== variableIndex);
                         onChange(
-                          updateTargetAt(value, targetIndex, {
+                          updateTargetAt(valueWithTargets, targetIndex, {
                             env: [{ ...envSet, vars: nextVars.length ? nextVars : [{ key: "", value: "" }] }],
                           }),
                         );

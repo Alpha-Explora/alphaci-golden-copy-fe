@@ -10,6 +10,7 @@ describe("home route migration", () => {
     path.join(process.cwd(), "src/features/dashboard/home/home-dashboard-tabs.tsx"),
     path.join(process.cwd(), "src/features/dashboard/home/home-overview-panel.tsx"),
     path.join(process.cwd(), "src/features/dashboard/home/home-activity-panel.tsx"),
+    path.join(process.cwd(), "src/features/dashboard/home/home-repositories-panel.tsx"),
   ];
 
   it("keeps the app route as a thin entry point", () => {

@@ -13,20 +13,6 @@ interface UseHomeDashboardDataOptions {
   selectedWorkspaceId: string | null;
 }
 
-export function projectBorderClass(status: string) {
-  if (status === "provisioned") return "repo-card-success";
-  if (status === "failed") return "repo-card-danger";
-  if (status === "orphaned") return "repo-card-amber";
-  return "repo-card-brand";
-}
-
-export function projectStatusChipClass(status: string) {
-  if (status === "provisioned") return "status-chip status-chip-success";
-  if (status === "failed") return "status-chip status-chip-danger";
-  if (status === "orphaned") return "status-chip status-chip-amber";
-  return "status-chip status-chip-brand";
-}
-
 export function useHomeDashboardData({ status, selectedWorkspaceId }: Readonly<UseHomeDashboardDataOptions>) {
   const [activeTab, setActiveTab] = useState<DashTab>("overview");
   const [history, setHistory] = useState<WorkflowHistoryItem[]>([]);

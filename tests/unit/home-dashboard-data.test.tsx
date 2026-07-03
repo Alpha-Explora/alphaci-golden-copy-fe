@@ -1,7 +1,8 @@
 import { act, useEffect } from "react";
 import { createRoot, type Root } from "react-dom/client";
 
-import { projectBorderClass, projectStatusChipClass, useHomeDashboardData } from "../../src/features/dashboard/home/use-home-dashboard-data";
+import { projectBorderClass, projectStatusChipClass } from "../../src/features/dashboard/home/home-repositories-panel";
+import { useHomeDashboardData } from "../../src/features/dashboard/home/use-home-dashboard-data";
 import { disconnectProject, getGithubRepos, getProjects, getWorkflowHistory, syncProjects } from "../../src/lib/api/client";
 
 jest.mock("../../src/lib/api/client", () => ({

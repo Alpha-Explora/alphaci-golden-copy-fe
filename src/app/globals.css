@@ -1060,8 +1060,7 @@
 
 .raw-hero-grid,
 .public-guide-shell,
-.deploy-section,
-.activity-section {
+.deploy-section {
   background-color: var(--bg-base);
 }
 
@@ -3799,23 +3798,6 @@ select option {
 
 
 
-.activity-item {
-  display: flex;
-  align-items: center;
-  gap: 0.8rem;
-  padding: 0.65rem 0.9rem;
-  border-radius: 0.5rem;
-  background: var(--bg-surface);
-  border: 1px solid var(--border);
-  transition: border-color 0.15s;
-}
-
-.activity-item:hover {
-  border-color: var(--border-brand);
-}
-
-
-
 .file-path-label {
   font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
   font-size: 0.72rem;
@@ -4913,27 +4895,6 @@ select option {
   font-size: 0.78rem;
   color: var(--text-muted);
   line-height: 1.65;
-}
-
-
-
-.activity-section {
-  padding: clamp(3rem, 5vw, 5rem) clamp(2rem, 7vw, 8rem);
-  background: var(--bg-soft);
-  border-top: 1px solid var(--border);
-  position: relative;
-  overflow: hidden;
-}
-
-.activity-section::after {
-  content: '';
-  position: absolute;
-  top: 0;
-  right: 0;
-  width: 40%;
-  height: 100%;
-  background: radial-gradient(ellipse at right, rgba(0,208,132,0.04) 0%, transparent 70%);
-  pointer-events: none;
 }
 
 

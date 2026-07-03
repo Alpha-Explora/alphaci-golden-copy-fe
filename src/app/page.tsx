@@ -6,7 +6,7 @@ import type { MotionValue } from "framer-motion";
 import { useRef, useState, useEffect } from "react";
 
 import { PipelineLogo } from "@/components/layout/pipeline-logo";
-import { FeatureStripSection, LandingSectionDivider, LandingShell, SupportedStacksSection } from "@/features/public-site/landing";
+import { ActivityStrip, FeatureStripSection, LandingSectionDivider, LandingShell, SupportedStacksSection } from "@/features/public-site/landing";
 
 import { useAuthSession } from "@/hooks/use-auth-session";
 import { hasActiveSubscription } from "@/lib/auth/subscription";
@@ -58,12 +58,6 @@ const YAML_INDENT: Record<YamlLineType, string> = {
   step:    "      - ",
 };
 
-const recentActivity = [
-  { repo: "payments-api",  action: "Production release approved", time: "2m ago",  status: "success" },
-  { repo: "auth-service",  action: "Tests passed (142/142)",    time: "8m ago",  status: "success" },
-  { repo: "frontend",      action: "Release lane healthy",      time: "15m ago", status: "success" },
-  { repo: "worker",        action: "Lint + security check",     time: "23m ago", status: "success" },
-];
 
 const featureRows = [
   { name: "Workflow generation",         pro: true },
@@ -523,31 +517,6 @@ function ReleaseLanesSection({ reduced }: Readonly<{ reduced: boolean | null }>)
   );
 }
 
-/* -- Activity strip -------------------------------------------------------- */
-
-function ActivityStrip() {
-  return (
-    <div className="activity-section">
-      <div style={{ display: "flex", alignItems: "center", gap: "0.6rem", marginBottom: "1rem" }}>
-        <p className="file-path-label" style={{ margin: 0 }}>
-          activity/recent.log
-        </p>
-        <div style={{ width: 6, height: 6, borderRadius: "50%", background: "var(--success)", display: "inline-block", animation: "flowPulse 1.5s ease-in-out infinite", flexShrink: 0 }} />
-        <span style={{ fontSize: "0.68rem", color: "var(--text-muted)", fontFamily: "ui-monospace, monospace" }}>live</span>
-      </div>
-      <div style={{ display: "grid", gap: "0.4rem" }}>
-        {recentActivity.map((item) => (
-          <div key={item.repo} className="activity-item">
-            <div style={{ width: 7, height: 7, borderRadius: "50%", background: "var(--success)", flexShrink: 0, boxShadow: "0 0 6px rgba(0,208,132,0.5)" }} />
-            <span style={{ fontFamily: "ui-monospace, monospace", fontSize: "0.78rem", color: "var(--text-primary)", fontWeight: 600, minWidth: 110 }}>{item.repo}</span>
-            <span style={{ fontSize: "0.8rem", color: "var(--text-secondary)", flex: 1 }}>{item.action}</span>
-            <span style={{ fontSize: "0.7rem", color: "var(--text-muted)", flexShrink: 0, fontFamily: "ui-monospace, monospace" }}>{item.time}</span>
-          </div>
-        ))}
-      </div>
-    </div>
-  );
-}
 
 /* -- Nav link resolver ----------------------------------------------------- */
 

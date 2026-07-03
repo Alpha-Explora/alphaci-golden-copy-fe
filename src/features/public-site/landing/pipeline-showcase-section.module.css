@@ -1,0 +1,386 @@
+.section {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  gap: 2rem;
+  width: 100%;
+  min-height: 100dvh;
+  overflow: hidden;
+  padding: clamp(4rem, 8vw, 7rem) clamp(2rem, 7vw, 8rem);
+  border-top: 1px solid var(--border);
+  background: var(--bg-soft);
+}
+.section::before,
+.section::after {
+  content: "";
+  position: absolute;
+  border-radius: 50%;
+  pointer-events: none;
+}
+.section::before {
+  top: -15%;
+  right: -8%;
+  width: 60%;
+  height: 70%;
+  background: radial-gradient(ellipse, rgba(79, 142, 255, 0.07) 0%, transparent 65%);
+}
+.section::after {
+  bottom: -10%;
+  left: -5%;
+  width: 50%;
+  height: 55%;
+  background: radial-gradient(ellipse, rgba(0, 208, 132, 0.05) 0%, transparent 65%);
+}
+.section > * {
+  position: relative;
+  z-index: 1;
+}
+.header {
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+  gap: 1rem;
+  max-width: 640px;
+  margin-bottom: 1rem;
+  text-align: center;
+}
+.eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.25rem 0.75rem;
+  margin-bottom: 0.25rem;
+  border: 1px solid rgba(56, 189, 248, 0.2);
+  border-radius: 999px;
+  background: rgba(56, 189, 248, 0.08);
+  color: var(--brand);
+  font-family: ui-monospace, monospace;
+  font-size: 0.62rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+.eyebrowDot {
+  width: 5px;
+  height: 5px;
+  flex-shrink: 0;
+  border-radius: 50%;
+  background: var(--brand);
+  animation: pipelineBadgePulse 1.8s ease-in-out infinite;
+}
+.eyebrowDot[data-paused="true"] {
+  animation: none;
+}
+.path {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  margin: 0;
+  color: var(--text-muted);
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 0.72rem;
+  letter-spacing: 0.06em;
+}
+.path::before {
+  content: "./";
+  color: var(--brand);
+}
+.header h2 {
+  margin: 0;
+  color: var(--text-primary);
+  font-size: clamp(1.8rem, 3.5vw, 2.8rem);
+  font-weight: 800;
+  letter-spacing: -0.03em;
+}
+.header > p:last-child {
+  max-width: 52ch;
+  margin: 0;
+  color: var(--text-secondary);
+  font-size: 1rem;
+  line-height: 1.6;
+}
+.content {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 3rem;
+  width: 100%;
+  max-width: 1100px;
+  margin: 0 auto;
+  align-items: start;
+}
+.visualColumn {
+  align-self: start;
+  width: 100%;
+  max-width: 520px;
+}
+.panelHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1rem;
+}
+.statusPassing {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.18rem 0.55rem;
+  border: 1px solid rgba(0, 208, 132, 0.28);
+  border-radius: 999px;
+  background: rgba(0, 208, 132, 0.08);
+  color: var(--success);
+  font-family: ui-monospace, monospace;
+  font-size: 0.68rem;
+  font-weight: 700;
+}
+.statusPassing::before {
+  content: "";
+  width: 0.34rem;
+  height: 0.34rem;
+  border-radius: 999px;
+  background: var(--success);
+  box-shadow: 0 0 10px rgba(52, 211, 153, 0.62);
+  animation: pipelineStatusPulse 1.8s ease-in-out infinite;
+}
+.stagePanel {
+  padding: 1.5rem;
+  margin-bottom: 1rem;
+  border: 1px solid var(--border);
+  border-radius: 0.75rem;
+  background: var(--bg-panel);
+  backdrop-filter: blur(12px);
+}
+.stageRow {
+  display: flex;
+  align-items: flex-start;
+  gap: 0;
+}
+.stageWrap {
+  display: flex;
+  align-items: center;
+  flex: 1;
+}
+.stageWrap:last-child {
+  flex: none;
+}
+.stageStack {
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+  flex-shrink: 0;
+}
+.stageNode {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+.passing {
+  border: 1.5px solid rgba(0, 208, 132, 0.5);
+  background: rgba(0, 208, 132, 0.15);
+  color: var(--success);
+  animation: pipelineNodeSuccess 2.5s ease-in-out infinite;
+}
+.running {
+  border: 1.5px solid rgba(79, 142, 255, 0.5);
+  background: rgba(79, 142, 255, 0.15);
+  color: var(--brand);
+  animation: pipelineNodeGlow 1.5s ease-in-out infinite;
+}
+.pending {
+  border: 1.5px solid rgba(74, 85, 120, 0.4);
+  background: rgba(74, 85, 120, 0.2);
+  color: var(--text-muted);
+}
+.spinner {
+  width: 10px;
+  height: 10px;
+  border: 2px solid rgba(79, 142, 255, 0.4);
+  border-top-color: #4f8eff;
+  border-radius: 50%;
+  animation: pipelineSpin 0.8s linear infinite;
+}
+.stageLabel {
+  margin-top: 0.35rem;
+  color: var(--text-muted);
+  font-family: ui-monospace, monospace;
+  font-size: 0.62rem;
+  letter-spacing: 0.1em;
+  text-align: center;
+  text-transform: uppercase;
+}
+.stageDuration {
+  margin-top: 0.15rem;
+  color: var(--text-muted);
+  font-family: ui-monospace, monospace;
+  font-size: 0.58rem;
+}
+.connectorLine {
+  position: relative;
+  flex: 1;
+  height: 2px;
+  margin: 0 0.2rem 1.4rem;
+  overflow: hidden;
+  border-radius: 999px;
+  background: linear-gradient(90deg, rgba(79, 142, 255, 0.5), rgba(79, 142, 255, 0.15));
+}
+.connectorLine::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: linear-gradient(90deg, transparent, rgba(79, 142, 255, 0.8), transparent);
+  animation: pipelineConnectorFlow 2.5s ease-in-out infinite;
+}
+.commitRow {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+  margin-top: 0.85rem;
+  padding-top: 0.65rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.05);
+}
+.branchChip {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.15rem 0.55rem;
+  border: 1px solid rgba(79, 142, 255, 0.25);
+  border-radius: 999px;
+  background: rgba(79, 142, 255, 0.1);
+  color: var(--brand);
+  font-family: ui-monospace, monospace;
+  font-size: 0.72rem;
+  letter-spacing: 0.02em;
+}
+.commitSha,
+.commitMessage,
+.footerStatus {
+  color: var(--text-muted);
+  font-family: ui-monospace, monospace;
+  font-size: 0.68rem;
+}
+.commitMessage {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  color: var(--text-secondary);
+  font-family: inherit;
+  font-size: 0.74rem;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.terminal {
+  width: 100%;
+  max-width: 520px;
+  overflow: hidden;
+  border: 1px solid rgba(79, 142, 255, 0.15);
+  border-radius: 0.75rem;
+  background: #0d1117;
+  box-shadow: var(--shadow-elevated), var(--glow-brand);
+}
+.logTerminal {
+  max-height: 148px;
+}
+.terminalBar {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+  padding: 0.65rem 0.8rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  background: rgba(255, 255, 255, 0.03);
+}
+.dot {
+  width: 0.58rem;
+  height: 0.58rem;
+  border-radius: 50%;
+}
+.dotRed { background: #ff5f56; }
+.dotYellow { background: #ffbd2e; }
+.dotGreen { background: #27c93f; }
+.terminalTitle {
+  margin-left: 0.4rem;
+  color: rgba(255, 255, 255, 0.3);
+  font-family: ui-monospace, monospace;
+  font-size: 0.65rem;
+}
+.logOutput,
+.yamlOutput {
+  margin: 0;
+  min-height: auto;
+  padding: 0.75rem 1rem;
+  color: #8b949e;
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 0.72rem;
+  line-height: 1.65;
+}
+.yamlOutput {
+  min-height: 18rem;
+  font-size: 0.75rem;
+}
+.logOutput span,
+.yamlLine {
+  display: block;
+}
+.logCommand { color: #79c0ff; }
+.logSuccess { color: #00d084; }
+.logMuted { color: #8b949e; }
+.cursor {
+  display: inline-block !important;
+  width: 0.5rem;
+  height: 0.85em;
+  margin-left: 2px;
+  background: #4f8eff;
+  opacity: 0.8;
+  vertical-align: text-bottom;
+  animation: pipelineCursorPulse 0.9s ease-in-out infinite;
+}
+.terminalLabel {
+  margin-bottom: 0.5rem;
+}
+.yamlKeyword { color: #ff7b72; }
+.yamlString { color: #a5d6ff; }
+.yamlComment { color: #8b949e; }
+.yamlKey { color: #79c0ff; }
+.footerStatus {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+@media (max-width: 860px) {
+  .content {
+    grid-template-columns: 1fr;
+  }
+}
+@keyframes pipelineBadgePulse {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.55; transform: scale(1.45); }
+}
+@keyframes pipelineNodeSuccess {
+  0%, 100% { box-shadow: 0 0 12px rgba(0, 208, 132, 0.2); }
+  50% { box-shadow: 0 0 22px rgba(0, 208, 132, 0.4); }
+}
+@keyframes pipelineNodeGlow {
+  0%, 100% { box-shadow: 0 0 12px rgba(79, 142, 255, 0.2); }
+  50% { box-shadow: 0 0 24px rgba(79, 142, 255, 0.4); }
+}
+@keyframes pipelineConnectorFlow {
+  0% { transform: translateX(-100%); }
+  100% { transform: translateX(100%); }
+}
+@keyframes pipelineSpin {
+  to { transform: rotate(360deg); }
+}
+@keyframes pipelineCursorPulse {
+  0%, 100% { opacity: 0.8; }
+  50% { opacity: 0.25; }
+}
+@keyframes pipelineStatusPulse {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.55; transform: scale(1.35); }
+}

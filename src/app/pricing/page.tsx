@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 
-import { PublicSiteNav } from "@/components/layout/public-site-nav";
+import { PricingPageShell } from "@/features/public-site/pricing/pricing-page-shell";
 
 import styles from "./pricing.module.css";
 
@@ -128,10 +128,7 @@ function CheckIcon() {
 
 export default function PricingPage() {
   return (
-    <main className={styles.shell}>
-      <a href="#main-content" className="skip-link">Skip to main content</a>
-      <PublicSiteNav active="pricing" />
-
+    <PricingPageShell>
       <section id="main-content" className={styles.hero} aria-labelledby="pricing-page-title">
         <div className={styles.heroCopy}>
           <span className={styles.kicker}>Usage-based pricing</span>
@@ -261,6 +258,6 @@ export default function PricingPage() {
           ))}
         </div>
       </section>
-    </main>
+    </PricingPageShell>
   );
 }

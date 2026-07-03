@@ -11,10 +11,10 @@ import type {
   WorkflowHistoryItem,
 } from "@/lib/api/contracts";
 import { ProjectEnvPanel } from "./project-env-panel";
-import { DeploymentProvisioningSummary } from "./setup-result-panel";
 import { FlowExplainer } from "./flow-explainer";
 import { HelpTip } from "./help-tip";
 import { DeploymentTargetsList } from "./workflow-deployment-targets-list";
+import { WorkflowCurrentSubtabBar, type WorkflowCurrentSubtab } from "./workflow-current-navigation";
 import {
   CiRunsList,
   DeploymentHistoryList,
@@ -23,6 +23,7 @@ import {
   WorkflowStageList,
 } from "./workflow-current-panels";
 import { selectedChecks, statusVariant } from "./workflow-current-formatters";
+import { WorkflowLatestResultBanner } from "./workflow-current-result-banner";
 import { useWorkflowProjectOverview } from "./use-workflow-project-overview";
 import { useWorkflowProjectTelemetry } from "./use-workflow-project-telemetry";
 import { useWorkflowSettingsPreview } from "./use-workflow-settings-preview";
@@ -40,7 +41,6 @@ interface WorkflowCurrentTabProps {
   projects: ProvisionedProject[];
 }
 
-type SubTab = "projects" | "history";
 type ProjectDetailTab =
   | "overview"
   | "workflow"
@@ -87,7 +87,7 @@ export function WorkflowCurrentTab({
   onOpenSetup,
   projects,
 }: Readonly<WorkflowCurrentTabProps>) {
-  const [subTab, setSubTab] = useState<SubTab>("projects");
+  const [subTab, setSubTab] = useState<WorkflowCurrentSubtab>("projects");
   const [projectDetailTab, setProjectDetailTab] = useState<ProjectDetailTab>("overview");
   const [selectedProjectId, setSelectedProjectId] = useState<string | null>(null);
   const {
@@ -170,106 +170,17 @@ export function WorkflowCurrentTab({
       transition={{ duration: 0.3 }}
       style={{ background: "transparent", border: "none", boxShadow: "none", padding: 0 }}
     >
-      {/* ── Latest result banner ──────────────────────────────────── */}
-      {latestResult ? (
-        <div className="latest-result-banner glass-panel">
-          <div className="latest-result-banner__header">
-            <span className="latest-result-banner__dot" aria-hidden="true" />
-            <p className="eyebrow latest-result-banner__eyebrow">Project Created Successfully</p>
-            <span className="latest-result-banner__sep" aria-hidden="true">·</span>
-            <span className="latest-result-banner__repo">{latestResult.repoFullName}</span>
-          </div>
+      {latestResult ? <WorkflowLatestResultBanner result={latestResult} /> : null}
 
-          <div className="result-branches latest-result-banner__chips">
-            <span className="branch-chip">{latestResult.status}</span>
-            <span className="branch-chip">{latestResult.projectTypeId}</span>
-            <span className="branch-chip">{latestResult.workflowRecipeId}</span>
-            {latestResult.branchesCreated.map((branch) => (
-              <span key={branch} className="branch-chip branch-chip--mono">{branch}</span>
-            ))}
-          </div>
+      <WorkflowCurrentSubtabBar
+        historyCount={history.length}
+        loadingHistory={loadingHistory}
+        loadingProjects={loadingProjects}
+        onSubTabChange={setSubTab}
+        projectsCount={projects.length}
+        subTab={subTab}
+      />
 
-          <p className="latest-result-banner__meta">
-            Workflow file:{" "}
-            <strong className="latest-result-banner__filename">{latestResult.outputFileName}</strong>
-            {latestResult.githubCommitUrl ? (
-              <a
-                href={latestResult.githubCommitUrl}
-                target="_blank"
-                rel="noreferrer"
-                className="latest-result-banner__commit-link"
-              >
-                commit: <span className="latest-result-banner__sha">{latestResult.githubCommitSha.slice(0, 10)}</span>
-              </a>
-            ) : (
-              <code className="latest-result-banner__sha-plain">{latestResult.githubCommitSha.slice(0, 10)}</code>
-            )}
-          </p>
-
-          <WorkflowStageList files={latestResult.workflowFiles} />
-          <DeploymentProvisioningSummary result={latestResult.deploymentProvisioning} />
-
-          <div className="latest-result-banner__actions">
-            <a className="latest-result-banner__action-btn latest-result-banner__action-btn--primary" href={latestResult.repoUrl} target="_blank" rel="noreferrer">
-              Open Repository
-            </a>
-            <a className="latest-result-banner__action-btn" href={`${latestResult.repoUrl}/actions`} target="_blank" rel="noreferrer">
-              Open Actions
-            </a>
-            <a
-              className="latest-result-banner__action-btn"
-              href={`${latestResult.repoUrl}/blob/main/${latestResult.workflowPath}`}
-              target="_blank"
-              rel="noreferrer"
-            >
-              View Workflow File
-            </a>
-          </div>
-
-          <p className="latest-result-banner__footer">
-            Workflow committed to{" "}
-            <code className="file-path-label">{latestResult.workflowPath}</code>{" "}
-            on <code className="file-path-label">main</code>.
-            Push to <code className="file-path-label">test</code> to trigger your first CI run.
-          </p>
-        </div>
-      ) : null}
-
-      {/* ── Sub-tab bar ───────────────────────────────────────────── */}
-      <div className="current-subtab-bar" role="tablist" aria-label="Current tab sections" data-tour="subtab-bar">
-        {(["projects", "history"] as SubTab[]).map((tab) => (
-          <button
-            key={tab}
-            type="button"
-            role="tab"
-            id={`subtab-${tab}`}
-            aria-controls={`subtab-panel-${tab}`}
-            aria-selected={subTab === tab}
-            onClick={() => setSubTab(tab)}
-            className={`current-subtab-btn${subTab === tab ? " active" : ""}`}
-          >
-            {subTab === tab && (
-              <motion.span
-                layoutId="current-subtab-indicator"
-                className="current-subtab-indicator"
-                transition={{ type: "spring", stiffness: 380, damping: 30 }}
-                aria-hidden="true"
-              />
-            )}
-            <span style={{ position: "relative", zIndex: 1 }}>
-              {tab === "projects" ? "Projects" : "History"}
-            </span>
-            {tab === "projects" && !loadingProjects && projects.length > 0 && (
-              <span className="current-subtab-count">{projects.length}</span>
-            )}
-            {tab === "history" && !loadingHistory && history.length > 0 && (
-              <span className="current-subtab-count">{history.length}</span>
-            )}
-          </button>
-        ))}
-      </div>
-
-      {/* ── Projects panel ───────────────────────────────────────── */}
       {subTab === "projects" && (
         <div
           id="subtab-panel-projects"
@@ -893,7 +804,6 @@ export function WorkflowCurrentTab({
         </div>
       )}
 
-      {/* ── History panel ─────────────────────────────────────────── */}
       {subTab === "history" && (
         <div
           id="subtab-panel-history"
@@ -1062,7 +972,6 @@ export function WorkflowCurrentTab({
                     </button>
                   </div>
 
-                  {/* YAML preview */}
                   <details style={{ marginTop: "0.25rem" }}>
                     <summary style={{ cursor: "pointer", color: "var(--brand)", fontWeight: 700, fontSize: "0.82rem", outline: "none", userSelect: "none" }}>
                       Preview YAML config

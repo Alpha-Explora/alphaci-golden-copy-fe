@@ -9,6 +9,8 @@ describe("workflow current tab migration", () => {
   const targetListPath = path.join(process.cwd(), "src/components/product/workflow-deployment-targets-list.tsx");
   const targetManagementHookPath = path.join(process.cwd(), "src/components/product/use-workflow-deployment-targets.ts");
   const panelComponentsPath = path.join(process.cwd(), "src/components/product/workflow-current-panels.tsx");
+  const resultBannerPath = path.join(process.cwd(), "src/components/product/workflow-current-result-banner.tsx");
+  const navigationPath = path.join(process.cwd(), "src/components/product/workflow-current-navigation.tsx");
 
   it("keeps project overview state owned by a dedicated hook", () => {
     const componentSource = fs.readFileSync(componentPath, "utf8");
@@ -41,6 +43,12 @@ describe("workflow current tab migration", () => {
     expect(componentSource).not.toContain("function CiRunsList");
     expect(componentSource).not.toContain("function DeploymentHistoryList");
     expect(componentSource).not.toContain("function DriftFindingsPanel");
+    expect(fs.existsSync(resultBannerPath)).toBe(true);
+    expect(componentSource).toContain("WorkflowLatestResultBanner");
+    expect(componentSource).not.toContain("latest-result-banner glass-panel");
+    expect(fs.existsSync(navigationPath)).toBe(true);
+    expect(componentSource).toContain("WorkflowCurrentSubtabBar");
+    expect(componentSource).not.toContain("current-subtab-bar");
     expect(componentSource).not.toContain("updateDeploymentTarget(");
     expect(componentSource).not.toContain("syncDeploymentTarget(");
     expect(componentSource).not.toContain("detachDeploymentTarget(");
@@ -54,20 +62,26 @@ describe("workflow current tab migration", () => {
     const targetListSource = fs.existsSync(targetListPath) ? fs.readFileSync(targetListPath, "utf8") : "";
     const targetManagementHookSource = fs.existsSync(targetManagementHookPath) ? fs.readFileSync(targetManagementHookPath, "utf8") : "";
     const panelComponentsSource = fs.existsSync(panelComponentsPath) ? fs.readFileSync(panelComponentsPath, "utf8") : "";
+    const resultBannerSource = fs.existsSync(resultBannerPath) ? fs.readFileSync(resultBannerPath, "utf8") : "";
+    const navigationSource = fs.existsSync(navigationPath) ? fs.readFileSync(navigationPath, "utf8") : "";
     const mojibakePattern = /[\u00c2\u00e2]/;
 
-    expect(componentSource.trim().split(/\r?\n/).length).toBeLessThanOrEqual(1100);
+    expect(componentSource.trim().split(/\r?\n/).length).toBeLessThanOrEqual(1000);
     expect(hookSource.trim().split(/\r?\n/).length).toBeLessThanOrEqual(350);
     expect(settingsHookSource.trim().split(/\r?\n/).length).toBeLessThanOrEqual(350);
     expect(telemetryHookSource.trim().split(/\r?\n/).length).toBeLessThanOrEqual(350);
     expect(targetListSource.trim().split(/\r?\n/).length).toBeLessThanOrEqual(260);
     expect(targetManagementHookSource.trim().split(/\r?\n/).length).toBeLessThanOrEqual(250);
     expect(panelComponentsSource.trim().split(/\r?\n/).length).toBeLessThanOrEqual(320);
+    expect(resultBannerSource.trim().split(/\r?\n/).length).toBeLessThanOrEqual(130);
+    expect(navigationSource.trim().split(/\r?\n/).length).toBeLessThanOrEqual(90);
     expect(hookSource).not.toMatch(mojibakePattern);
     expect(settingsHookSource).not.toMatch(mojibakePattern);
     expect(telemetryHookSource).not.toMatch(mojibakePattern);
     expect(targetListSource).not.toMatch(mojibakePattern);
     expect(targetManagementHookSource).not.toMatch(mojibakePattern);
     expect(panelComponentsSource).not.toMatch(mojibakePattern);
+    expect(resultBannerSource).not.toMatch(mojibakePattern);
+    expect(navigationSource).not.toMatch(mojibakePattern);
   });
 });

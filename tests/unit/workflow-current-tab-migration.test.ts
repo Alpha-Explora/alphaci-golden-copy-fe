@@ -11,6 +11,7 @@ describe("workflow current tab migration", () => {
   const panelComponentsPath = path.join(process.cwd(), "src/components/product/workflow-current-panels.tsx");
   const resultBannerPath = path.join(process.cwd(), "src/components/product/workflow-current-result-banner.tsx");
   const navigationPath = path.join(process.cwd(), "src/components/product/workflow-current-navigation.tsx");
+  const historyPanelPath = path.join(process.cwd(), "src/components/product/workflow-history-panel.tsx");
 
   it("keeps project overview state owned by a dedicated hook", () => {
     const componentSource = fs.readFileSync(componentPath, "utf8");
@@ -49,6 +50,10 @@ describe("workflow current tab migration", () => {
     expect(fs.existsSync(navigationPath)).toBe(true);
     expect(componentSource).toContain("WorkflowCurrentSubtabBar");
     expect(componentSource).not.toContain("current-subtab-bar");
+    expect(fs.existsSync(historyPanelPath)).toBe(true);
+    expect(componentSource).toContain("WorkflowHistoryPanel");
+    expect(componentSource).not.toContain("Preview YAML config");
+    expect(componentSource).not.toContain("Generate your first workflow");
     expect(componentSource).not.toContain("updateDeploymentTarget(");
     expect(componentSource).not.toContain("syncDeploymentTarget(");
     expect(componentSource).not.toContain("detachDeploymentTarget(");
@@ -64,9 +69,10 @@ describe("workflow current tab migration", () => {
     const panelComponentsSource = fs.existsSync(panelComponentsPath) ? fs.readFileSync(panelComponentsPath, "utf8") : "";
     const resultBannerSource = fs.existsSync(resultBannerPath) ? fs.readFileSync(resultBannerPath, "utf8") : "";
     const navigationSource = fs.existsSync(navigationPath) ? fs.readFileSync(navigationPath, "utf8") : "";
+    const historyPanelSource = fs.existsSync(historyPanelPath) ? fs.readFileSync(historyPanelPath, "utf8") : "";
     const mojibakePattern = /[\u00c2\u00e2]/;
 
-    expect(componentSource.trim().split(/\r?\n/).length).toBeLessThanOrEqual(1000);
+    expect(componentSource.trim().split(/\r?\n/).length).toBeLessThanOrEqual(820);
     expect(hookSource.trim().split(/\r?\n/).length).toBeLessThanOrEqual(350);
     expect(settingsHookSource.trim().split(/\r?\n/).length).toBeLessThanOrEqual(350);
     expect(telemetryHookSource.trim().split(/\r?\n/).length).toBeLessThanOrEqual(350);
@@ -75,6 +81,7 @@ describe("workflow current tab migration", () => {
     expect(panelComponentsSource.trim().split(/\r?\n/).length).toBeLessThanOrEqual(320);
     expect(resultBannerSource.trim().split(/\r?\n/).length).toBeLessThanOrEqual(130);
     expect(navigationSource.trim().split(/\r?\n/).length).toBeLessThanOrEqual(90);
+    expect(historyPanelSource.trim().split(/\r?\n/).length).toBeLessThanOrEqual(280);
     expect(hookSource).not.toMatch(mojibakePattern);
     expect(settingsHookSource).not.toMatch(mojibakePattern);
     expect(telemetryHookSource).not.toMatch(mojibakePattern);
@@ -83,5 +90,6 @@ describe("workflow current tab migration", () => {
     expect(panelComponentsSource).not.toMatch(mojibakePattern);
     expect(resultBannerSource).not.toMatch(mojibakePattern);
     expect(navigationSource).not.toMatch(mojibakePattern);
+    expect(historyPanelSource).not.toMatch(mojibakePattern);
   });
 });

@@ -16,13 +16,12 @@ import { WorkflowCurrentSubtabBar, type WorkflowCurrentSubtab } from "./workflow
 import {
   CiRunsList,
   DeploymentHistoryList,
-  DriftFindingsPanel,
   EnvMetadataList,
   WorkflowStageList,
 } from "./workflow-current-panels";
-import { selectedChecks } from "./workflow-current-formatters";
 import { WorkflowLatestResultBanner } from "./workflow-current-result-banner";
 import { WorkflowHistoryPanel } from "./workflow-history-panel";
+import { WorkflowProjectOverviewPanel } from "./workflow-project-overview-panel";
 import {
   PROJECT_DETAIL_TABS,
   WorkflowProjectDetailActions,
@@ -223,94 +222,24 @@ export function WorkflowCurrentTab({
                 ) : null}
 
                 {projectDetailTab === "overview" ? (
-                  <div style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
-                    <dl className="project-detail-grid">
-                      <div>
-                        <dt>Workflow</dt>
-                        <dd>{selectedOverview?.workflow.path ?? selectedProject.workflowPath}</dd>
-                      </div>
-                      <div>
-                        <dt>Checks</dt>
-                        <dd>{selectedChecks(selectedProject)}</dd>
-                      </div>
-                      {selectedProject.githubCommitSha ? (
-                        <div>
-                          <dt>Commit</dt>
-                          <dd>{selectedProject.githubCommitSha.slice(0, 10)}</dd>
-                        </div>
-                      ) : null}
-                      <div>
-                        <dt>Stages</dt>
-                        <dd>{selectedWorkflowFiles.length ? `${selectedWorkflowFiles.length} gated workflow stages` : "Not configured"}</dd>
-                      </div>
-                      <div>
-                        <dt>CI token</dt>
-                        <dd>{selectedOverview?.ciAuth.status ?? "Not loaded"}</dd>
-                      </div>
-                      <div>
-                        <dt>Targets</dt>
-                        <dd>{selectedOverview ? selectedOverview.deploymentTargets.count : "Not loaded"}</dd>
-                      </div>
-                    </dl>
-
-                    {syncSnapshot ? (
-                      <div className="env-metadata-row provisioned" style={{ alignItems: "center" }}>
-                        <span>
-                          <strong>Local snapshot</strong>
-                          <br />
-                          {syncSnapshot.latest
-                            ? `${syncSnapshot.latest.status} - ${syncSnapshot.latest.findings.length} finding${syncSnapshot.latest.findings.length === 1 ? "" : "s"} - ${formatDate(syncSnapshot.latest.completedAt)}`
-                            : "Not synced yet"}
-                        </span>
-                        {syncAvailable ? (
-                          <button
-                            className="ghost-button target-action-btn"
-                            type="button"
-                            disabled={syncingProjectId === selectedProject.id}
-                            onClick={handleProjectSync}
-                          >
-                            {syncingProjectId === selectedProject.id ? "Syncing…" : "Sync now"}
-                          </button>
-                        ) : null}
-                      </div>
-                    ) : null}
-
-                    {syncMessage ? (
-                      <p className="error-text" style={{ margin: 0 }}>{syncMessage}</p>
-                    ) : null}
-
-                    {selectedProject.failureReason ? (
-                      <p className="error-text" style={{ margin: 0 }}>
-                        {selectedProject.failureReason}
-                      </p>
-                    ) : null}
-
-                    {selectedOverview?.health.checks.length ? (
-                      <div className="env-metadata-list" data-tour="sync-health">
-                        {selectedOverview.health.checks.map((check) => (
-                          <div key={check.key} className={`env-metadata-row ${check.status === "error" ? "failed" : "provisioned"}`}>
-                            <span>{check.label}</span>
-                            <span>{check.message}</span>
-                          </div>
-                        ))}
-                      </div>
-                    ) : null}
-
-                    {driftDetectionEnabled && selectedOverview?.capabilities.driftDetection ? (
-                      driftError ? (
-                        <p className="error-text" style={{ margin: 0 }}>{driftError}</p>
-                      ) : (
-                        <DriftFindingsPanel
-                          onRun={() => void handleRunDriftDetection()}
-                          onRepair={handleRepairDriftFinding}
-                          repairEnabled={driftRepairEnabled}
-                          response={driftResponse}
-                          running={runningDriftCheck}
-                          workflowUpdatePrEnabled={workflowUpdatePrEnabled}
-                        />
-                      )
-                    ) : null}
-                  </div>
+                  <WorkflowProjectOverviewPanel
+                    driftDetectionEnabled={driftDetectionEnabled}
+                    driftError={driftError}
+                    driftRepairEnabled={driftRepairEnabled}
+                    driftResponse={driftResponse}
+                    onProjectSync={handleProjectSync}
+                    onRepairDriftFinding={handleRepairDriftFinding}
+                    onRunDriftDetection={() => void handleRunDriftDetection()}
+                    project={selectedProject}
+                    runningDriftCheck={runningDriftCheck}
+                    selectedOverview={selectedOverview}
+                    selectedWorkflowFiles={selectedWorkflowFiles}
+                    syncAvailable={syncAvailable}
+                    syncMessage={syncMessage}
+                    syncingProjectId={syncingProjectId}
+                    syncSnapshot={syncSnapshot}
+                    workflowUpdatePrEnabled={workflowUpdatePrEnabled}
+                  />
                 ) : null}
 
                 {projectDetailTab === "workflow" ? (

@@ -10,8 +10,7 @@ import { AppNav } from "@/components/layout/app-nav";
 import { FlowBackground } from "@/components/layout/flow-background";
 import { PipelineLoader } from "@/components/layout/pipeline-loader";
 import { WorkspaceProvider, useWorkspaceSelection } from "@/components/layout/workspace-context";
-import { NotificationPreferencesSection } from "@/components/settings/notification-preferences-section";
-import { WorkspaceMembersSection } from "@/components/settings/workspace-members-section";
+import { Badge } from "@/components/ui/badge";
 import { Button, ButtonLink } from "@/components/ui/button";
 import { useAuthSession } from "@/hooks/use-auth-session";
 import { useCapabilities } from "@/hooks/use-capabilities";
@@ -21,11 +20,12 @@ import { getNotifications, markNotificationRead } from "@/lib/api/notifications"
 import { getMyWorkspaces } from "@/lib/api/workspaces";
 import { isGuest } from "@/lib/auth/subscription";
 
-import styles from "./settings-page.module.css";
+import { SettingsAccountSection } from "./settings-account-section";
 import { SettingsBillingSection } from "./settings-billing-section";
 import { SettingsConnectionsSection } from "./settings-connections-section";
 import { SettingsDangerSection } from "./settings-danger-section";
 import { SettingsGuideSection } from "./settings-guide-section";
+import styles from "./settings-page.module.css";
 import {
   AlertTriangleIcon,
   BookOpenIcon,
@@ -33,7 +33,6 @@ import {
   GithubIcon,
   UserIcon,
 } from "./settings-icons";
-import { HoverField, SettingsSection } from "./settings-section";
 
 type SettingsSectionId = "account" | "connections" | "billing" | "guide" | "danger";
 
@@ -254,7 +253,7 @@ function SettingsPageContent() {
               <Button type="button" onClick={() => void refresh()}>Retry</Button>
               <ButtonLink variant="ghost" href="/login?next=/settings">Go to login</ButtonLink>
             </div>
-            {error ? <p className="error-text" style={{ fontSize: "0.82rem" }}>{error}</p> : null}
+            {error ? <p className={`${styles.errorText} ${styles.sessionErrorText}`}>{error}</p> : null}
           </div>
         </div>
       </main>
@@ -366,9 +365,9 @@ function SettingsPageContent() {
                 {session?.user.name ?? session?.user.login ?? "Account"}
               </p>
               {session?.subscription.plan && (
-                <span className="dash-badge-violet">
+                <Badge tone="accent">
                   {session.subscription.plan}
-                </span>
+                </Badge>
               )}
             </div>
           </div>
@@ -385,15 +384,15 @@ function SettingsPageContent() {
               danger:      <AlertTriangleIcon size={14} />,
             };
             const stateClass = isActive
-              ? isDanger ? "settings-nav-btn--active-danger" : "settings-nav-btn--active"
-              : isDanger ? "settings-nav-btn--inactive-danger" : "settings-nav-btn--inactive";
+              ? isDanger ? styles.navButtonActiveDanger : styles.navButtonActive
+              : isDanger ? styles.navButtonInactiveDanger : "";
             return (
               <button
                 key={sec}
                 type="button"
                 onClick={() => setActiveSection(sec)}
                 aria-current={isActive ? "true" : undefined}
-                className={`settings-nav-btn ${stateClass}`}
+                className={`${styles.navButton} ${stateClass}`.trim()}
               >
                 {icons[sec]}
                 {SECTION_LABELS[sec]}
@@ -423,208 +422,19 @@ function SettingsPageContent() {
 
               {/* Account section */}
               {activeSection === "account" && (
-                <>
-                  {/* Profile header with gradient accent */}
-                  <motion.div
-                    className="settings-profile-header"
-                    initial={prefersReducedMotion ? undefined : { opacity: 0, y: 14 }}
-                    animate={prefersReducedMotion ? undefined : { opacity: 1, y: 0 }}
-                    transition={{ duration: 0.35, ease: [0.25, 0, 0, 1] }}
-                    style={{
-                      position: "relative",
-                      borderRadius: "1rem",
-                      overflow: "hidden",
-                      padding: "clamp(1.25rem, 3vw, 1.75rem)",
-                    }}
-                  >
-                    {/* Gradient top bar */}
-                    <div
-                      aria-hidden="true"
-                      style={{
-                        position: "absolute",
-                        top: 0, left: 0, right: 0,
-                        height: 2,
-                        background: "linear-gradient(90deg, var(--brand), var(--accent-violet))",
-                      }}
-                    />
-
-                    <div style={{ display: "flex", alignItems: "center", gap: "1.25rem", flexWrap: "wrap" }}>
-                      {/* Avatar with gradient ring */}
-                      <div
-                        style={{
-                          position: "relative",
-                          borderRadius: "50%",
-                          padding: "2.5px",
-                          background: "linear-gradient(135deg, var(--brand), var(--accent-violet))",
-                          flexShrink: 0,
-                        }}
-                      >
-                        {session?.user.avatarUrl ? (
-                          <Image
-                            src={session.user.avatarUrl}
-                            alt={session.user.name ?? session.user.login}
-                            width={64}
-                            height={64}
-                            style={{ borderRadius: "50%", display: "block", border: "2px solid var(--bg-base)" }}
-                            unoptimized
-                          />
-                        ) : (
-                          <span
-                            aria-hidden="true"
-                            style={{
-                              width: "64px",
-                              height: "64px",
-                              borderRadius: "50%",
-                              background: "var(--bg-elevated)",
-                              color: "var(--brand)",
-                              display: "flex",
-                              alignItems: "center",
-                              justifyContent: "center",
-                              fontSize: "1.5rem",
-                              fontWeight: 700,
-                              border: "2px solid var(--bg-base)",
-                            }}
-                          >
-                            {avatarInitial}
-                          </span>
-                        )}
-                      </div>
-
-                      <div style={{ flex: 1, minWidth: 0 }}>
-                        <p style={{ fontSize: "0.65rem", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.1em", color: "var(--brand)", margin: "0 0 0.25rem" }}>
-                          SETTINGS / ACCOUNT
-                        </p>
-                        <h1 style={{ fontSize: "clamp(1.2rem, 2.5vw, 1.6rem)", fontWeight: 800, margin: "0 0 0.2rem", letterSpacing: "-0.02em" }}>
-                          {session?.user.name ?? session?.user.login ?? "Your account"}
-                        </h1>
-                        <div style={{ display: "flex", alignItems: "center", gap: "0.6rem", flexWrap: "wrap" }}>
-                          {session?.user.login && (
-                            <span style={{ display: "flex", alignItems: "center", gap: "0.3rem", fontSize: "0.8rem", color: "var(--text-secondary)", fontFamily: "ui-monospace, monospace" }}>
-                              <GithubIcon size={13} />
-                              @{session.user.login}
-                            </span>
-                          )}
-                          {session?.user.email && (
-                            <span style={{ fontSize: "0.8rem", color: "var(--text-muted)" }}>
-                              {session.user.email}
-                            </span>
-                          )}
-                          {session?.subscription.plan && (
-                            <span className="dash-badge-violet">
-                              {session.subscription.plan} plan
-                            </span>
-                          )}
-                        </div>
-                      </div>
-                    </div>
-                  </motion.div>
-
-                  {/* Account identity */}
-                  <SettingsSection icon={<UserIcon />} title="Account" index={0}>
-                    <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem" }}>
-                      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "0.5rem" }}>
-                        <HoverField label="Display name" value={session?.user.name ?? "-"} editable={false} />
-                        <HoverField label="GitHub login" value={`@${session?.user.login ?? "-"}`} editable={false} />
-                      </div>
-                      {session?.user.email ? (
-                        <HoverField label="Email" value={session.user.email} editable={false} />
-                      ) : null}
-                    </div>
-                  </SettingsSection>
-                  {workspacesEnabled ? (
-                    <SettingsSection icon={<UserIcon />} title="Workspace" index={1}>
-                      {workspacesError ? (
-                        <p className="error-text" style={{ margin: 0 }}>{workspacesError}</p>
-                      ) : workspaces?.items.length ? (
-                        <div style={{ display: "flex", flexDirection: "column", gap: "0.75rem" }}>
-                          {workspaces.items.map((workspace) => (
-                            <div key={workspace.id} style={{ display: "flex", flexDirection: "column", gap: "0.75rem" }}>
-                              <div
-                                className={styles.field}
-                                style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: "1rem", flexWrap: "wrap" }}
-                              >
-                              <div style={{ display: "flex", flexDirection: "column", gap: "0.25rem" }}>
-                                <span style={{ fontSize: "0.9rem", fontWeight: 700, color: "var(--text-primary)" }}>
-                                  {workspace.name}
-                                </span>
-                                <span style={{ fontSize: "0.78rem", color: "var(--text-muted)", textTransform: "capitalize" }}>
-                                  {workspace.kind} / {workspace.role}
-                                </span>
-                              </div>
-                              </div>
-                              <WorkspaceMembersSection
-                                workspace={workspace}
-                                currentUserId={session?.user.id ?? ""}
-                              />
-                            </div>
-                          ))}
-                        </div>
-                      ) : (
-                        <p style={{ margin: 0, fontSize: "0.8rem", color: "var(--text-muted)" }}>
-                          Loading workspace...
-                        </p>
-                      )}
-                    </SettingsSection>
-                  ) : null}
-
-                  {notificationsEnabled ? (
-                    <SettingsSection icon={<AlertTriangleIcon />} title="Notifications" index={2}>
-                      {notificationsError ? (
-                        <p className="error-text" style={{ margin: 0 }}>{notificationsError}</p>
-                      ) : notifications ? (
-                        <div style={{ display: "flex", flexDirection: "column", gap: "0.75rem" }}>
-                          <span style={{ fontSize: "0.88rem", fontWeight: 700, color: "var(--text-primary)" }}>
-                            {notifications.unreadCount} unread
-                          </span>
-                          {notifications.items.length ? (
-                            notifications.items.map((notification) => (
-                              <div
-                                key={notification.id}
-                                className={styles.field}
-                                style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", gap: "1rem", flexWrap: "wrap" }}
-                              >
-                                <div style={{ display: "flex", flexDirection: "column", gap: "0.25rem", maxWidth: "min(100%, 560px)" }}>
-                                  <span style={{ fontSize: "0.9rem", fontWeight: 700, color: "var(--text-primary)" }}>
-                                    {notification.title}
-                                  </span>
-                                  <span style={{ fontSize: "0.8rem", color: "var(--text-secondary)" }}>
-                                    {notification.body}
-                                  </span>
-                                  <span style={{ fontSize: "0.72rem", color: "var(--text-muted)", fontFamily: "ui-monospace, monospace" }}>
-                                    {notification.eventCode}
-                                  </span>
-                                </div>
-                                {notification.readAt ? (
-                                  <span className="dash-badge-violet">Read</span>
-                                ) : (
-                                  <button
-                                    type="button"
-                                    className="dash-action-btn"
-                                    disabled={markingNotificationId === notification.id}
-                                    onClick={() => void handleMarkNotificationRead(notification.id)}
-                                  >
-                                    {markingNotificationId === notification.id ? "Saving..." : "Mark read"}
-                                  </button>
-                                )}
-                              </div>
-                            ))
-                          ) : (
-                            <p style={{ margin: 0, fontSize: "0.8rem", color: "var(--text-muted)" }}>
-                              No notifications.
-                            </p>
-                          )}
-                          <div style={{ borderTop: "1px solid var(--border-soft)", paddingTop: "0.75rem" }}>
-                            <NotificationPreferencesSection />
-                          </div>
-                        </div>
-                      ) : (
-                        <p style={{ margin: 0, fontSize: "0.8rem", color: "var(--text-muted)" }}>
-                          Loading notifications...
-                        </p>
-                      )}
-                    </SettingsSection>
-                  ) : null}
-                </>
+                <SettingsAccountSection
+                  avatarInitial={avatarInitial}
+                  markingNotificationId={markingNotificationId}
+                  notifications={notifications}
+                  notificationsEnabled={notificationsEnabled}
+                  notificationsError={notificationsError}
+                  onMarkNotificationRead={(id) => void handleMarkNotificationRead(id)}
+                  prefersReducedMotion={prefersReducedMotion}
+                  session={session}
+                  workspaces={workspaces}
+                  workspacesEnabled={workspacesEnabled}
+                  workspacesError={workspacesError}
+                />
               )}
 
               {/* Connections section */}

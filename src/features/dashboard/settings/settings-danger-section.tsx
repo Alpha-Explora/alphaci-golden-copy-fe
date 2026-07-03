@@ -1,3 +1,4 @@
+import styles from "./settings-page.module.css";
 import { AlertTriangleIcon } from "./settings-icons";
 import { SettingsSection } from "./settings-section";
 
@@ -53,7 +54,7 @@ export function SettingsDangerSection({
           </button>
         </div>
         {logoutMessage && (
-          <p className="error-text" style={{ marginTop: "-0.5rem" }}>{logoutMessage}</p>
+          <p className={`${styles.errorText} ${styles.errorTextRaised}`}>{logoutMessage}</p>
         )}
 
         <div style={{ borderTop: "1px solid rgba(248, 113, 113, 0.12)" }} />

@@ -17,6 +17,15 @@ const fieldStyle = {
   padding: "0.55rem 0.7rem",
 } as const;
 
+const errorStyle = {
+  margin: 0,
+  padding: "0.55rem 0.74rem",
+  border: "1px solid rgba(255, 79, 79, 0.4)",
+  borderRadius: "0.84rem",
+  background: "rgba(255, 79, 79, 0.08)",
+  color: "#ff8b8b",
+} as const;
+
 export function DeploymentProvidersSection({
   workspaceRole = "owner",
 }: {
@@ -99,7 +108,7 @@ export function DeploymentProvidersSection({
             Save
           </Button>
         </div>
-        {error ? <p className="error-text" style={{ margin: 0 }}>{error}</p> : null}
+        {error ? <p style={errorStyle}>{error}</p> : null}
       </form>
 
       <div className="provider-connections-wrap">

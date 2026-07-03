@@ -138,7 +138,7 @@ export function SettingsBillingSection({
               Usage
             </span>
             {usageError ? (
-              <p className="error-text" style={{ margin: 0 }}>{usageError}</p>
+              <p className={styles.errorText}>{usageError}</p>
             ) : usage ? (
               <div className={styles.usageGrid}>
                 {usage.items.map((item) => (

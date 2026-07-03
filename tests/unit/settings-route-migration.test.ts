@@ -19,6 +19,7 @@ describe("settings route migration", () => {
   const routePath = path.join(process.cwd(), "src/app/settings/page.tsx");
   const featureDir = path.join(process.cwd(), "src/features/dashboard/settings");
   const featurePath = path.join(featureDir, "settings-page.tsx");
+  const accountSectionPath = path.join(featureDir, "settings-account-section.tsx");
   const billingSectionPath = path.join(featureDir, "settings-billing-section.tsx");
   const connectionsSectionPath = path.join(featureDir, "settings-connections-section.tsx");
   const guideSectionPath = path.join(featureDir, "settings-guide-section.tsx");
@@ -45,8 +46,18 @@ describe("settings route migration", () => {
     expect(featureSource).toContain("calc(64px + 1rem)");
     expect(featureSource).not.toContain("dash-shell");
     expect(featureSource).not.toContain("dash-page-content");
+    expect(featureSource).not.toContain("dash-action-btn");
     expect(featureSource).not.toContain("primary-button");
     expect(featureSource).not.toContain("ghost-button");
+
+    for (const componentPath of collectFiles(featureDir, ".tsx")) {
+      const source = fs.readFileSync(componentPath, "utf8");
+      expect(source).not.toContain("dash-badge-violet");
+      expect(source).not.toContain("error-text");
+      expect(source).not.toContain("settings-nav-btn");
+      expect(source).not.toContain("primary-button");
+      expect(source).not.toContain("ghost-button");
+    }
   });
 
   it("keeps migrated settings files ASCII-clean", () => {
@@ -61,6 +72,7 @@ describe("settings route migration", () => {
     const connectionsSource = fs.readFileSync(connectionsSectionPath, "utf8");
 
     expect(fs.existsSync(stylesPath)).toBe(true);
+    expect(fs.existsSync(accountSectionPath)).toBe(true);
     expect(fs.existsSync(billingSectionPath)).toBe(true);
     expect(fs.existsSync(connectionsSectionPath)).toBe(true);
     expect(fs.existsSync(guideSectionPath)).toBe(true);
@@ -69,7 +81,7 @@ describe("settings route migration", () => {
     for (const componentPath of collectFiles(featureDir, ".tsx")) {
       const source = fs.readFileSync(componentPath, "utf8");
       const lineCount = source.trim().split(/\r?\n/).length;
-      const budget = componentPath.endsWith("settings-page.tsx") ? 725 : 350;
+      const budget = componentPath.endsWith("settings-page.tsx") ? 525 : 350;
 
       expect(lineCount).toBeLessThanOrEqual(budget);
     }
@@ -79,6 +91,7 @@ describe("settings route migration", () => {
     expect(styleSource.trim().split(/\r?\n/).length).toBeLessThanOrEqual(400);
     expect(styleSource).not.toContain("data-theme=\"light\"");
     expect(styleSource).not.toContain("Light mode");
+    expect(fs.readFileSync(accountSectionPath, "utf8")).toContain("SettingsAccountSection");
     expect(billingSource).toContain("styles.sectionStack");
     expect(billingSource).toContain("styles.splitRow");
     expect(connectionsSource).toContain("styles.splitRow");
@@ -89,5 +102,6 @@ describe("settings route migration", () => {
 
     expect(providerSource).not.toContain("primary-button");
     expect(providerSource).not.toContain("ghost-button");
+    expect(providerSource).not.toContain("error-text");
   });
 });

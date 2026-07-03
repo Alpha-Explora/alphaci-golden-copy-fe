@@ -1,13 +1,21 @@
 import fs from "fs";
 import path from "path";
 
+function collectTsxFiles(directoryPath: string): string[] {
+  return fs.readdirSync(directoryPath, { withFileTypes: true }).flatMap((entry) => {
+    const entryPath = path.join(directoryPath, entry.name);
+    if (entry.isDirectory()) {
+      return collectTsxFiles(entryPath);
+    }
+    return entry.isFile() && entry.name.endsWith(".tsx") ? [entryPath] : [];
+  });
+}
+
 describe("runs route migration", () => {
   const routePath = path.join(process.cwd(), "src/app/runs/page.tsx");
+  const runsFeatureDir = path.join(process.cwd(), "src/features/dashboard/runs");
   const featurePath = path.join(process.cwd(), "src/features/dashboard/runs/runs-page.tsx");
-  const componentPaths = [
-    path.join(process.cwd(), "src/features/dashboard/runs/runs-page.tsx"),
-    path.join(process.cwd(), "src/features/dashboard/runs/runs-state-panels.tsx"),
-  ];
+  const componentPaths = collectTsxFiles(runsFeatureDir);
 
   it("keeps the app route as a thin entry point", () => {
     const routeSource = fs.readFileSync(routePath, "utf8");
@@ -27,6 +35,8 @@ describe("runs route migration", () => {
     expect(featureSource).toContain("Sign up to see your pipeline runs.");
     expect(featureSource).not.toContain("dash-shell");
     expect(featureSource).not.toContain("dash-page-content");
+    expect(featureSource).not.toContain("primary-button");
+    expect(featureSource).not.toContain("ghost-button");
     expect(featureSource).not.toContain("preview mode");
   });
 
@@ -35,6 +45,8 @@ describe("runs route migration", () => {
       const source = fs.readFileSync(componentPath, "utf8");
       expect(source.trim().split(/\r?\n/).length).toBeLessThanOrEqual(350);
       expect(source).not.toMatch(/[^\x00-\x7F]/);
+      expect(source).not.toContain("primary-button");
+      expect(source).not.toContain("ghost-button");
     }
   });
 });

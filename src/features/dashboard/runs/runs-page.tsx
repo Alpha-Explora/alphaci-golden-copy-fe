@@ -9,6 +9,7 @@ import { AppNav } from "@/components/layout/app-nav";
 import { DashboardPageContent, DashboardShell } from "@/components/layout/app-shell/dashboard-shell";
 import { FlowBackground } from "@/components/layout/flow-background";
 import { PipelineLoader } from "@/components/layout/pipeline-loader";
+import { ButtonLink } from "@/components/ui/button";
 import { useAuthSession } from "@/hooks/use-auth-session";
 import { logout, getRuns } from "@/lib/api/client";
 import { ApiError } from "@/lib/api/request";
@@ -124,12 +125,12 @@ function RunsContent({ guest, session, onLogout, isLoggingOut, prefersReducedMot
             Sign up to see your pipeline runs.
           </p>
           <div className="guest-banner-actions">
-            <Link className="primary-button" href="/signup" style={{ padding: "0.4rem 1rem", fontSize: "0.82rem" }}>
+            <ButtonLink href="/signup" size="sm">
               Sign up free
-            </Link>
-            <Link className="ghost-button" href="/login" style={{ padding: "0.4rem 0.9rem", fontSize: "0.82rem" }}>
+            </ButtonLink>
+            <ButtonLink href="/login" size="sm" variant="ghost">
               Log in
-            </Link>
+            </ButtonLink>
           </div>
         </div>
       )}
@@ -215,9 +216,9 @@ function RunsContent({ guest, session, onLogout, isLoggingOut, prefersReducedMot
               <p style={{ color: "var(--text-secondary)", marginBottom: "1.25rem", fontSize: "0.9rem" }}>
                 Sign in to see your pipeline run history.
               </p>
-              <Link className="primary-button" href="/login?next=/runs" style={{ padding: "0.65rem 1.5rem", fontSize: "0.9rem" }}>
+              <ButtonLink href="/login?next=/runs">
                 Sign in
-              </Link>
+              </ButtonLink>
             </div>
           </motion.div>
         ) : (

@@ -1,9 +1,8 @@
 "use client";
 
-import Link from "next/link";
-
 import { DashboardShell } from "@/components/layout/app-shell/dashboard-shell";
 import { FlowBackground } from "@/components/layout/flow-background";
+import { Button, ButtonLink } from "@/components/ui/button";
 
 export function RunsEmptyState() {
   return (
@@ -43,13 +42,9 @@ export function RunsEmptyState() {
         </p>
       </div>
 
-      <Link
-        className="ghost-button"
-        href="/workflows"
-        style={{ padding: "0.5rem 1.4rem", fontSize: "0.88rem", minHeight: "2.4rem" }}
-      >
+      <ButtonLink href="/workflows" variant="ghost">
         Connect a repository
-      </Link>
+      </ButtonLink>
     </div>
   );
 }
@@ -78,14 +73,9 @@ export function RunsErrorState({ message, onRetry }: { message: string; onRetry:
         </svg>
         <p style={{ margin: 0, fontSize: "0.85rem", color: "var(--text-secondary)" }}>{message}</p>
       </div>
-      <button
-        type="button"
-        onClick={onRetry}
-        className="ghost-button"
-        style={{ padding: "0.35rem 1rem", fontSize: "0.82rem", minHeight: "2rem" }}
-      >
+      <Button type="button" onClick={onRetry} size="sm" variant="ghost">
         Retry
-      </button>
+      </Button>
     </div>
   );
 }
@@ -107,8 +97,8 @@ export function RunsSessionErrorState({ sessionError, onRetry }: { sessionError?
           <p>We could not verify your session. Please retry or sign in again.</p>
           {sessionError && <p className="error-text" style={{ fontSize: "0.82rem" }}>{sessionError}</p>}
           <div className="hero-actions">
-            <button className="primary-button" type="button" onClick={onRetry}>Retry</button>
-            <Link className="ghost-button" href="/login?next=/runs">Go to login</Link>
+            <Button type="button" onClick={onRetry}>Retry</Button>
+            <ButtonLink variant="ghost" href="/login?next=/runs">Go to login</ButtonLink>
           </div>
         </div>
       </div>

@@ -2,6 +2,7 @@
 
 import { FormEvent, useState } from "react";
 
+import { Button } from "@/components/ui/button";
 import { useCapabilities } from "@/hooks/use-capabilities";
 import { useProviderConnections } from "@/hooks/use-provider-connections";
 import type { EnvProvider, WorkspaceRole } from "@/lib/api/contracts";
@@ -89,9 +90,14 @@ export function DeploymentProvidersSection({
             style={fieldStyle}
             disabled={!canManageProviders}
           />
-          <button className="primary-button" disabled={!canManageProviders || saving || !label || !token} type="submit">
+          <Button
+            disabled={!canManageProviders || saving || !label || !token}
+            size="sm"
+            style={{ borderRadius: "6px", minHeight: "2.5rem" }}
+            type="submit"
+          >
             Save
-          </button>
+          </Button>
         </div>
         {error ? <p className="error-text" style={{ margin: 0 }}>{error}</p> : null}
       </form>
@@ -119,10 +125,12 @@ export function DeploymentProvidersSection({
                   <td data-label="Status">{connection.status}</td>
                   <td data-label="Action">
                     {connection.status === "active" ? (
-                      <button
-                        className="ghost-button"
+                      <Button
                         type="button"
                         disabled={!canManageProviders}
+                        size="sm"
+                        style={{ borderRadius: "6px", minHeight: "2rem", paddingInline: "0.7rem" }}
+                        variant="ghost"
                         onClick={() => {
                           if (canManageProviders) {
                             void revokeConnection(connection.id);
@@ -130,7 +138,7 @@ export function DeploymentProvidersSection({
                         }}
                       >
                         Revoke
-                      </button>
+                      </Button>
                     ) : null}
                   </td>
                 </tr>

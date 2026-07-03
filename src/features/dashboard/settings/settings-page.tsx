@@ -1,6 +1,5 @@
 "use client";
 
-import Link from "next/link";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useEffect, useState, type ReactNode } from "react";
@@ -11,7 +10,6 @@ import { AppNav } from "@/components/layout/app-nav";
 import { FlowBackground } from "@/components/layout/flow-background";
 import { PipelineLoader } from "@/components/layout/pipeline-loader";
 import { WorkspaceProvider, useWorkspaceSelection } from "@/components/layout/workspace-context";
-import { DeploymentProvidersSection } from "@/components/settings/deployment-providers-section";
 import { NotificationPreferencesSection } from "@/components/settings/notification-preferences-section";
 import { WorkspaceMembersSection } from "@/components/settings/workspace-members-section";
 import { Button, ButtonLink } from "@/components/ui/button";
@@ -24,6 +22,8 @@ import { getMyWorkspaces } from "@/lib/api/workspaces";
 import { isGuest } from "@/lib/auth/subscription";
 
 import styles from "./settings-page.module.css";
+import { SettingsBillingSection } from "./settings-billing-section";
+import { SettingsConnectionsSection } from "./settings-connections-section";
 import { SettingsDangerSection } from "./settings-danger-section";
 import { SettingsGuideSection } from "./settings-guide-section";
 import {
@@ -32,7 +32,6 @@ import {
   CreditCardIcon,
   GithubIcon,
   UserIcon,
-  ExternalLinkIcon,
 } from "./settings-icons";
 import { HoverField, SettingsSection } from "./settings-section";
 
@@ -285,7 +284,9 @@ function SettingsPageContent() {
         className="settings-layout"
         id="main-content"
         style={{
-          padding: isCompactLayout ? "1rem" : "1.75rem var(--layout-gutter) 2.5rem",
+          padding: isCompactLayout
+            ? "1rem 1rem 2.5rem calc(64px + 1rem)"
+            : "1.75rem var(--layout-gutter) 2.5rem calc(var(--sidebar-width) + var(--layout-gutter))",
           flex: 1,
           display: "flex",
           flexDirection: isCompactLayout ? "column" : "row",
@@ -628,137 +629,27 @@ function SettingsPageContent() {
 
               {/* Connections section */}
               {activeSection === "connections" && (
-                <SettingsSection icon={<GithubIcon />} title="GitHub Connection" index={0}>
-                  <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: "1rem", flexWrap: "wrap" }}>
-                    <div style={{ display: "flex", flexDirection: "column", gap: "0.3rem" }}>
-                      <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
-                        <span className="dash-status-active" />
-                        <span style={{ fontSize: "0.9rem", fontWeight: 600, color: "var(--text-primary)" }}>
-                          GitHub App connected
-                        </span>
-                      </div>
-                      <p style={{ margin: 0, fontSize: "0.82rem", color: "var(--text-secondary)" }}>
-                        Manage your GitHub App connection from the Create Project page.
-                      </p>
-                    </div>
-                    <Link href="/workflows" className="dash-action-btn">
-                      Manage
-                      <ExternalLinkIcon size={11} />
-                    </Link>
-                  </div>
-                </SettingsSection>
+                <SettingsConnectionsSection />
               )}
 
               {/* Billing section */}
               {activeSection === "billing" && (
-                <>
-                  <SettingsSection icon={<CreditCardIcon />} title="Billing" index={0}>
-                    <div style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
-                      {/* Current plan row */}
-                      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: "1rem", flexWrap: "wrap" }}>
-                        <div style={{ display: "flex", flexDirection: "column", gap: "0.3rem" }}>
-                          <span style={{ fontSize: "0.9rem", fontWeight: 600, color: "var(--text-primary)" }}>
-                            {session?.subscription.plan
-                              ? `${session.subscription.plan.charAt(0).toUpperCase() + session.subscription.plan.slice(1)} plan`
-                              : "No active plan"}
-                          </span>
-                          {session?.subscription.status && (
-                            <span style={{ fontSize: "0.78rem", color: session.subscription.status === "active" ? "var(--success)" : "var(--text-muted)", textTransform: "capitalize" }}>
-                              Status: {session.subscription.status}
-                            </span>
-                          )}
-                        </div>
-                        <Link
-                          href={canManageBilling ? "/subscribe" : "#"}
-                          className="dash-action-btn"
-                          aria-disabled={!canManageBilling}
-                          onClick={(event) => {
-                            if (!canManageBilling) event.preventDefault();
-                          }}
-                        >
-                          View plan
-                          <ExternalLinkIcon size={11} />
-                        </Link>
-                      </div>
-                      {!canManageBilling ? (
-                        <p className="helper-text" style={{ margin: 0 }}>
-                          Billing management requires owner or admin workspace access.
-                        </p>
-                      ) : null}
-
-                      {/* Cancel subscription */}
-                      {session?.subscription.plan === "pro" && session.subscription.status === "active" && (
-                        <div style={{ borderTop: "1px solid var(--border-soft)", paddingTop: "1rem", display: "flex", flexDirection: "column", gap: "0.6rem" }}>
-                          {!showCancelConfirm ? (
-                            <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: "1rem", flexWrap: "wrap" }}>
-                              <div style={{ display: "flex", flexDirection: "column", gap: "0.25rem" }}>
-                                <span style={{ fontSize: "0.88rem", fontWeight: 600, color: "var(--text-primary)" }}>Cancel subscription</span>
-                                <span style={{ fontSize: "0.78rem", color: "var(--text-muted)" }}>Your access will remain active until the end of the billing period.</span>
-                              </div>
-                              <button
-                                type="button"
-                                onClick={() => setShowCancelConfirm(true)}
-                                disabled={!canManageBilling}
-                                className="confirm-btn-danger"
-                                style={{ padding: "0.4rem 0.85rem", fontSize: "0.82rem" }}
-                              >
-                                Cancel plan
-                              </button>
-                            </div>
-                          ) : (
-                            <div style={{ background: "rgba(248, 113, 113, 0.05)", border: "1px solid rgba(248, 113, 113, 0.18)", borderRadius: "0.75rem", padding: "1rem", display: "flex", flexDirection: "column", gap: "0.75rem" }}>
-                              <p style={{ margin: 0, fontSize: "0.85rem", color: "var(--text-primary)", fontWeight: 600 }}>
-                                Are you sure you want to cancel your Pro subscription?
-                              </p>
-                              <p style={{ margin: 0, fontSize: "0.78rem", color: "var(--text-muted)" }}>
-                                You will lose access to Pro features at the end of your current billing period. This action can be undone by resubscribing.
-                              </p>
-                              <div style={{ display: "flex", gap: "0.5rem" }}>
-                                <button type="button" onClick={() => void handleCancelSubscription()} disabled={isCanceling || !canManageBilling} className="confirm-btn-danger">
-                                  {isCanceling ? "Canceling..." : "Yes, cancel"}
-                                </button>
-                                <button type="button" onClick={() => { setShowCancelConfirm(false); setCancelMessage(null); }} disabled={isCanceling} className="confirm-btn-neutral">
-                                  Keep plan
-                                </button>
-                              </div>
-                            </div>
-                          )}
-                          {cancelMessage && (
-                            <p style={{ margin: 0, fontSize: "0.8rem", color: cancelMessage.startsWith("Failed") ? "var(--danger)" : "var(--success)" }}>
-                              {cancelMessage}
-                            </p>
-                          )}
-                        </div>
-                      )}
-                      <div style={{ borderTop: "1px solid var(--border-soft)", paddingTop: "1rem", display: "flex", flexDirection: "column", gap: "0.6rem" }}>
-                        <span style={{ fontSize: "0.88rem", fontWeight: 700, color: "var(--text-primary)" }}>
-                          Usage
-                        </span>
-                        {usageError ? (
-                          <p className="error-text" style={{ margin: 0 }}>{usageError}</p>
-                        ) : usage ? (
-                          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(180px, 1fr))", gap: "0.5rem" }}>
-                            {usage.items.map((item) => (
-                              <div key={item.code} className={styles.field}>
-                                <span style={{ fontSize: "0.68rem", color: "var(--text-muted)", textTransform: "uppercase", letterSpacing: "0.08em" }}>
-                                  {item.code.replaceAll("_", " ")}
-                                </span>
-                                <span style={{ fontSize: "0.9rem", fontWeight: 700, color: item.upgradeRequired ? "var(--danger)" : "var(--text-primary)" }}>
-                                  {item.current} / {item.limit}
-                                </span>
-                              </div>
-                            ))}
-                          </div>
-                        ) : (
-                          <p style={{ margin: 0, fontSize: "0.8rem", color: "var(--text-muted)" }}>
-                            Loading usage...
-                          </p>
-                        )}
-                      </div>
-                    </div>
-                  </SettingsSection>
-                  <DeploymentProvidersSection workspaceRole={selectedWorkspaceRole} />
-                </>
+                <SettingsBillingSection
+                  cancelMessage={cancelMessage}
+                  canManageBilling={canManageBilling}
+                  isCanceling={isCanceling}
+                  onCancelSubscription={() => void handleCancelSubscription()}
+                  onCloseCancelConfirm={() => {
+                    setShowCancelConfirm(false);
+                    setCancelMessage(null);
+                  }}
+                  onOpenCancelConfirm={() => setShowCancelConfirm(true)}
+                  selectedWorkspaceRole={selectedWorkspaceRole}
+                  session={session}
+                  showCancelConfirm={showCancelConfirm}
+                  usage={usage}
+                  usageError={usageError}
+                />
               )}
 
               {/* Guide section */}

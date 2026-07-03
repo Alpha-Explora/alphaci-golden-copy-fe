@@ -69,3 +69,138 @@
   font-weight: 600;
   color: var(--text-primary);
 }
+
+.sectionStack {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.sectionStackCompact {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+}
+
+.splitRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.inlineRow {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.textStack {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+}
+
+.textStackTight {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.primaryText {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.secondaryText {
+  margin: 0;
+  font-size: 0.82rem;
+  color: var(--text-secondary);
+}
+
+.mutedText {
+  margin: 0;
+  font-size: 0.8rem;
+  color: var(--text-muted);
+}
+
+.fineMutedText {
+  font-size: 0.78rem;
+  color: var(--text-muted);
+}
+
+.activeStatusText {
+  font-size: 0.78rem;
+  color: var(--success);
+  text-transform: capitalize;
+}
+
+.mutedStatusText {
+  font-size: 0.78rem;
+  color: var(--text-muted);
+  text-transform: capitalize;
+}
+
+.sectionDivider {
+  border-top: 1px solid var(--border-soft);
+  padding-top: 1rem;
+}
+
+.confirmBox {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  padding: 1rem;
+  border: 1px solid rgba(248, 113, 113, 0.18);
+  border-radius: 0.75rem;
+  background: rgba(248, 113, 113, 0.05);
+}
+
+.confirmTitle {
+  margin: 0;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.buttonRow {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.messageSuccess {
+  margin: 0;
+  font-size: 0.8rem;
+  color: var(--success);
+}
+
+.messageDanger {
+  margin: 0;
+  font-size: 0.8rem;
+  color: var(--danger);
+}
+
+.usageGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 0.5rem;
+}
+
+.usageLabel {
+  font-size: 0.68rem;
+  color: var(--text-muted);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.usageValue {
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.usageValueDanger {
+  color: var(--danger);
+}

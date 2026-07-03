@@ -265,7 +265,9 @@ describe("DeploymentProvidersSection", () => {
 
     const rendered = renderComponent();
     root = rendered.root;
-    const revokeButton = rendered.container.querySelector<HTMLButtonElement>("button.ghost-button")!;
+    const revokeButton = Array.from(rendered.container.querySelectorAll("button")).find(
+      (button) => button.textContent === "Revoke",
+    )!;
 
     await act(async () => {
       revokeButton.click();

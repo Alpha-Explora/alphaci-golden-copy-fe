@@ -3,24 +3,6 @@
 @import "../styles/tokens.css";
 @import "../styles/base.css";
 @import "../styles/utilities.css";
-[data-theme="light"] .app-sidebar {
-  background: linear-gradient(180deg, #ffffff 0%, #f8fafc 100%);
-  box-shadow:
-    inset -1px 0 0 rgba(0, 0, 0, 0.06),
-    2px 0 20px rgba(79, 70, 229, 0.06),
-    4px 0 12px rgba(0, 0, 0, 0.04);
-}
-
-[data-theme="light"] .sidebar-nav-item:hover {
-  background: rgba(79, 70, 229, 0.05);
-  color: var(--text-primary);
-}
-
-[data-theme="light"] .sidebar-nav-item-bg {
-  background: linear-gradient(135deg, rgba(79, 70, 229, 0.1) 0%, rgba(2, 132, 199, 0.06) 100%);
-  border-left-color: var(--accent-indigo);
-}
-
 [data-theme="light"] .notification-center-button {
   background: rgba(0, 0, 0, 0.04);
   border-color: rgba(0, 0, 0, 0.1);
@@ -92,42 +74,6 @@
 [data-theme="light"] .dash-repo-row {
   background: rgba(255, 255, 255, 0.7);
   border-color: rgba(0, 0, 0, 0.06);
-}
-
-[data-theme="light"] .sidebar-brand-zone {
-  border-bottom-color: rgba(0, 0, 0, 0.06);
-}
-
-[data-theme="light"] .sidebar-collapse-btn {
-  background: rgba(0, 0, 0, 0.04);
-  border-color: rgba(0, 0, 0, 0.1);
-  color: var(--text-secondary);
-}
-
-[data-theme="light"] .sidebar-signout-btn {
-  color: var(--text-secondary);
-  border-color: rgba(0, 0, 0, 0.08);
-}
-
-[data-theme="light"] .sidebar-signout-btn:hover:not(:disabled) {
-  background: rgba(220, 38, 38, 0.06);
-  border-color: rgba(220, 38, 38, 0.2);
-  color: var(--danger);
-}
-
-[data-theme="light"] .sidebar-user-chip {
-  background: rgba(0, 0, 0, 0.04);
-  border-color: rgba(0, 0, 0, 0.08);
-}
-
-[data-theme="light"] .app-sidebar .workspace-switcher {
-  background: rgba(0, 0, 0, 0.04);
-  border-color: rgba(0, 0, 0, 0.1);
-}
-
-[data-theme="light"] .app-sidebar .notification-center-button {
-  background: rgba(0, 0, 0, 0.04);
-  border-color: rgba(0, 0, 0, 0.1);
 }
 
 [data-theme="light"] .admin-shell {
@@ -6392,3 +6338,4 @@ select option {
 .stat-block-enhanced:last-child {
   border-right: none;
 }
+

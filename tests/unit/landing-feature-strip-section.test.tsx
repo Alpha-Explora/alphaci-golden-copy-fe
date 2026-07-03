@@ -6,6 +6,19 @@ import { createRoot, type Root } from "react-dom/client";
 
 import { FeatureStripSection } from "../../src/features/public-site/landing/feature-strip-section";
 
+class MockIntersectionObserver {
+  observe() {}
+  unobserve() {}
+  disconnect() {}
+}
+
+beforeAll(() => {
+  Object.defineProperty(globalThis, "IntersectionObserver", {
+    configurable: true,
+    writable: true,
+    value: MockIntersectionObserver,
+  });
+});
 function render(node: React.ReactNode) {
   const container = document.createElement("div");
   document.body.appendChild(container);
@@ -45,6 +58,15 @@ describe("FeatureStripSection migration", () => {
     expect(classList(result.container).some((name) => name.startsWith("feature-strip") || name === "features-strip" || name === "feature-card-enhanced" || name === "section-mesh")).toBe(false);
   });
 
+
+  it("renders animated cards for standard motion mode", () => {
+    const result = render(<FeatureStripSection reduced={false} />);
+    root = result.root;
+
+    expect(result.container.querySelectorAll("[data-feature-card]")).toHaveLength(3);
+    expect(result.container.querySelector("[data-tone='accent']")).toBeInTheDocument();
+    expect(result.container).toHaveTextContent("features/automation");
+  });
   it("keeps feature-strip selectors out of globals after migration", () => {
     const pageSource = fs.readFileSync(path.join(process.cwd(), "src/app/page.tsx"), "utf8");
     const globals = fs.readFileSync(path.join(process.cwd(), "src/app/globals.css"), "utf8");

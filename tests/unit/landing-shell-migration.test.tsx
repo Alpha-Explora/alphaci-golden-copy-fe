@@ -48,6 +48,18 @@ describe("LandingShell migration", () => {
     expect(collectClasses(result.container)).not.toContain("landing-page-shell");
   });
 
+
+  it("uses the default active public nav state", () => {
+    const result = render(
+      <LandingShell>
+        <section>Default active state</section>
+      </LandingShell>,
+    );
+    root = result.root;
+
+    expect(result.container.querySelector("#main-content")?.textContent).toContain("Default active state");
+    expect(result.container.querySelector("a[href='/pricing']")).toBeInTheDocument();
+  });
   it("keeps the root route using the feature-owned landing shell", () => {
     const source = fs.readFileSync(path.join(process.cwd(), "src/app/page.tsx"), "utf8");
     const globals = fs.readFileSync(path.join(process.cwd(), "src/app/globals.css"), "utf8");

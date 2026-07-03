@@ -6,6 +6,19 @@ import { createRoot, type Root } from "react-dom/client";
 
 import { LandingSectionDivider } from "../../src/features/public-site/landing/landing-section-divider";
 
+class MockIntersectionObserver {
+  observe() {}
+  unobserve() {}
+  disconnect() {}
+}
+
+beforeAll(() => {
+  Object.defineProperty(globalThis, "IntersectionObserver", {
+    configurable: true,
+    writable: true,
+    value: MockIntersectionObserver,
+  });
+});
 function render(node: React.ReactNode) {
   const container = document.createElement("div");
   document.body.appendChild(container);
@@ -37,6 +50,15 @@ describe("LandingSectionDivider migration", () => {
     expect(divider?.className).not.toContain("section-gradient-divider");
   });
 
+
+  it("renders animated motion props in standard mode", () => {
+    const result = render(<LandingSectionDivider reduced={false} />);
+    root = result.root;
+
+    const divider = result.container.querySelector("hr[data-landing-section-divider='true']");
+    expect(divider).toBeInTheDocument();
+    expect(divider).toHaveAttribute("aria-hidden", "true");
+  });
   it("keeps divider styling out of globals after migration", () => {
     const pageSource = fs.readFileSync(path.join(process.cwd(), "src/app/page.tsx"), "utf8");
     const globals = fs.readFileSync(path.join(process.cwd(), "src/app/globals.css"), "utf8");

@@ -1,0 +1,120 @@
+.provider-settings-panel {
+  display: grid;
+  gap: 1rem;
+  padding: 1rem;
+  border: 1px solid var(--border-soft);
+  border-radius: 8px;
+  background: rgba(15, 23, 42, 0.72);
+}
+.provider-settings-header {
+  display: grid;
+  gap: 0.35rem;
+}
+.provider-settings-header h2 {
+  margin: 0;
+  color: var(--text-primary);
+  font-size: 1rem;
+}
+.provider-settings-header p {
+  margin: 0;
+  color: var(--text-secondary);
+  font-size: 0.84rem;
+  line-height: 1.5;
+}
+.provider-connection-form {
+  display: grid;
+  gap: 0.75rem;
+}
+.provider-connection-fields {
+  display: grid;
+  grid-template-columns: minmax(8rem, 0.8fr) minmax(10rem, 1fr) minmax(
+      12rem,
+      1.2fr
+    ) auto;
+  gap: 0.6rem;
+  align-items: stretch;
+}
+.provider-connection-fields .primary-button {
+  min-height: 2.5rem;
+  border-radius: 6px;
+}
+.provider-connections-wrap {
+  overflow-x: auto;
+}
+.provider-connections-table {
+  width: 100%;
+  border-collapse: collapse;
+  min-width: 34rem;
+}
+.provider-connections-table th,
+.provider-connections-table td {
+  padding: 0.65rem 0.7rem;
+  border-top: 1px solid var(--border-soft);
+  text-align: left;
+  font-size: 0.8rem;
+}
+.provider-connections-table th {
+  color: var(--text-muted);
+  font-weight: 700;
+}
+.provider-connections-table td {
+  color: var(--text-secondary);
+}
+.provider-connections-table td:first-child {
+  color: var(--text-primary);
+  font-weight: 700;
+}
+.provider-connections-table .ghost-button {
+  min-height: 2rem;
+  padding: 0.35rem 0.7rem;
+  border-radius: 6px;
+}
+.provider-empty-state {
+  margin: 0;
+  color: var(--text-muted);
+  font-size: 0.82rem;
+}
+@media (max-width: 920px) {
+  .provider-connection-fields {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+@media (max-width: 640px) {
+  .provider-connection-fields {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .provider-connections-table {
+    min-width: 0;
+    table-layout: auto;
+  }
+  .provider-connections-table thead {
+    display: none;
+  }
+  .provider-connections-table tbody,
+  .provider-connections-table tr,
+  .provider-connections-table td {
+    display: block;
+    width: 100%;
+  }
+  .provider-connections-table tr {
+    padding: 0.65rem 0;
+    border-top: 1px solid var(--border-soft);
+  }
+  .provider-connections-table td {
+    display: grid;
+    grid-template-columns: 5.25rem minmax(0, 1fr);
+    gap: 0.75rem;
+    border-top: none;
+    padding: 0.5rem 0.45rem;
+    font-size: 0.72rem;
+    overflow-wrap: anywhere;
+  }
+  .provider-connections-table td::before {
+    content: attr(data-label);
+    color: var(--text-muted);
+    font-weight: 700;
+  }
+  .provider-connections-table td:last-child {
+    width: 100%;
+  }
+}

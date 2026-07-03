@@ -34,7 +34,7 @@ export function Logo({
       unoptimized
       style={{
         width,
-        height: size,
+        height: "auto",
       }}
     />
   );

@@ -17,6 +17,7 @@ interface DashboardPageContentProps {
   children: ReactNode;
   className?: string;
   id?: string;
+  style?: CSSProperties;
 }
 
 export function DashboardShell({
@@ -40,9 +41,10 @@ export function DashboardPageContent({
   children,
   className,
   id = "main-content",
+  style,
 }: Readonly<DashboardPageContentProps>) {
   return (
-    <div id={id} className={cx(styles.content, className)}>
+    <div id={id} className={cx(styles.content, className)} style={style}>
       {children}
     </div>
   );

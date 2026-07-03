@@ -4,6 +4,10 @@ import path from "path";
 describe("runs route migration", () => {
   const routePath = path.join(process.cwd(), "src/app/runs/page.tsx");
   const featurePath = path.join(process.cwd(), "src/features/dashboard/runs/runs-page.tsx");
+  const componentPaths = [
+    path.join(process.cwd(), "src/features/dashboard/runs/runs-page.tsx"),
+    path.join(process.cwd(), "src/features/dashboard/runs/runs-state-panels.tsx"),
+  ];
 
   it("keeps the app route as a thin entry point", () => {
     const routeSource = fs.readFileSync(routePath, "utf8");
@@ -23,8 +27,14 @@ describe("runs route migration", () => {
     expect(featureSource).toContain("Sign up to see your pipeline runs.");
     expect(featureSource).not.toContain("dash-shell");
     expect(featureSource).not.toContain("dash-page-content");
-    expect(featureSource.trim().split(/\r?\n/).length).toBeLessThanOrEqual(500);
     expect(featureSource).not.toContain("preview mode");
-    expect(featureSource).not.toMatch(/[^\x00-\x7F]/);
+  });
+
+  it("keeps migrated runs feature files under budget and ASCII-clean", () => {
+    for (const componentPath of componentPaths) {
+      const source = fs.readFileSync(componentPath, "utf8");
+      expect(source.trim().split(/\r?\n/).length).toBeLessThanOrEqual(350);
+      expect(source).not.toMatch(/[^\x00-\x7F]/);
+    }
   });
 });

@@ -1,24 +1,19 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import { motion } from "framer-motion";
 
 import { useCapabilities } from "@/hooks/use-capabilities";
 import {
-  createWorkflowUpdatePullRequest,
   detachDeploymentTarget,
   getProjectCiRuns,
   getProjectDeployments,
   getProjectDrift,
   getProjectAuditEvents,
-  getProjectOverview,
-  getWorkflowSettings,
-  previewWorkflowSettings,
   repairProjectDriftFinding,
   runProjectDriftDetection,
   syncDeploymentTarget,
-  syncProjectSnapshot,
   updateDeploymentTarget,
 } from "@/lib/api/projects";
 import type {
@@ -27,16 +22,12 @@ import type {
   EnvEnvironment,
   EnvTargetSlot,
   EnvVarMetadata,
-  ProjectOverviewResponse,
   ProjectCiRunsResponse,
   ProjectDeploymentsResponse,
   ProjectDriftResponse,
   ProjectDriftRepairAction,
   ProjectAuditEventsResponse,
   UpdateDeploymentTargetRequest,
-  WorkflowSettings,
-  WorkflowSettingsPreviewResponse,
-  WorkflowUpdatePullRequestResponse,
   ProvisionedProject,
   WorkflowFileMetadata,
   WorkflowHistoryItem,
@@ -45,6 +36,8 @@ import { ProjectEnvPanel } from "./project-env-panel";
 import { DeploymentProvisioningSummary } from "./setup-result-panel";
 import { FlowExplainer } from "./flow-explainer";
 import { HelpTip } from "./help-tip";
+import { useWorkflowProjectOverview } from "./use-workflow-project-overview";
+import { useWorkflowSettingsPreview } from "./use-workflow-settings-preview";
 
 import { formatDate, toSourcePath } from "./workflow-builder-utils";
 
@@ -708,11 +701,6 @@ export function WorkflowCurrentTab({
   const [subTab, setSubTab] = useState<SubTab>("projects");
   const [projectDetailTab, setProjectDetailTab] = useState<ProjectDetailTab>("overview");
   const [selectedProjectId, setSelectedProjectId] = useState<string | null>(null);
-  const [projectOverview, setProjectOverview] = useState<ProjectOverviewResponse | null>(null);
-  const [projectOverviewError, setProjectOverviewError] = useState<{
-    projectId: string;
-    message: string;
-  } | null>(null);
   const {
     envProvisioningEnabled,
     ciRunTrackingEnabled,
@@ -724,16 +712,6 @@ export function WorkflowCurrentTab({
     workflowSettingsPreviewEnabled,
     workflowUpdatePrEnabled,
   } = useCapabilities();
-  const [syncingProjectId, setSyncingProjectId] = useState<string | null>(null);
-  const [syncMessage, setSyncMessage] = useState<string | null>(null);
-  const [workflowSettings, setWorkflowSettings] = useState<WorkflowSettings | null>(null);
-  const [workflowSettingsProjectId, setWorkflowSettingsProjectId] = useState<string | null>(null);
-  const [workflowSettingsError, setWorkflowSettingsError] = useState<string | null>(null);
-  const [workflowPreview, setWorkflowPreview] = useState<WorkflowSettingsPreviewResponse | null>(null);
-  const [workflowUpdatePr, setWorkflowUpdatePr] = useState<WorkflowUpdatePullRequestResponse | null>(null);
-  const [workflowUpdatePrError, setWorkflowUpdatePrError] = useState<string | null>(null);
-  const [creatingWorkflowPr, setCreatingWorkflowPr] = useState(false);
-  const [previewingWorkflow, setPreviewingWorkflow] = useState(false);
   const [ciRunsResponse, setCiRunsResponse] = useState<ProjectCiRunsResponse | null>(null);
   const [ciRunsProjectId, setCiRunsProjectId] = useState<string | null>(null);
   const [ciRunsError, setCiRunsError] = useState<string | null>(null);
@@ -747,122 +725,42 @@ export function WorkflowCurrentTab({
   const [auditResponse, setAuditResponse] = useState<ProjectAuditEventsResponse | null>(null);
   const [auditProjectId, setAuditProjectId] = useState<string | null>(null);
   const [auditError, setAuditError] = useState<string | null>(null);
-  const selectedProject = useMemo(() => {
-    return projects.find((project) => project.id === selectedProjectId) ?? projects[0] ?? null;
-  }, [projects, selectedProjectId]);
-  const selectedOverview = selectedProject && projectOverview?.project.id === selectedProject.id
-    ? projectOverview
-    : null;
-  const selectedOverviewError = selectedProject && projectOverviewError?.projectId === selectedProject.id
-    ? projectOverviewError.message
-    : null;
-  const loadingProjectOverview = Boolean(selectedProject && !selectedOverview && !selectedOverviewError);
-  const selectedWorkflowFiles = selectedOverview?.workflow.files ?? selectedProject?.workflowFiles ?? [];
-  const deploymentTargets = selectedOverview?.deploymentTargets.items ?? [];
-  const envMetadata = selectedOverview?.environment.items ?? [];
-  const syncSnapshot = selectedOverview?.syncSnapshot ?? null;
-  const syncAvailable =
-    projectSyncSnapshotsEnabled &&
-    selectedOverview?.capabilities.syncSnapshots === true &&
-    syncSnapshot?.enabled === true;
-
-  const handleTargetChanged = (target: DeploymentTarget) => {
-    if (!selectedProject) return;
-    setProjectOverview((current) => {
-      if (!current || current.project.id !== selectedProject.id) return current;
-      const items = current.deploymentTargets.items.map((item) =>
-        item.id === target.id ? target : item,
-      );
-      return {
-        ...current,
-        deploymentTargets: {
-          ...current.deploymentTargets,
-          items,
-        },
-      };
-    });
-  };
-
-  const handleTargetDetached = (targetId: string) => {
-    if (!selectedProject) return;
-    setProjectOverview((current) => {
-      if (!current || current.project.id !== selectedProject.id) return current;
-      const items = current.deploymentTargets.items.filter((item) => item.id !== targetId);
-      return {
-        ...current,
-        deploymentTargets: {
-          ...current.deploymentTargets,
-          items,
-          count: items.length,
-        },
-      };
-    });
-  };
-
-  useEffect(() => {
-    if (!selectedProject) {
-      return;
-    }
-
-    let active = true;
-    void getProjectOverview(selectedProject.id)
-      .then((overview) => {
-        if (active) {
-          setProjectOverview(overview);
-          setProjectOverviewError(null);
-        }
-      })
-      .catch(() => {
-        if (active) {
-          setProjectOverviewError({
-            projectId: selectedProject.id,
-            message: "Unable to load project overview.",
-          });
-        }
-      });
-
-    return () => {
-      active = false;
-    };
-  }, [selectedProject]);
-
-  useEffect(() => {
-    if (!selectedProject || projectDetailTab !== "workflow" || !workflowSettingsPreviewEnabled) {
-      return;
-    }
-
-    if (workflowSettingsProjectId === selectedProject.id && workflowSettings) {
-      return;
-    }
-
-    let active = true;
-    void getWorkflowSettings(selectedProject.id)
-      .then((response) => {
-        if (active) {
-          setWorkflowSettings(response.settings);
-          setWorkflowSettingsProjectId(selectedProject.id);
-          setWorkflowSettingsError(null);
-          setWorkflowPreview(null);
-          setWorkflowUpdatePr(null);
-          setWorkflowUpdatePrError(null);
-        }
-      })
-      .catch(() => {
-        if (active) {
-          setWorkflowSettingsError("Unable to load workflow settings.");
-        }
-      });
-
-    return () => {
-      active = false;
-    };
-  }, [
-    projectDetailTab,
+  const {
+    deploymentTargets,
+    envMetadata,
+    handleProjectSync,
+    handleTargetChanged,
+    handleTargetDetached,
+    loadingProjectOverview,
+    selectedOverview,
+    selectedOverviewError,
     selectedProject,
+    selectedWorkflowFiles,
+    syncAvailable,
+    syncMessage,
+    syncingProjectId,
+    syncSnapshot,
+  } = useWorkflowProjectOverview({
+    projectSyncSnapshotsEnabled,
+    projects,
+    selectedProjectId,
+  });
+  const {
+    creatingWorkflowPr,
+    handleCreateWorkflowPr,
+    handleWorkflowPreview,
+    previewingWorkflow,
+    setWorkflowSettings,
+    workflowPreview,
     workflowSettings,
+    workflowSettingsError,
+    workflowUpdatePr,
+    workflowUpdatePrError,
+  } = useWorkflowSettingsPreview({
+    selectedProject,
     workflowSettingsPreviewEnabled,
-    workflowSettingsProjectId,
-  ]);
+    workflowTabActive: projectDetailTab === "workflow",
+  });
 
   useEffect(() => {
     if (!selectedProject || projectDetailTab !== "audit") {
@@ -1019,23 +917,6 @@ export function WorkflowCurrentTab({
     selectedProject,
   ]);
 
-  async function handleProjectSync() {
-    if (!selectedProject || !syncAvailable) {
-      return;
-    }
-
-    setSyncingProjectId(selectedProject.id);
-    setSyncMessage(null);
-    try {
-      const result = await syncProjectSnapshot(selectedProject.id);
-      setProjectOverview(result.overview);
-    } catch {
-      setSyncMessage("Unable to create local snapshot right now.");
-    } finally {
-      setSyncingProjectId(null);
-    }
-  }
-
   async function handleRunDriftDetection() {
     if (!selectedProject) {
       return;
@@ -1068,43 +949,6 @@ export function WorkflowCurrentTab({
       action,
     );
     return response.message;
-  }
-
-  async function handleWorkflowPreview() {
-    if (!selectedProject || !workflowSettings) {
-      return;
-    }
-
-    setPreviewingWorkflow(true);
-    setWorkflowSettingsError(null);
-    try {
-      const result = await previewWorkflowSettings(selectedProject.id, workflowSettings);
-      setWorkflowPreview(result);
-      setWorkflowSettings(result.settings);
-      setWorkflowUpdatePr(null);
-      setWorkflowUpdatePrError(null);
-    } catch {
-      setWorkflowSettingsError("Unable to preview workflow settings.");
-    } finally {
-      setPreviewingWorkflow(false);
-    }
-  }
-
-  async function handleCreateWorkflowPr() {
-    if (!selectedProject || !workflowSettings || !workflowPreview) {
-      return;
-    }
-
-    setCreatingWorkflowPr(true);
-    setWorkflowUpdatePrError(null);
-    try {
-      const result = await createWorkflowUpdatePullRequest(selectedProject.id, workflowSettings);
-      setWorkflowUpdatePr(result);
-    } catch {
-      setWorkflowUpdatePrError("Unable to create workflow update PR.");
-    } finally {
-      setCreatingWorkflowPr(false);
-    }
   }
 
   return (

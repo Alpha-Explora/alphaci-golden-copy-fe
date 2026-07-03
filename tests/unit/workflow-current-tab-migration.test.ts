@@ -8,6 +8,7 @@ describe("workflow current tab migration", () => {
   const telemetryHookPath = path.join(process.cwd(), "src/components/product/use-workflow-project-telemetry.ts");
   const targetListPath = path.join(process.cwd(), "src/components/product/workflow-deployment-targets-list.tsx");
   const targetManagementHookPath = path.join(process.cwd(), "src/components/product/use-workflow-deployment-targets.ts");
+  const panelComponentsPath = path.join(process.cwd(), "src/components/product/workflow-current-panels.tsx");
 
   it("keeps project overview state owned by a dedicated hook", () => {
     const componentSource = fs.readFileSync(componentPath, "utf8");
@@ -33,6 +34,13 @@ describe("workflow current tab migration", () => {
     expect(componentSource).toContain("DeploymentTargetsList");
     expect(fs.existsSync(targetManagementHookPath)).toBe(true);
     expect(fs.readFileSync(targetListPath, "utf8")).toContain("useWorkflowDeploymentTargets");
+    expect(fs.existsSync(panelComponentsPath)).toBe(true);
+    expect(componentSource).toContain("workflow-current-panels");
+    expect(componentSource).not.toContain("function WorkflowStageList");
+    expect(componentSource).not.toContain("function EnvMetadataList");
+    expect(componentSource).not.toContain("function CiRunsList");
+    expect(componentSource).not.toContain("function DeploymentHistoryList");
+    expect(componentSource).not.toContain("function DriftFindingsPanel");
     expect(componentSource).not.toContain("updateDeploymentTarget(");
     expect(componentSource).not.toContain("syncDeploymentTarget(");
     expect(componentSource).not.toContain("detachDeploymentTarget(");
@@ -45,18 +53,21 @@ describe("workflow current tab migration", () => {
     const telemetryHookSource = fs.existsSync(telemetryHookPath) ? fs.readFileSync(telemetryHookPath, "utf8") : "";
     const targetListSource = fs.existsSync(targetListPath) ? fs.readFileSync(targetListPath, "utf8") : "";
     const targetManagementHookSource = fs.existsSync(targetManagementHookPath) ? fs.readFileSync(targetManagementHookPath, "utf8") : "";
+    const panelComponentsSource = fs.existsSync(panelComponentsPath) ? fs.readFileSync(panelComponentsPath, "utf8") : "";
     const mojibakePattern = /[\u00c2\u00e2]/;
 
-    expect(componentSource.trim().split(/\r?\n/).length).toBeLessThanOrEqual(1550);
+    expect(componentSource.trim().split(/\r?\n/).length).toBeLessThanOrEqual(1100);
     expect(hookSource.trim().split(/\r?\n/).length).toBeLessThanOrEqual(350);
     expect(settingsHookSource.trim().split(/\r?\n/).length).toBeLessThanOrEqual(350);
     expect(telemetryHookSource.trim().split(/\r?\n/).length).toBeLessThanOrEqual(350);
     expect(targetListSource.trim().split(/\r?\n/).length).toBeLessThanOrEqual(260);
     expect(targetManagementHookSource.trim().split(/\r?\n/).length).toBeLessThanOrEqual(250);
+    expect(panelComponentsSource.trim().split(/\r?\n/).length).toBeLessThanOrEqual(320);
     expect(hookSource).not.toMatch(mojibakePattern);
     expect(settingsHookSource).not.toMatch(mojibakePattern);
     expect(telemetryHookSource).not.toMatch(mojibakePattern);
     expect(targetListSource).not.toMatch(mojibakePattern);
     expect(targetManagementHookSource).not.toMatch(mojibakePattern);
+    expect(panelComponentsSource).not.toMatch(mojibakePattern);
   });
 });

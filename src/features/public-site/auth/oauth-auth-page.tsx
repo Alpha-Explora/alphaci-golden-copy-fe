@@ -11,6 +11,9 @@ import { useAuthSession } from "@/hooks/use-auth-session";
 import { createGitHubLoginUrl, warmupBackend } from "@/lib/api/client";
 import { getAuthenticatedRedirectPath } from "@/lib/auth/subscription";
 
+import cardStyles from "./oauth-auth-card.module.css";
+import styles from "./oauth-auth-page.module.css";
+
 interface OAuthAuthPageProps {
   mode: "login" | "signup";
   title: string;
@@ -147,28 +150,28 @@ export function OAuthAuthPage({
   }
 
   return (
-    <main className="auth-shell-split">
+    <main className={styles.shellSplit} data-auth-page={mode}>
       <FlowBackground />
-      <PublicSiteNav active="pricing" fixed showActions={false} />
-      <div className="auth-shell-grid" aria-hidden="true" />
-      <div className="auth-scanline" aria-hidden="true" />
+      <PublicSiteNav fixed showActions={false} />
+      <div className={styles.shellGrid} aria-hidden="true" />
+      <div className={styles.scanline} aria-hidden="true" />
 
-      <div className="auth-left-panel">
-        <div className="auth-left-effects" aria-hidden="true">
-          <span className="auth-rail auth-rail-a" />
-          <span className="auth-rail auth-rail-b" />
-          <span className="auth-signal auth-signal-a" />
-          <span className="auth-signal auth-signal-b" />
+      <div className={styles.leftPanel}>
+        <div className={styles.leftEffects} aria-hidden="true">
+          <span className={`${styles.rail} ${styles.railA}`} />
+          <span className={`${styles.rail} ${styles.railB}`} />
+          <span className={`${styles.signal} ${styles.signalA}`} />
+          <span className={`${styles.signal} ${styles.signalB}`} />
         </div>
 
         <div style={{ flex: 1, display: "flex", flexDirection: "column", justifyContent: "center", gap: "1rem", padding: "1rem 0" }}>
           <motion.div
-            className="auth-access-showcase"
+            className={styles.accessShowcase}
             initial={prefersReducedMotion ? undefined : { opacity: 0, y: 16, scale: 0.96 }}
             animate={prefersReducedMotion ? undefined : { opacity: 1, y: 0, scale: 1 }}
             transition={{ duration: 0.55, delay: 0.15, ease: [0.25, 1, 0.5, 1] }}
           >
-            <span className="auth-access-node" aria-hidden="true">
+            <span className={styles.accessNode} aria-hidden="true">
               <svg width="22" height="22" viewBox="0 0 24 24" fill="none" focusable="false">
                 <path d="M8 12.5 10.5 15 16 9" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round" />
                 <path d="M12 3 19 6.1v5.3c0 4.4-2.8 8.3-7 9.6-4.2-1.3-7-5.2-7-9.6V6.1L12 3Z" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
@@ -184,12 +187,12 @@ export function OAuthAuthPage({
             initial={prefersReducedMotion ? undefined : { opacity: 0, y: 12 }}
             animate={prefersReducedMotion ? undefined : { opacity: 1, y: 0 }}
             transition={{ duration: 0.5, delay: 0.3 }}
-            className="auth-pipeline-stage-shell"
+            className={styles.pipelineStageShell}
           >
             <PipelineStagesVisual />
           </motion.div>
 
-          {/* Feature bullets — staggered reveal */}
+          
           <motion.div
             style={{ display: "flex", flexDirection: "column", gap: "0.45rem" }}
             initial={prefersReducedMotion ? undefined : { opacity: 0 }}
@@ -228,17 +231,17 @@ export function OAuthAuthPage({
           </motion.div>
 
           <motion.div
-            className="editorial-glass-panel"
+            className={styles.codePanel}
             initial={prefersReducedMotion ? undefined : { opacity: 0, y: 16 }}
             animate={prefersReducedMotion ? undefined : { opacity: 1, y: 0 }}
             transition={{ duration: 0.5, delay: 0.7 }}
             style={{ marginBottom: "0", marginTop: "0.5rem", marginLeft: "0", maxWidth: "100%", padding: "1.25rem", borderRadius: "2px" }}
           >
-            <div className="auth-code-sheen" aria-hidden="true" />
-            <div className="hero-mockup-bar" style={{ marginBottom: "0.75rem", opacity: 0.5 }}>
-              <span className="mockup-dot mockup-dot-red" aria-hidden="true" />
-              <span className="mockup-dot mockup-dot-yellow" aria-hidden="true" />
-              <span className="mockup-dot mockup-dot-green" aria-hidden="true" />
+            <div className={styles.codeSheen} aria-hidden="true" />
+            <div className={styles.mockupBar} style={{ marginBottom: "0.75rem", opacity: 0.5 }}>
+              <span className={`${styles.mockupDot} ${styles.mockupDotRed}`} aria-hidden="true" />
+              <span className={`${styles.mockupDot} ${styles.mockupDotYellow}`} aria-hidden="true" />
+              <span className={`${styles.mockupDot} ${styles.mockupDotGreen}`} aria-hidden="true" />
               <span style={{ fontFamily: "ui-monospace, monospace", fontSize: "0.7rem", color: "var(--text-muted)", marginLeft: "0.5rem" }}>
                 payments-service.yml
               </span>
@@ -258,9 +261,9 @@ export function OAuthAuthPage({
       </div>
 
 
-      <div className="auth-right-panel">
+      <div className={cardStyles.rightPanel}>
         <motion.div
-          className="auth-card-shell"
+          className={cardStyles.cardShell}
           initial={prefersReducedMotion ? undefined : { opacity: 0, y: 14, scale: 0.985 }}
           animate={prefersReducedMotion ? undefined : { opacity: 1, y: 0, scale: 1 }}
           transition={{ duration: 0.42, ease: [0.22, 1, 0.36, 1] }}
@@ -272,11 +275,11 @@ export function OAuthAuthPage({
               : { transformPerspective: 1100, rotateX, rotateY }
           }
         >
-          <span className="auth-card-topline" aria-hidden="true" />
-          <span className="auth-card-sweep" aria-hidden="true" />
-          <div className="auth-header">
+          <span className={cardStyles.cardTopline} aria-hidden="true" />
+          <span className={cardStyles.cardSweep} aria-hidden="true" />
+          <div className={cardStyles.header}>
             <motion.p
-              className="hero-kicker"
+              className={cardStyles.kicker}
               initial={prefersReducedMotion ? undefined : { opacity: 0, y: 8 }}
               animate={prefersReducedMotion ? undefined : { opacity: 1, y: 0 }}
             >
@@ -289,14 +292,14 @@ export function OAuthAuthPage({
             >
               {title}
             </motion.h1>
-            <p className="auth-subtitle">{subtitle}</p>
+            <p className={cardStyles.subtitle}>{subtitle}</p>
           </div>
 
-          <div className="auth-provider-single">
+          <div className={cardStyles.providerSingle}>
             <motion.a
               href={githubLoginHref}
               aria-disabled={isWarming}
-              className="auth-github-cta"
+              className={cardStyles.githubCta}
               whileHover={prefersReducedMotion ? undefined : { scale: 1.01, boxShadow: "0 0 24px rgba(56, 189, 248, 0.2)" }}
               whileTap={{ scale: 0.98 }}
               style={{
@@ -330,7 +333,7 @@ export function OAuthAuthPage({
                 try {
                   await warmupBackend();
                 } catch {
-                  // Intentionally swallowed — warmup failure must not block login.
+                  // Warmup failure must not block login.
                 } finally {
                   setIsWarming(false);
                 }
@@ -369,7 +372,7 @@ export function OAuthAuthPage({
             >
               View pricing
             </Link>
-            <span style={{ color: "var(--border)", fontSize: "0.82rem" }} aria-hidden="true">·</span>
+            <span style={{ color: "var(--border)", fontSize: "0.82rem" }} aria-hidden="true">|</span>
             <Link
               href="/"
               style={{
@@ -387,15 +390,15 @@ export function OAuthAuthPage({
             </Link>
           </div>
 
-          {status === "loading" ? <p className="helper-text">Checking current session...</p> : null}
+          {status === "loading" ? <p className={cardStyles.helperText}>Checking current session...</p> : null}
 
-          <div className="auth-trust-strip" aria-label="AlphaCI sign in protections">
+          <div className={cardStyles.trustStrip} aria-label="AlphaCI sign in protections">
             <span>GitHub OAuth</span>
             <span>Branch-safe setup</span>
             <span>Encrypted provider tokens</span>
           </div>
 
-          <p className="auth-switch-text">
+          <p className={cardStyles.switchText}>
             {switchText} <Link href={switchHref}>{switchCta}</Link>
           </p>
         </motion.div>

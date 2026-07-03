@@ -1,0 +1,71 @@
+.card {
+  display: block;
+}
+
+.cardDanger {
+  display: block;
+}
+
+.cardAccent {
+  display: block;
+}
+
+.cardAccentDanger {
+  display: block;
+}
+
+.cardHeader {
+  display: block;
+}
+
+.cardHeaderDanger {
+  display: block;
+}
+
+.cardIcon {
+  display: inline;
+}
+
+.cardIconDanger {
+  display: inline;
+}
+
+.cardTitle {
+  display: inline;
+}
+
+.cardTitleDanger {
+  display: inline;
+}
+
+.sectionBody {
+  display: block;
+}
+
+.field {
+  display: block;
+}
+
+.fieldHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 0.2rem;
+}
+
+.fieldLabel {
+  font-size: 0.68rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+
+.fieldIcon {
+  display: inline;
+}
+
+.fieldValue {
+  font-size: 0.88rem;
+  font-weight: 600;
+  color: var(--text-primary);
+}

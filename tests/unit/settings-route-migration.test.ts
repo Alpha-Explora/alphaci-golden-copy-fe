@@ -19,6 +19,7 @@ describe("settings route migration", () => {
   const routePath = path.join(process.cwd(), "src/app/settings/page.tsx");
   const featureDir = path.join(process.cwd(), "src/features/dashboard/settings");
   const featurePath = path.join(featureDir, "settings-page.tsx");
+  const stylesPath = path.join(featureDir, "settings-page.module.css");
 
   it("keeps the app route as a thin entry point", () => {
     const routeSource = fs.readFileSync(routePath, "utf8");
@@ -46,5 +47,23 @@ describe("settings route migration", () => {
       const source = fs.readFileSync(componentPath, "utf8");
       expect(source).not.toMatch(/[^\x00-\x7F]/);
     }
+  });
+
+  it("keeps settings feature decomposed into budgeted local modules", () => {
+    expect(fs.existsSync(stylesPath)).toBe(true);
+
+    for (const componentPath of collectFiles(featureDir, ".tsx")) {
+      const source = fs.readFileSync(componentPath, "utf8");
+      const lineCount = source.trim().split(/\r?\n/).length;
+      const budget = componentPath.endsWith("settings-page.tsx") ? 1000 : 350;
+
+      expect(lineCount).toBeLessThanOrEqual(budget);
+    }
+
+    const styleSource = fs.readFileSync(stylesPath, "utf8");
+    expect(styleSource).not.toMatch(/[^\x00-\x7F]/);
+    expect(styleSource.trim().split(/\r?\n/).length).toBeLessThanOrEqual(400);
+    expect(styleSource).not.toContain("data-theme=\"light\"");
+    expect(styleSource).not.toContain("Light mode");
   });
 });

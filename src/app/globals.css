@@ -4666,15 +4666,6 @@ select option {
   border-bottom: 1px solid var(--border);
 }
 
-/* Gradient divider between sections */
-.section-gradient-divider {
-  height: 1px;
-  background: linear-gradient(90deg, transparent 0%, var(--border-brand) 30%, rgba(0,208,132,0.3) 60%, transparent 100%);
-  width: 100%;
-  border: none;
-  margin: 0;
-}
-
 /* Grid mesh background pattern for feature sections */
 /* Radial highlight for pricing / CTA sections */
 .section-glow-center {

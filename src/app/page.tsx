@@ -6,7 +6,7 @@ import type { MotionValue } from "framer-motion";
 import { useRef, useState, useEffect } from "react";
 
 import { PipelineLogo } from "@/components/layout/pipeline-logo";
-import { FeatureStripSection, LandingShell, SupportedStacksSection } from "@/features/public-site/landing";
+import { FeatureStripSection, LandingSectionDivider, LandingShell, SupportedStacksSection } from "@/features/public-site/landing";
 
 import { useAuthSession } from "@/hooks/use-auth-session";
 import { hasActiveSubscription } from "@/lib/auth/subscription";
@@ -1236,42 +1236,15 @@ export default function LandingPage() {
 
         <FeatureStripSection reduced={Boolean(prefersReducedMotion)} />
 
-        <motion.hr
-          className="section-gradient-divider"
-          aria-hidden="true"
-          initial={prefersReducedMotion ? undefined : { scaleX: 0, opacity: 0 }}
-          whileInView={prefersReducedMotion ? undefined : { scaleX: 1, opacity: 1 }}
-          viewport={{ once: true, margin: "-40px" }}
-          transition={{ duration: 1.2, ease: [0.25, 1, 0.5, 1] }}
-          style={{ transformOrigin: "center" }}
-        />
-
+        <LandingSectionDivider reduced={Boolean(prefersReducedMotion)} />
         {/* -- SECTION 4: Deploy anywhere --------------------------------- */}
         <ReleaseLanesSection reduced={prefersReducedMotion} />
 
-        <motion.hr
-          className="section-gradient-divider"
-          aria-hidden="true"
-          initial={prefersReducedMotion ? undefined : { scaleX: 0, opacity: 0 }}
-          whileInView={prefersReducedMotion ? undefined : { scaleX: 1, opacity: 1 }}
-          viewport={{ once: true, margin: "-40px" }}
-          transition={{ duration: 1.2, ease: [0.25, 1, 0.5, 1] }}
-          style={{ transformOrigin: "center" }}
-        />
-
+        <LandingSectionDivider reduced={Boolean(prefersReducedMotion)} />
         {/* -- SECTION 5: Activity strip ---------------------------------- */}
         <ActivityStrip />
 
-        <motion.hr
-          className="section-gradient-divider"
-          aria-hidden="true"
-          initial={prefersReducedMotion ? undefined : { scaleX: 0, opacity: 0 }}
-          whileInView={prefersReducedMotion ? undefined : { scaleX: 1, opacity: 1 }}
-          viewport={{ once: true, margin: "-40px" }}
-          transition={{ duration: 1.2, ease: [0.25, 1, 0.5, 1] }}
-          style={{ transformOrigin: "center" }}
-        />
-
+        <LandingSectionDivider reduced={Boolean(prefersReducedMotion)} />
         {/* -- SECTION 6: Pricing ----------------------------------------- */}
         <section
           id="pricing"

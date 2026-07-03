@@ -2,7 +2,7 @@
   "version": 1,
   "status": "captured",
   "reviewed": true,
-  "capturedAt": "2026-07-02T23:42:32.412Z",
+  "capturedAt": "2026-07-02T23:58:52.085Z",
   "source": "src/app/globals.css",
   "sources": [
     "src/app/globals.css",
@@ -11,15 +11,15 @@
     "src/styles/tokens.css",
     "src/styles/utilities.css"
   ],
-  "uniqueSelectorCount": 959,
-  "governedSelectorCount": 951,
+  "uniqueSelectorCount": 958,
+  "governedSelectorCount": 950,
   "counts": {
-    "legacy-frozen": 791,
+    "legacy-frozen": 790,
     "feature-owned": 153,
     "primitive-owned": 7,
     "global allowed": 8
   },
-  "reviewNotes": "Phase 3 feature-strip slice moved key feature cards to feature-owned CSS and removed legacy feature-strip selectors from globals.",
+  "reviewNotes": "Phase 3 divider slice moved repeated landing section dividers to feature-owned CSS and removed section-gradient-divider from globals.",
   "items": [
     {
       "selector": ".action-grid",
@@ -80,7 +80,7 @@
     {
       "selector": ".activity-section::after",
       "source": "src/app/globals.css",
-      "line": 4937,
+      "line": 4928,
       "ownership": "legacy-frozen",
       "owner": "legacy",
       "reason": "no explicit design-system owner matched"
@@ -160,7 +160,7 @@
     {
       "selector": ".app-nav-premium",
       "source": "src/app/globals.css",
-      "line": 7498,
+      "line": 7489,
       "ownership": "feature-owned",
       "owner": "app-nav",
       "reason": "matches feature selector prefix"
@@ -728,7 +728,7 @@
     {
       "selector": ".bento-card",
       "source": "src/app/globals.css",
-      "line": 5865,
+      "line": 5856,
       "ownership": "legacy-frozen",
       "owner": "legacy",
       "reason": "no explicit design-system owner matched"
@@ -736,7 +736,7 @@
     {
       "selector": ".bento-card-dominant",
       "source": "src/app/globals.css",
-      "line": 5906,
+      "line": 5897,
       "ownership": "legacy-frozen",
       "owner": "legacy",
       "reason": "no explicit design-system owner matched"
@@ -744,7 +744,7 @@
     {
       "selector": ".bento-card-dominant:hover",
       "source": "src/app/globals.css",
-      "line": 5912,
+      "line": 5903,
       "ownership": "legacy-frozen",
       "owner": "legacy",
       "reason": "no explicit design-system owner matched"
@@ -752,7 +752,7 @@
     {
       "selector": ".bento-card-icon",
       "source": "src/app/globals.css",
-      "line": 5937,
+      "line": 5928,
       "ownership": "legacy-frozen",
       "owner": "legacy",
       "reason": "no explicit design-system owner matched"
@@ -760,7 +760,7 @@
     {
       "selector": ".bento-card-title",
       "source": "src/app/globals.css",
-      "line": 5917,
+      "line": 5908,
       "ownership": "legacy-frozen",
       "owner": "legacy",
       "reason": "no explicit design-system owner matched"
@@ -768,7 +768,7 @@
     {
       "selector": ".bento-card-value",
       "source": "src/app/globals.css",
-      "line": 5928,
+      "line": 5919,
       "ownership": "legacy-frozen",
       "owner": "legacy",
       "reason": "no explicit design-system owner matched"
@@ -776,7 +776,7 @@
     {
       "selector": ".bento-card::before",
       "source": "src/app/globals.css",
-      "line": 5882,
+      "line": 5873,
       "ownership": "legacy-frozen",
       "owner": "legacy",
       "reason": "no explicit design-system owner matched"
@@ -784,7 +784,7 @@
     {
       "selector": ".bento-card:hover",
       "source": "src/app/globals.css",
-      "line": 5896,
+      "line": 5887,
       "ownership": "legacy-frozen",
       "owner": "legacy",
       "reason": "no explicit design-system owner matched"
@@ -792,7 +792,7 @@
     {
       "selector": ".bento-card:hover .bento-card-icon",
       "source": "src/app/globals.css",
-      "line": 5946,
+      "line": 5937,
       "ownership": "legacy-frozen",
       "owner": "legacy",
       "reason": "no explicit design-system owner matched"
@@ -800,7 +800,7 @@
     {
       "selector": ".bento-card:hover::before",
       "source": "src/app/globals.css",
-      "line": 5902,
+      "line": 5893,
       "ownership": "legacy-frozen",
       "owner": "legacy",
       "reason": "no explicit design-system owner matched"
@@ -816,7 +816,7 @@
     {
       "selector": ".branch-chip--mono",
       "source": "src/app/globals.css",
-      "line": 6432,
+      "line": 6423,
       "ownership": "legacy-frozen",
       "owner": "legacy",
       "reason": "no explicit design-system owner matched"
@@ -832,7 +832,7 @@
     {
       "selector": ".brand-mark-enhanced span",
       "source": "src/app/globals.css",
-      "line": 7487,
+      "line": 7478,
       "ownership": "legacy-frozen",
       "owner": "legacy",
       "reason": "no explicit design-system owner matched"
@@ -984,7 +984,7 @@
     {
       "selector": ".controls-panel-label",
       "source": "src/app/globals.css",
-      "line": 5674,
+      "line": 5665,
       "ownership": "legacy-frozen",
       "owner": "legacy",
       "reason": "no explicit design-system owner matched"
@@ -992,7 +992,7 @@
     {
       "selector": ".controls-panel-rule",
       "source": "src/app/globals.css",
-      "line": 5684,
+      "line": 5675,
       "ownership": "legacy-frozen",
       "owner": "legacy",
       "reason": "no explicit design-system owner matched"
@@ -1000,7 +1000,7 @@
     {
       "selector": ".controls-panel-section",
       "source": "src/app/globals.css",
-      "line": 5691,
+      "line": 5682,
       "ownership": "legacy-frozen",
       "owner": "legacy",
       "reason": "no explicit design-system owner matched"
@@ -1024,7 +1024,7 @@
     {
       "selector": ".cta-gradient-button",
       "source": "src/app/globals.css",
-      "line": 7429,
+      "line": 7420,
       "ownership": "legacy-frozen",
       "owner": "legacy",
       "reason": "no explicit design-system owner matched"
@@ -1032,7 +1032,7 @@
     {
       "selector": ".cta-gradient-button:active",
       "source": "src/app/globals.css",
-      "line": 7456,
+      "line": 7447,
       "ownership": "legacy-frozen",
       "owner": "legacy",
       "reason": "no explicit design-system owner matched"
@@ -1040,7 +1040,7 @@
     {
       "selector": ".cta-gradient-button:focus-visible",
       "source": "src/app/globals.css",
-      "line": 7460,
+      "line": 7451,
       "ownership": "legacy-frozen",
       "owner": "legacy",
       "reason": "no explicit design-system owner matched"
@@ -1048,7 +1048,7 @@
     {
       "selector": ".cta-gradient-button:hover",
       "source": "src/app/globals.css",
-      "line": 7450,
+      "line": 7441,
       "ownership": "legacy-frozen",
       "owner": "legacy",
       "reason": "no explicit design-system owner matched"
@@ -1056,7 +1056,7 @@
     {
       "selector": ".cta-gradient-button:hover .cta-shimmer",
       "source": "src/app/globals.css",
-      "line": 7476,
+      "line": 7467,
       "ownership": "legacy-frozen",
       "owner": "legacy",
       "reason": "no explicit design-system owner matched"
@@ -1064,7 +1064,7 @@
     {
       "selector": ".cta-shimmer",
       "source": "src/app/globals.css",
-      "line": 7465,
+      "line": 7456,
       "ownership": "legacy-frozen",
       "owner": "legacy",
       "reason": "no explicit design-system owner matched"
@@ -1072,7 +1072,7 @@
     {
       "selector": ".current-subtab-bar",
       "source": "src/app/globals.css",
-      "line": 6442,
+      "line": 6433,
       "ownership": "legacy-frozen",
       "owner": "legacy",
       "reason": "no explicit design-system owner matched"
@@ -1080,7 +1080,7 @@
     {
       "selector": ".current-subtab-btn",
       "source": "src/app/globals.css",
-      "line": 6454,
+      "line": 6445,
       "ownership": "legacy-frozen",
       "owner": "legacy",
       "reason": "no explicit design-system owner matched"
@@ -1088,7 +1088,7 @@
     {
       "selector": ".current-subtab-btn.active",
       "source": "src/app/globals.css",
-      "line": 6467,
+      "line": 6458,
       "ownership": "legacy-frozen",
       "owner": "legacy",
       "reason": "no explicit design-system owner matched"
@@ -1096,7 +1096,7 @@
     {
       "selector": ".current-subtab-count",
       "source": "src/app/globals.css",
-      "line": 6471,
+      "line": 6462,
       "ownership": "legacy-frozen",
       "owner": "legacy",
       "reason": "no explicit design-system owner matched"
@@ -1104,7 +1104,7 @@
     {
       "selector": ".current-subtab-indicator",
       "source": "src/app/globals.css",
-      "line": 6476,
+      "line": 6467,
       "ownership": "legacy-frozen",
       "owner": "legacy",
       "reason": "no explicit design-system owner matched"
@@ -1120,7 +1120,7 @@
     {
       "selector": ".dash-shell",
       "source": "src/app/globals.css",
-      "line": 7332,
+      "line": 7323,
       "ownership": "legacy-frozen",
       "owner": "legacy",
       "reason": "no explicit design-system owner matched"
@@ -1128,7 +1128,7 @@
     {
       "selector": ".dash-shell .command-item",
       "source": "src/app/globals.css",
-      "line": 5832,
+      "line": 5823,
       "ownership": "legacy-frozen",
       "owner": "legacy",
       "reason": "no explicit design-system owner matched"
@@ -1136,7 +1136,7 @@
     {
       "selector": ".dash-shell .command-item:hover",
       "source": "src/app/globals.css",
-      "line": 5845,
+      "line": 5836,
       "ownership": "legacy-frozen",
       "owner": "legacy",
       "reason": "no explicit design-system owner matched"
@@ -1144,7 +1144,7 @@
     {
       "selector": ".dash-shell .command-list",
       "source": "src/app/globals.css",
-      "line": 5826,
+      "line": 5817,
       "ownership": "legacy-frozen",
       "owner": "legacy",
       "reason": "no explicit design-system owner matched"
@@ -1152,7 +1152,7 @@
     {
       "selector": ".dash-shell .dash-tab-bar",
       "source": "src/app/globals.css",
-      "line": 5771,
+      "line": 5762,
       "ownership": "legacy-frozen",
       "owner": "legacy",
       "reason": "no explicit design-system owner matched"
@@ -1160,7 +1160,7 @@
     {
       "selector": ".dash-shell .dash-tab-btn",
       "source": "src/app/globals.css",
-      "line": 5778,
+      "line": 5769,
       "ownership": "legacy-frozen",
       "owner": "legacy",
       "reason": "no explicit design-system owner matched"
@@ -1168,7 +1168,7 @@
     {
       "selector": ".dash-shell .dash-tab-btn:hover",
       "source": "src/app/globals.css",
-      "line": 5790,
+      "line": 5781,
       "ownership": "legacy-frozen",
       "owner": "legacy",
       "reason": "no explicit design-system owner matched"
@@ -1176,7 +1176,7 @@
     {
       "selector": ".dash-shell .dash-tab-btn.active",
       "source": "src/app/globals.css",
-      "line": 5794,
+      "line": 5785,
       "ownership": "legacy-frozen",
       "owner": "legacy",
       "reason": "no explicit design-system owner matched"
@@ -1184,7 +1184,7 @@
     {
       "selector": ".dash-shell .kpi-cell",
       "source": "src/app/globals.css",
-      "line": 5805,
+      "line": 5796,
       "ownership": "legacy-frozen",
       "owner": "legacy",
       "reason": "no explicit design-system owner matched"
@@ -1192,7 +1192,7 @@
     {
       "selector": ".dash-shell .kpi-cell h3",
       "source": "src/app/globals.css",
-      "line": 5815,
+      "line": 5806,
       "ownership": "legacy-frozen",
       "owner": "legacy",
       "reason": "no explicit design-system owner matched"
@@ -1200,7 +1200,7 @@
     {
       "selector": ".dash-shell .kpi-cell p",
       "source": "src/app/globals.css",
-      "line": 5820,
+      "line": 5811,
       "ownership": "legacy-frozen",
       "owner": "legacy",
       "reason": "no explicit design-system owner matched"
@@ -1208,7 +1208,7 @@
     {
       "selector": ".dash-shell .kpi-grid-editorial",
       "source": "src/app/globals.css",
-      "line": 5799,
+      "line": 5790,
       "ownership": "legacy-frozen",
       "owner": "legacy",
       "reason": "no explicit design-system owner matched"
@@ -1216,7 +1216,7 @@
     {
       "selector": ".dash-tab-bar",
       "source": "src/app/globals.css",
-      "line": 5218,
+      "line": 5209,
       "ownership": "legacy-frozen",
       "owner": "legacy",
       "reason": "no explicit design-system owner matched"
@@ -1224,7 +1224,7 @@
     {
       "selector": ".dash-tab-btn",
       "source": "src/app/globals.css",
-      "line": 5226,
+      "line": 5217,
       "ownership": "legacy-frozen",
       "owner": "legacy",
       "reason": "no explicit design-system owner matched"
@@ -1232,7 +1232,7 @@
     {
       "selector": ".dash-tab-btn:focus-visible",
       "source": "src/app/globals.css",
-      "line": 5245,
+      "line": 5236,
       "ownership": "legacy-frozen",
       "owner": "legacy",
       "reason": "no explicit design-system owner matched"
@@ -1240,7 +1240,7 @@
     {
       "selector": ".dash-tab-btn:hover",
       "source": "src/app/globals.css",
-      "line": 5241,
+      "line": 5232,
       "ownership": "legacy-frozen",
       "owner": "legacy",
       "reason": "no explicit design-system owner matched"
@@ -1248,7 +1248,7 @@
     {
       "selector": ".dash-tab-btn.active",
       "source": "src/app/globals.css",
-      "line": 5251,
+      "line": 5242,
       "ownership": "legacy-frozen",
       "owner": "legacy",
       "reason": "no explicit design-system owner matched"
@@ -1256,7 +1256,7 @@
     {
       "selector": ".dash-tab-btn.active::after",
       "source": "src/app/globals.css",
-      "line": 5255,
+      "line": 5246,
       "ownership": "legacy-frozen",
       "owner": "legacy",
       "reason": "no explicit design-system owner matched"
@@ -1264,7 +1264,7 @@
     {
       "selector": ".deploy-provider-badge",
       "source": "src/app/globals.css",
-      "line": 4840,
+      "line": 4831,
       "ownership": "legacy-frozen",
       "owner": "legacy",
       "reason": "no explicit design-system owner matched"
@@ -1272,7 +1272,7 @@
     {
       "selector": ".deploy-provider-card",
       "source": "src/app/globals.css",
-      "line": 4757,
+      "line": 4748,
       "ownership": "legacy-frozen",
       "owner": "legacy",
       "reason": "no explicit design-system owner matched"
@@ -1280,7 +1280,7 @@
     {
       "selector": ".deploy-provider-card--render",
       "source": "src/app/globals.css",
-      "line": 4800,
+      "line": 4791,
       "ownership": "legacy-frozen",
       "owner": "legacy",
       "reason": "no explicit design-system owner matched"
@@ -1288,7 +1288,7 @@
     {
       "selector": ".deploy-provider-card--render:hover",
       "source": "src/app/globals.css",
-      "line": 4809,
+      "line": 4800,
       "ownership": "legacy-frozen",
       "owner": "legacy",
       "reason": "no explicit design-system owner matched"
@@ -1296,7 +1296,7 @@
     {
       "selector": ".deploy-provider-card--vercel",
       "source": "src/app/globals.css",
-      "line": 4781,
+      "line": 4772,
       "ownership": "legacy-frozen",
       "owner": "legacy",
       "reason": "no explicit design-system owner matched"
@@ -1304,7 +1304,7 @@
     {
       "selector": ".deploy-provider-card--vercel:hover",
       "source": "src/app/globals.css",
-      "line": 4790,
+      "line": 4781,
       "ownership": "legacy-frozen",
       "owner": "legacy",
       "reason": "no explicit design-system owner matched"
@@ -1312,7 +1312,7 @@
     {
       "selector": ".deploy-provider-card:hover",
       "source": "src/app/globals.css",
-      "line": 4765,
+      "line": 4756,
       "ownership": "legacy-frozen",
       "owner": "legacy",
       "reason": "no explicit design-system owner matched"
@@ -1320,7 +1320,7 @@
     {
       "selector": ".deploy-provider-grain",
       "source": "src/app/globals.css",
-      "line": 4769,
+      "line": 4760,
       "ownership": "legacy-frozen",
       "owner": "legacy",
       "reason": "no explicit design-system owner matched"
@@ -1328,7 +1328,7 @@
     {
       "selector": ".deploy-provider-logo",
       "source": "src/app/globals.css",
-      "line": 4817,
+      "line": 4808,
       "ownership": "legacy-frozen",
       "owner": "legacy",
       "reason": "no explicit design-system owner matched"
@@ -1336,7 +1336,7 @@
     {
       "selector": ".deploy-provider-logo--render",
       "source": "src/app/globals.css",
-      "line": 4833,
+      "line": 4824,
       "ownership": "legacy-frozen",
       "owner": "legacy",
       "reason": "no explicit design-system owner matched"
@@ -1344,7 +1344,7 @@
     {
       "selector": ".deploy-provider-logo--vercel",
       "source": "src/app/globals.css",
-      "line": 4827,
+      "line": 4818,
       "ownership": "legacy-frozen",
       "owner": "legacy",
       "reason": "no explicit design-system owner matched"
@@ -1352,7 +1352,7 @@
     {
       "selector": ".deploy-providers-row",
       "source": "src/app/globals.css",
-      "line": 4743,
+      "line": 4734,
       "ownership": "legacy-frozen",
       "owner": "legacy",
       "reason": "no explicit design-system owner matched"
@@ -1368,7 +1368,7 @@
     {
       "selector": ".deploy-section-header",
       "source": "src/app/globals.css",
-      "line": 4718,
+      "line": 4709,
       "ownership": "legacy-frozen",
       "owner": "legacy",
       "reason": "no explicit design-system owner matched"
@@ -1376,7 +1376,7 @@
     {
       "selector": ".deploy-section-header h2",
       "source": "src/app/globals.css",
-      "line": 4724,
+      "line": 4715,
       "ownership": "legacy-frozen",
       "owner": "legacy",
       "reason": "no explicit design-system owner matched"
@@ -1384,7 +1384,7 @@
     {
       "selector": ".deploy-section-header p",
       "source": "src/app/globals.css",
-      "line": 4732,
+      "line": 4723,
       "ownership": "legacy-frozen",
       "owner": "legacy",
       "reason": "no explicit design-system owner matched"
@@ -1392,7 +1392,7 @@
     {
       "selector": ".deploy-section::before",
       "source": "src/app/globals.css",
-      "line": 4706,
+      "line": 4697,
       "ownership": "legacy-frozen",
       "owner": "legacy",
       "reason": "no explicit design-system owner matched"
@@ -1400,7 +1400,7 @@
     {
       "selector": ".deploy-step",
       "source": "src/app/globals.css",
-      "line": 4886,
+      "line": 4877,
       "ownership": "legacy-frozen",
       "owner": "legacy",
       "reason": "no explicit design-system owner matched"
@@ -1408,7 +1408,7 @@
     {
       "selector": ".deploy-step-detail",
       "source": "src/app/globals.css",
-      "line": 4920,
+      "line": 4911,
       "ownership": "legacy-frozen",
       "owner": "legacy",
       "reason": "no explicit design-system owner matched"
@@ -1416,7 +1416,7 @@
     {
       "selector": ".deploy-step-label",
       "source": "src/app/globals.css",
-      "line": 4912,
+      "line": 4903,
       "ownership": "legacy-frozen",
       "owner": "legacy",
       "reason": "no explicit design-system owner matched"
@@ -1424,7 +1424,7 @@
     {
       "selector": ".deploy-step-num",
       "source": "src/app/globals.css",
-      "line": 4893,
+      "line": 4884,
       "ownership": "legacy-frozen",
       "owner": "legacy",
       "reason": "no explicit design-system owner matched"
@@ -1432,7 +1432,7 @@
     {
       "selector": ".deploy-steps-row",
       "source": "src/app/globals.css",
-      "line": 4852,
+      "line": 4843,
       "ownership": "legacy-frozen",
       "owner": "legacy",
       "reason": "no explicit design-system owner matched"
@@ -1440,7 +1440,7 @@
     {
       "selector": ".deploy-steps-row::before",
       "source": "src/app/globals.css",
-      "line": 4861,
+      "line": 4852,
       "ownership": "legacy-frozen",
       "owner": "legacy",
       "reason": "no explicit design-system owner matched"
@@ -1448,7 +1448,7 @@
     {
       "selector": ".deployment-flow-branch",
       "source": "src/app/globals.css",
-      "line": 6586,
+      "line": 6577,
       "ownership": "legacy-frozen",
       "owner": "legacy",
       "reason": "no explicit design-system owner matched"
@@ -1456,7 +1456,7 @@
     {
       "selector": ".deployment-flow-branch--button",
       "source": "src/app/globals.css",
-      "line": 6602,
+      "line": 6593,
       "ownership": "legacy-frozen",
       "owner": "legacy",
       "reason": "no explicit design-system owner matched"
@@ -1464,7 +1464,7 @@
     {
       "selector": ".deployment-flow-branch--button:disabled",
       "source": "src/app/globals.css",
-      "line": 6612,
+      "line": 6603,
       "ownership": "legacy-frozen",
       "owner": "legacy",
       "reason": "no explicit design-system owner matched"
@@ -1472,7 +1472,7 @@
     {
       "selector": ".deployment-flow-branch--button.active",
       "source": "src/app/globals.css",
-      "line": 6606,
+      "line": 6597,
       "ownership": "legacy-frozen",
       "owner": "legacy",
       "reason": "no explicit design-system owner matched"
@@ -1480,7 +1480,7 @@
     {
       "selector": ".deployment-flow-branches",
       "source": "src/app/globals.css",
-      "line": 6579,
+      "line": 6570,
       "ownership": "legacy-frozen",
       "owner": "legacy",
       "reason": "no explicit design-system owner matched"
@@ -1488,7 +1488,7 @@
     {
       "selector": ".deployment-flow-step",
       "source": "src/app/globals.css",
-      "line": 6540,
+      "line": 6531,
       "ownership": "legacy-frozen",
       "owner": "legacy",
       "reason": "no explicit design-system owner matched"
@@ -1496,7 +1496,7 @@
     {
       "selector": ".deployment-flow-step span:not(.deployment-flow-step__index):not(.deployment-flow-branch)",
       "source": "src/app/globals.css",
-      "line": 6574,
+      "line": 6565,
       "ownership": "legacy-frozen",
       "owner": "legacy",
       "reason": "no explicit design-system owner matched"
@@ -1504,7 +1504,7 @@
     {
       "selector": ".deployment-flow-step strong",
       "source": "src/app/globals.css",
-      "line": 6567,
+      "line": 6558,
       "ownership": "legacy-frozen",
       "owner": "legacy",
       "reason": "no explicit design-system owner matched"
@@ -1512,7 +1512,7 @@
     {
       "selector": ".deployment-flow-step__index",
       "source": "src/app/globals.css",
-      "line": 6552,
+      "line": 6543,
       "ownership": "legacy-frozen",
       "owner": "legacy",
       "reason": "no explicit design-system owner matched"
@@ -1520,7 +1520,7 @@
     {
       "selector": ".deployment-provider-groups",
       "source": "src/app/globals.css",
-      "line": 6648,
+      "line": 6639,
       "ownership": "legacy-frozen",
       "owner": "legacy",
       "reason": "no explicit design-system owner matched"
@@ -1528,7 +1528,7 @@
     {
       "selector": ".deployment-provider-groups__header",
       "source": "src/app/globals.css",
-      "line": 6657,
+      "line": 6648,
       "ownership": "legacy-frozen",
       "owner": "legacy",
       "reason": "no explicit design-system owner matched"
@@ -1536,7 +1536,7 @@
     {
       "selector": ".deployment-provider-groups__header strong",
       "source": "src/app/globals.css",
-      "line": 6664,
+      "line": 6655,
       "ownership": "legacy-frozen",
       "owner": "legacy",
       "reason": "no explicit design-system owner matched"
@@ -1544,7 +1544,7 @@
     {
       "selector": ".deployment-provisioning-flow",
       "source": "src/app/globals.css",
-      "line": 6533,
+      "line": 6524,
       "ownership": "legacy-frozen",
       "owner": "legacy",
       "reason": "no explicit design-system owner matched"
@@ -1552,7 +1552,7 @@
     {
       "selector": ".deployment-provisioning-setup",
       "source": "src/app/globals.css",
-      "line": 6508,
+      "line": 6499,
       "ownership": "legacy-frozen",
       "owner": "legacy",
       "reason": "no explicit design-system owner matched"
@@ -1560,7 +1560,7 @@
     {
       "selector": ".deployment-provisioning-setup .env-var-row",
       "source": "src/app/globals.css",
-      "line": 6890,
+      "line": 6881,
       "ownership": "legacy-frozen",
       "owner": "legacy",
       "reason": "no explicit design-system owner matched"
@@ -1568,7 +1568,7 @@
     {
       "selector": ".deployment-provisioning-setup__body",
       "source": "src/app/globals.css",
-      "line": 6528,
+      "line": 6519,
       "ownership": "legacy-frozen",
       "owner": "legacy",
       "reason": "no explicit design-system owner matched"
@@ -1576,7 +1576,7 @@
     {
       "selector": ".deployment-provisioning-setup__header",
       "source": "src/app/globals.css",
-      "line": 6517,
+      "line": 6508,
       "ownership": "legacy-frozen",
       "owner": "legacy",
       "reason": "no explicit design-system owner matched"
@@ -1584,7 +1584,7 @@
     {
       "selector": ".deployment-provisioning-setup__vars-header",
       "source": "src/app/globals.css",
-      "line": 6617,
+      "line": 6608,
       "ownership": "legacy-frozen",
       "owner": "legacy",
       "reason": "no explicit design-system owner matched"
@@ -1592,7 +1592,7 @@
     {
       "selector": ".deployment-provisioning-summary",
       "source": "src/app/globals.css",
-      "line": 7019,
+      "line": 7010,
       "ownership": "legacy-frozen",
       "owner": "legacy",
       "reason": "no explicit design-system owner matched"
@@ -1600,7 +1600,7 @@
     {
       "selector": ".deployment-provisioning-summary__env",
       "source": "src/app/globals.css",
-      "line": 7073,
+      "line": 7064,
       "ownership": "legacy-frozen",
       "owner": "legacy",
       "reason": "no explicit design-system owner matched"
@@ -1608,7 +1608,7 @@
     {
       "selector": ".deployment-provisioning-summary__env > div",
       "source": "src/app/globals.css",
-      "line": 7082,
+      "line": 7073,
       "ownership": "legacy-frozen",
       "owner": "legacy",
       "reason": "no explicit design-system owner matched"
@@ -1616,7 +1616,7 @@
     {
       "selector": ".deployment-provisioning-summary__env code",
       "source": "src/app/globals.css",
-      "line": 7088,
+      "line": 7079,
       "ownership": "legacy-frozen",
       "owner": "legacy",
       "reason": "no explicit design-system owner matched"
@@ -1624,7 +1624,7 @@
     {
       "selector": ".deployment-provisioning-summary__env code.failed",
       "source": "src/app/globals.css",
-      "line": 7096,
+      "line": 7087,
       "ownership": "legacy-frozen",
       "owner": "legacy",
       "reason": "no explicit design-system owner matched"
@@ -1632,7 +1632,7 @@
     {
       "selector": ".deployment-provisioning-summary__status",
       "source": "src/app/globals.css",
-      "line": 7028,
+      "line": 7019,
       "ownership": "legacy-frozen",
       "owner": "legacy",
       "reason": "no explicit design-system owner matched"
@@ -1640,7 +1640,7 @@
     {
       "selector": ".deployment-provisioning-summary__status.completed",
       "source": "src/app/globals.css",
-      "line": 7036,
+      "line": 7027,
       "ownership": "legacy-frozen",
       "owner": "legacy",
       "reason": "no explicit design-system owner matched"
@@ -1648,7 +1648,7 @@
     {
       "selector": ".deployment-provisioning-summary__status.failed",
       "source": "src/app/globals.css",
-      "line": 7041,
+      "line": 7032,
       "ownership": "legacy-frozen",
       "owner": "legacy",
       "reason": "no explicit design-system owner matched"
@@ -1656,7 +1656,7 @@
     {
       "selector": ".deployment-provisioning-summary__status.partial",
       "source": "src/app/globals.css",
-      "line": 7041,
+      "line": 7032,
       "ownership": "legacy-frozen",
       "owner": "legacy",
       "reason": "no explicit design-system owner matched"
@@ -1664,7 +1664,7 @@
     {
       "selector": ".deployment-provisioning-summary__target",
       "source": "src/app/globals.css",
-      "line": 7052,
+      "line": 7043,
       "ownership": "legacy-frozen",
       "owner": "legacy",
       "reason": "no explicit design-system owner matched"
@@ -1672,7 +1672,7 @@
     {
       "selector": ".deployment-provisioning-summary__target > div:first-child",
       "source": "src/app/globals.css",
-      "line": 7059,
+      "line": 7050,
       "ownership": "legacy-frozen",
       "owner": "legacy",
       "reason": "no explicit design-system owner matched"
@@ -1680,7 +1680,7 @@
     {
       "selector": ".deployment-provisioning-summary__target > div:first-child span",
       "source": "src/app/globals.css",
-      "line": 7067,
+      "line": 7058,
       "ownership": "legacy-frozen",
       "owner": "legacy",
       "reason": "no explicit design-system owner matched"
@@ -1688,7 +1688,7 @@
     {
       "selector": ".deployment-provisioning-summary__targets",
       "source": "src/app/globals.css",
-      "line": 7047,
+      "line": 7038,
       "ownership": "legacy-frozen",
       "owner": "legacy",
       "reason": "no explicit design-system owner matched"
@@ -1696,7 +1696,7 @@
     {
       "selector": ".deployment-variable-groups",
       "source": "src/app/globals.css",
-      "line": 6644,
+      "line": 6635,
       "ownership": "legacy-frozen",
       "owner": "legacy",
       "reason": "no explicit design-system owner matched"
@@ -1704,7 +1704,7 @@
     {
       "selector": ".deployment-variable-panel",
       "source": "src/app/globals.css",
-      "line": 6669,
+      "line": 6660,
       "ownership": "legacy-frozen",
       "owner": "legacy",
       "reason": "no explicit design-system owner matched"
@@ -1712,7 +1712,7 @@
     {
       "selector": ".deployment-variable-panel input",
       "source": "src/app/globals.css",
-      "line": 6803,
+      "line": 6794,
       "ownership": "legacy-frozen",
       "owner": "legacy",
       "reason": "no explicit design-system owner matched"
@@ -1720,7 +1720,7 @@
     {
       "selector": ".deployment-variable-panel label",
       "source": "src/app/globals.css",
-      "line": 6635,
+      "line": 6626,
       "ownership": "legacy-frozen",
       "owner": "legacy",
       "reason": "no explicit design-system owner matched"
@@ -1728,7 +1728,7 @@
     {
       "selector": ".deployment-variable-panel select",
       "source": "src/app/globals.css",
-      "line": 6803,
+      "line": 6794,
       "ownership": "legacy-frozen",
       "owner": "legacy",
       "reason": "no explicit design-system owner matched"
@@ -1736,7 +1736,7 @@
     {
       "selector": ".deployment-variable-panel strong",
       "source": "src/app/globals.css",
-      "line": 6567,
+      "line": 6558,
       "ownership": "legacy-frozen",
       "owner": "legacy",
       "reason": "no explicit design-system owner matched"
@@ -1744,7 +1744,7 @@
     {
       "selector": ".deployment-variable-panel__button",
       "source": "src/app/globals.css",
-      "line": 6703,
+      "line": 6694,
       "ownership": "legacy-frozen",
       "owner": "legacy",
       "reason": "no explicit design-system owner matched"
@@ -1752,7 +1752,7 @@
     {
       "selector": ".deployment-variable-panel__environment",
       "source": "src/app/globals.css",
-      "line": 6699,
+      "line": 6690,
       "ownership": "legacy-frozen",
       "owner": "legacy",
       "reason": "no explicit design-system owner matched"
@@ -1760,7 +1760,7 @@
     {
       "selector": ".deployment-variable-panel__scope",
       "source": "src/app/globals.css",
-      "line": 6695,
+      "line": 6686,
       "ownership": "legacy-frozen",
       "owner": "legacy",
       "reason": "no explicit design-system owner matched"
@@ -1768,7 +1768,7 @@
     {
       "selector": ".deployment-variable-panel__scope-row",
       "source": "src/app/globals.css",
-      "line": 6688,
+      "line": 6679,
       "ownership": "legacy-frozen",
       "owner": "legacy",
       "reason": "no explicit design-system owner matched"
@@ -1776,7 +1776,7 @@
     {
       "selector": ".deployment-variable-panel__scope-row .deployment-variable-panel__button",
       "source": "src/app/globals.css",
-      "line": 6724,
+      "line": 6715,
       "ownership": "legacy-frozen",
       "owner": "legacy",
       "reason": "no explicit design-system owner matched"
@@ -1784,7 +1784,7 @@
     {
       "selector": ".deployment-variable-panel__targets",
       "source": "src/app/globals.css",
-      "line": 6730,
+      "line": 6721,
       "ownership": "legacy-frozen",
       "owner": "legacy",
       "reason": "no explicit design-system owner matched"
@@ -1792,7 +1792,7 @@
     {
       "selector": ".deployment-variable-panel__title-row",
       "source": "src/app/globals.css",
-      "line": 6678,
+      "line": 6669,
       "ownership": "legacy-frozen",
       "owner": "legacy",
       "reason": "no explicit design-system owner matched"
@@ -1800,7 +1800,7 @@
     {
       "selector": ".deployment-variable-panel__title-row .deployment-variable-panel__scope",
       "source": "src/app/globals.css",
-      "line": 6684,
+      "line": 6675,
       "ownership": "legacy-frozen",
       "owner": "legacy",
       "reason": "no explicit design-system owner matched"
@@ -1816,7 +1816,7 @@
     {
       "selector": ".enhancement-chip-dot",
       "source": "src/app/globals.css",
-      "line": 5741,
+      "line": 5732,
       "ownership": "legacy-frozen",
       "owner": "legacy",
       "reason": "no explicit design-system owner matched"
@@ -1824,7 +1824,7 @@
     {
       "selector": ".enhancement-chip-label",
       "source": "src/app/globals.css",
-      "line": 5705,
+      "line": 5696,
       "ownership": "legacy-frozen",
       "owner": "legacy",
       "reason": "no explicit design-system owner matched"
@@ -1832,7 +1832,7 @@
     {
       "selector": ".enhancement-chip-label input[type=\"checkbox\"]",
       "source": "src/app/globals.css",
-      "line": 5733,
+      "line": 5724,
       "ownership": "legacy-frozen",
       "owner": "legacy",
       "reason": "no explicit design-system owner matched"
@@ -1840,7 +1840,7 @@
     {
       "selector": ".enhancement-chip-label:has(input:checked)",
       "source": "src/app/globals.css",
-      "line": 5722,
+      "line": 5713,
       "ownership": "legacy-frozen",
       "owner": "legacy",
       "reason": "no explicit design-system owner matched"
@@ -1848,7 +1848,7 @@
     {
       "selector": ".enhancement-chip-label:has(input:checked) .enhancement-chip-dot",
       "source": "src/app/globals.css",
-      "line": 5750,
+      "line": 5741,
       "ownership": "legacy-frozen",
       "owner": "legacy",
       "reason": "no explicit design-system owner matched"
@@ -1856,7 +1856,7 @@
     {
       "selector": ".enhancement-chip-label:has(input:disabled)",
       "source": "src/app/globals.css",
-      "line": 5728,
+      "line": 5719,
       "ownership": "legacy-frozen",
       "owner": "legacy",
       "reason": "no explicit design-system owner matched"
@@ -1864,7 +1864,7 @@
     {
       "selector": ".enhancement-chips",
       "source": "src/app/globals.css",
-      "line": 5698,
+      "line": 5689,
       "ownership": "legacy-frozen",
       "owner": "legacy",
       "reason": "no explicit design-system owner matched"
@@ -1976,7 +1976,7 @@
     {
       "selector": ".env-empty-state",
       "source": "src/app/globals.css",
-      "line": 7126,
+      "line": 7117,
       "ownership": "legacy-frozen",
       "owner": "legacy",
       "reason": "no explicit design-system owner matched"
@@ -1984,7 +1984,7 @@
     {
       "selector": ".env-environment-tabs",
       "source": "src/app/globals.css",
-      "line": 7007,
+      "line": 6998,
       "ownership": "legacy-frozen",
       "owner": "legacy",
       "reason": "no explicit design-system owner matched"
@@ -1992,7 +1992,7 @@
     {
       "selector": ".env-environment-tabs .ghost-button",
       "source": "src/app/globals.css",
-      "line": 6920,
+      "line": 6911,
       "ownership": "legacy-frozen",
       "owner": "legacy",
       "reason": "no explicit design-system owner matched"
@@ -2000,7 +2000,7 @@
     {
       "selector": ".env-environment-tabs .primary-button",
       "source": "src/app/globals.css",
-      "line": 6920,
+      "line": 6911,
       "ownership": "legacy-frozen",
       "owner": "legacy",
       "reason": "no explicit design-system owner matched"
@@ -2008,7 +2008,7 @@
     {
       "selector": ".env-field-label",
       "source": "src/app/globals.css",
-      "line": 6821,
+      "line": 6812,
       "ownership": "legacy-frozen",
       "owner": "legacy",
       "reason": "no explicit design-system owner matched"
@@ -2016,7 +2016,7 @@
     {
       "selector": ".env-form-actions",
       "source": "src/app/globals.css",
-      "line": 7007,
+      "line": 6998,
       "ownership": "legacy-frozen",
       "owner": "legacy",
       "reason": "no explicit design-system owner matched"
@@ -2024,7 +2024,7 @@
     {
       "selector": ".env-form-actions .ghost-button",
       "source": "src/app/globals.css",
-      "line": 6920,
+      "line": 6911,
       "ownership": "legacy-frozen",
       "owner": "legacy",
       "reason": "no explicit design-system owner matched"
@@ -2032,7 +2032,7 @@
     {
       "selector": ".env-form-actions .primary-button",
       "source": "src/app/globals.css",
-      "line": 6920,
+      "line": 6911,
       "ownership": "legacy-frozen",
       "owner": "legacy",
       "reason": "no explicit design-system owner matched"
@@ -2040,7 +2040,7 @@
     {
       "selector": ".env-metadata-list",
       "source": "src/app/globals.css",
-      "line": 7014,
+      "line": 7005,
       "ownership": "legacy-frozen",
       "owner": "legacy",
       "reason": "no explicit design-system owner matched"
@@ -2048,7 +2048,7 @@
     {
       "selector": ".env-metadata-row",
       "source": "src/app/globals.css",
-      "line": 7102,
+      "line": 7093,
       "ownership": "legacy-frozen",
       "owner": "legacy",
       "reason": "no explicit design-system owner matched"
@@ -2056,7 +2056,7 @@
     {
       "selector": ".env-metadata-row > span:first-child",
       "source": "src/app/globals.css",
-      "line": 7116,
+      "line": 7107,
       "ownership": "legacy-frozen",
       "owner": "legacy",
       "reason": "no explicit design-system owner matched"
@@ -2064,7 +2064,7 @@
     {
       "selector": ".env-metadata-row:first-child",
       "source": "src/app/globals.css",
-      "line": 7112,
+      "line": 7103,
       "ownership": "legacy-frozen",
       "owner": "legacy",
       "reason": "no explicit design-system owner matched"
@@ -2072,7 +2072,7 @@
     {
       "selector": ".env-metadata-row.failed > span:last-child",
       "source": "src/app/globals.css",
-      "line": 7122,
+      "line": 7113,
       "ownership": "legacy-frozen",
       "owner": "legacy",
       "reason": "no explicit design-system owner matched"
@@ -2080,7 +2080,7 @@
     {
       "selector": ".env-orphan-warning",
       "source": "src/app/globals.css",
-      "line": 6708,
+      "line": 6699,
       "ownership": "legacy-frozen",
       "owner": "legacy",
       "reason": "no explicit design-system owner matched"
@@ -2088,7 +2088,7 @@
     {
       "selector": ".env-provisioning-panel",
       "source": "src/app/globals.css",
-      "line": 6501,
+      "line": 6492,
       "ownership": "legacy-frozen",
       "owner": "legacy",
       "reason": "no explicit design-system owner matched"
@@ -2096,7 +2096,7 @@
     {
       "selector": ".env-provisioning-section",
       "source": "src/app/globals.css",
-      "line": 6738,
+      "line": 6729,
       "ownership": "legacy-frozen",
       "owner": "legacy",
       "reason": "no explicit design-system owner matched"
@@ -2104,7 +2104,7 @@
     {
       "selector": ".env-provisioning-section > select",
       "source": "src/app/globals.css",
-      "line": 6803,
+      "line": 6794,
       "ownership": "legacy-frozen",
       "owner": "legacy",
       "reason": "no explicit design-system owner matched"
@@ -2112,7 +2112,7 @@
     {
       "selector": ".env-section-header",
       "source": "src/app/globals.css",
-      "line": 6748,
+      "line": 6739,
       "ownership": "legacy-frozen",
       "owner": "legacy",
       "reason": "no explicit design-system owner matched"
@@ -2120,7 +2120,7 @@
     {
       "selector": ".env-section-header h4",
       "source": "src/app/globals.css",
-      "line": 6755,
+      "line": 6746,
       "ownership": "legacy-frozen",
       "owner": "legacy",
       "reason": "no explicit design-system owner matched"
@@ -2128,7 +2128,7 @@
     {
       "selector": ".env-section-header span",
       "source": "src/app/globals.css",
-      "line": 6765,
+      "line": 6756,
       "ownership": "legacy-frozen",
       "owner": "legacy",
       "reason": "no explicit design-system owner matched"
@@ -2136,7 +2136,7 @@
     {
       "selector": ".env-target-grid",
       "source": "src/app/globals.css",
-      "line": 6770,
+      "line": 6761,
       "ownership": "legacy-frozen",
       "owner": "legacy",
       "reason": "no explicit design-system owner matched"
@@ -2144,7 +2144,7 @@
     {
       "selector": ".env-target-grid .ghost-button",
       "source": "src/app/globals.css",
-      "line": 6920,
+      "line": 6911,
       "ownership": "legacy-frozen",
       "owner": "legacy",
       "reason": "no explicit design-system owner matched"
@@ -2152,7 +2152,7 @@
     {
       "selector": ".env-target-grid input",
       "source": "src/app/globals.css",
-      "line": 6803,
+      "line": 6794,
       "ownership": "legacy-frozen",
       "owner": "legacy",
       "reason": "no explicit design-system owner matched"
@@ -2160,7 +2160,7 @@
     {
       "selector": ".env-target-grid label",
       "source": "src/app/globals.css",
-      "line": 6635,
+      "line": 6626,
       "ownership": "legacy-frozen",
       "owner": "legacy",
       "reason": "no explicit design-system owner matched"
@@ -2168,7 +2168,7 @@
     {
       "selector": ".env-target-grid select",
       "source": "src/app/globals.css",
-      "line": 6803,
+      "line": 6794,
       "ownership": "legacy-frozen",
       "owner": "legacy",
       "reason": "no explicit design-system owner matched"
@@ -2176,7 +2176,7 @@
     {
       "selector": ".env-target-grid__field",
       "source": "src/app/globals.css",
-      "line": 6777,
+      "line": 6768,
       "ownership": "legacy-frozen",
       "owner": "legacy",
       "reason": "no explicit design-system owner matched"
@@ -2184,7 +2184,7 @@
     {
       "selector": ".env-target-grid__field--compact",
       "source": "src/app/globals.css",
-      "line": 6781,
+      "line": 6772,
       "ownership": "legacy-frozen",
       "owner": "legacy",
       "reason": "no explicit design-system owner matched"
@@ -2192,7 +2192,7 @@
     {
       "selector": ".env-target-grid__field--wide",
       "source": "src/app/globals.css",
-      "line": 6785,
+      "line": 6776,
       "ownership": "legacy-frozen",
       "owner": "legacy",
       "reason": "no explicit design-system owner matched"
@@ -2200,7 +2200,7 @@
     {
       "selector": ".env-target-grid__note",
       "source": "src/app/globals.css",
-      "line": 6789,
+      "line": 6780,
       "ownership": "legacy-frozen",
       "owner": "legacy",
       "reason": "no explicit design-system owner matched"
@@ -2208,7 +2208,7 @@
     {
       "selector": ".env-var-remove",
       "source": "src/app/globals.css",
-      "line": 6895,
+      "line": 6886,
       "ownership": "legacy-frozen",
       "owner": "legacy",
       "reason": "no explicit design-system owner matched"
@@ -2216,7 +2216,7 @@
     {
       "selector": ".env-var-remove:disabled",
       "source": "src/app/globals.css",
-      "line": 6915,
+      "line": 6906,
       "ownership": "legacy-frozen",
       "owner": "legacy",
       "reason": "no explicit design-system owner matched"
@@ -2224,7 +2224,7 @@
     {
       "selector": ".env-var-remove:hover:not(:disabled)",
       "source": "src/app/globals.css",
-      "line": 6909,
+      "line": 6900,
       "ownership": "legacy-frozen",
       "owner": "legacy",
       "reason": "no explicit design-system owner matched"
@@ -2232,7 +2232,7 @@
     {
       "selector": ".env-var-row",
       "source": "src/app/globals.css",
-      "line": 6796,
+      "line": 6787,
       "ownership": "legacy-frozen",
       "owner": "legacy",
       "reason": "no explicit design-system owner matched"
@@ -2240,7 +2240,7 @@
     {
       "selector": ".env-var-row .ghost-button",
       "source": "src/app/globals.css",
-      "line": 6920,
+      "line": 6911,
       "ownership": "legacy-frozen",
       "owner": "legacy",
       "reason": "no explicit design-system owner matched"
@@ -2248,7 +2248,7 @@
     {
       "selector": ".env-var-row input",
       "source": "src/app/globals.css",
-      "line": 6803,
+      "line": 6794,
       "ownership": "legacy-frozen",
       "owner": "legacy",
       "reason": "no explicit design-system owner matched"
@@ -2256,7 +2256,7 @@
     {
       "selector": ".env-var-row label",
       "source": "src/app/globals.css",
-      "line": 6635,
+      "line": 6626,
       "ownership": "legacy-frozen",
       "owner": "legacy",
       "reason": "no explicit design-system owner matched"
@@ -2264,7 +2264,7 @@
     {
       "selector": ".env-var-row__remove",
       "source": "src/app/globals.css",
-      "line": 6930,
+      "line": 6921,
       "ownership": "legacy-frozen",
       "owner": "legacy",
       "reason": "no explicit design-system owner matched"
@@ -2272,7 +2272,7 @@
     {
       "selector": ".env-var-row__remove:disabled",
       "source": "src/app/globals.css",
-      "line": 6949,
+      "line": 6940,
       "ownership": "legacy-frozen",
       "owner": "legacy",
       "reason": "no explicit design-system owner matched"
@@ -2280,7 +2280,7 @@
     {
       "selector": ".env-var-row__remove:not(:disabled):hover",
       "source": "src/app/globals.css",
-      "line": 6944,
+      "line": 6935,
       "ownership": "legacy-frozen",
       "owner": "legacy",
       "reason": "no explicit design-system owner matched"
@@ -2384,7 +2384,7 @@
     {
       "selector": ".field-info",
       "source": "src/app/globals.css",
-      "line": 6829,
+      "line": 6820,
       "ownership": "legacy-frozen",
       "owner": "legacy",
       "reason": "no explicit design-system owner matched"
@@ -2392,7 +2392,7 @@
     {
       "selector": ".field-info-bubble",
       "source": "src/app/globals.css",
-      "line": 6855,
+      "line": 6846,
       "ownership": "legacy-frozen",
       "owner": "legacy",
       "reason": "no explicit design-system owner matched"
@@ -2400,7 +2400,7 @@
     {
       "selector": ".field-info:focus-visible",
       "source": "src/app/globals.css",
-      "line": 6845,
+      "line": 6836,
       "ownership": "legacy-frozen",
       "owner": "legacy",
       "reason": "no explicit design-system owner matched"
@@ -2408,7 +2408,7 @@
     {
       "selector": ".field-info:focus-visible .field-info-bubble",
       "source": "src/app/globals.css",
-      "line": 6882,
+      "line": 6873,
       "ownership": "legacy-frozen",
       "owner": "legacy",
       "reason": "no explicit design-system owner matched"
@@ -2416,7 +2416,7 @@
     {
       "selector": ".field-info:hover",
       "source": "src/app/globals.css",
-      "line": 6845,
+      "line": 6836,
       "ownership": "legacy-frozen",
       "owner": "legacy",
       "reason": "no explicit design-system owner matched"
@@ -2424,7 +2424,7 @@
     {
       "selector": ".field-info:hover .field-info-bubble",
       "source": "src/app/globals.css",
-      "line": 6882,
+      "line": 6873,
       "ownership": "legacy-frozen",
       "owner": "legacy",
       "reason": "no explicit design-system owner matched"
@@ -2536,7 +2536,7 @@
     {
       "selector": ".form-pair-row",
       "source": "src/app/globals.css",
-      "line": 5756,
+      "line": 5747,
       "ownership": "legacy-frozen",
       "owner": "legacy",
       "reason": "no explicit design-system owner matched"
@@ -2728,7 +2728,7 @@
     {
       "selector": ".grid-pattern",
       "source": "src/app/globals.css",
-      "line": 5850,
+      "line": 5841,
       "ownership": "legacy-frozen",
       "owner": "legacy",
       "reason": "no explicit design-system owner matched"
@@ -2752,7 +2752,7 @@
     {
       "selector": ".guest-banner-actions > *",
       "source": "src/app/globals.css",
-      "line": 7348,
+      "line": 7339,
       "ownership": "legacy-frozen",
       "owner": "legacy",
       "reason": "no explicit design-system owner matched"
@@ -2824,7 +2824,7 @@
     {
       "selector": ".hero-actions > *",
       "source": "src/app/globals.css",
-      "line": 7348,
+      "line": 7339,
       "ownership": "legacy-frozen",
       "owner": "legacy",
       "reason": "no explicit design-system owner matched"
@@ -2864,7 +2864,7 @@
     {
       "selector": ".hero-br-desktop",
       "source": "src/app/globals.css",
-      "line": 7521,
+      "line": 7512,
       "ownership": "legacy-frozen",
       "owner": "legacy",
       "reason": "no explicit design-system owner matched"
@@ -2976,7 +2976,7 @@
     {
       "selector": ".hero-mesh-bg",
       "source": "src/app/globals.css",
-      "line": 7504,
+      "line": 7495,
       "ownership": "legacy-frozen",
       "owner": "legacy",
       "reason": "no explicit design-system owner matched"
@@ -3088,7 +3088,7 @@
     {
       "selector": ".history-entry-actions",
       "source": "src/app/globals.css",
-      "line": 5666,
+      "line": 5657,
       "ownership": "legacy-frozen",
       "owner": "legacy",
       "reason": "no explicit design-system owner matched"
@@ -3096,7 +3096,7 @@
     {
       "selector": ".history-entry-card",
       "source": "src/app/globals.css",
-      "line": 5619,
+      "line": 5610,
       "ownership": "legacy-frozen",
       "owner": "legacy",
       "reason": "no explicit design-system owner matched"
@@ -3104,7 +3104,7 @@
     {
       "selector": ".history-entry-card:hover",
       "source": "src/app/globals.css",
-      "line": 5631,
+      "line": 5622,
       "ownership": "legacy-frozen",
       "owner": "legacy",
       "reason": "no explicit design-system owner matched"
@@ -3112,7 +3112,7 @@
     {
       "selector": ".history-entry-date",
       "source": "src/app/globals.css",
-      "line": 5651,
+      "line": 5642,
       "ownership": "legacy-frozen",
       "owner": "legacy",
       "reason": "no explicit design-system owner matched"
@@ -3120,7 +3120,7 @@
     {
       "selector": ".history-entry-header",
       "source": "src/app/globals.css",
-      "line": 5635,
+      "line": 5626,
       "ownership": "legacy-frozen",
       "owner": "legacy",
       "reason": "no explicit design-system owner matched"
@@ -3128,7 +3128,7 @@
     {
       "selector": ".history-entry-meta",
       "source": "src/app/globals.css",
-      "line": 5659,
+      "line": 5650,
       "ownership": "legacy-frozen",
       "owner": "legacy",
       "reason": "no explicit design-system owner matched"
@@ -3136,7 +3136,7 @@
     {
       "selector": ".history-entry-title",
       "source": "src/app/globals.css",
-      "line": 5643,
+      "line": 5634,
       "ownership": "legacy-frozen",
       "owner": "legacy",
       "reason": "no explicit design-system owner matched"
@@ -3192,7 +3192,7 @@
     {
       "selector": ".inline-link",
       "source": "src/app/globals.css",
-      "line": 5470,
+      "line": 5461,
       "ownership": "legacy-frozen",
       "owner": "legacy",
       "reason": "no explicit design-system owner matched"
@@ -3200,7 +3200,7 @@
     {
       "selector": ".inline-link:focus-visible",
       "source": "src/app/globals.css",
-      "line": 5478,
+      "line": 5469,
       "ownership": "legacy-frozen",
       "owner": "legacy",
       "reason": "no explicit design-system owner matched"
@@ -3208,7 +3208,7 @@
     {
       "selector": ".inline-link:hover",
       "source": "src/app/globals.css",
-      "line": 5478,
+      "line": 5469,
       "ownership": "legacy-frozen",
       "owner": "legacy",
       "reason": "no explicit design-system owner matched"
@@ -3248,7 +3248,7 @@
     {
       "selector": ".kpi-bento-grid",
       "source": "src/app/globals.css",
-      "line": 5858,
+      "line": 5849,
       "ownership": "legacy-frozen",
       "owner": "legacy",
       "reason": "no explicit design-system owner matched"
@@ -3464,7 +3464,7 @@
     {
       "selector": ".latest-result-banner",
       "source": "src/app/globals.css",
-      "line": 6312,
+      "line": 6303,
       "ownership": "legacy-frozen",
       "owner": "legacy",
       "reason": "no explicit design-system owner matched"
@@ -3472,7 +3472,7 @@
     {
       "selector": ".latest-result-banner__action-btn",
       "source": "src/app/globals.css",
-      "line": 6355,
+      "line": 6346,
       "ownership": "legacy-frozen",
       "owner": "legacy",
       "reason": "no explicit design-system owner matched"
@@ -3480,7 +3480,7 @@
     {
       "selector": ".latest-result-banner__action-btn--primary",
       "source": "src/app/globals.css",
-      "line": 6421,
+      "line": 6412,
       "ownership": "legacy-frozen",
       "owner": "legacy",
       "reason": "no explicit design-system owner matched"
@@ -3488,7 +3488,7 @@
     {
       "selector": ".latest-result-banner__action-btn--primary:hover",
       "source": "src/app/globals.css",
-      "line": 6428,
+      "line": 6419,
       "ownership": "legacy-frozen",
       "owner": "legacy",
       "reason": "no explicit design-system owner matched"
@@ -3496,7 +3496,7 @@
     {
       "selector": ".latest-result-banner__actions",
       "source": "src/app/globals.css",
-      "line": 6349,
+      "line": 6340,
       "ownership": "legacy-frozen",
       "owner": "legacy",
       "reason": "no explicit design-system owner matched"
@@ -3504,7 +3504,7 @@
     {
       "selector": ".latest-result-banner__chips",
       "source": "src/app/globals.css",
-      "line": 6383,
+      "line": 6374,
       "ownership": "legacy-frozen",
       "owner": "legacy",
       "reason": "no explicit design-system owner matched"
@@ -3512,7 +3512,7 @@
     {
       "selector": ".latest-result-banner__commit-link",
       "source": "src/app/globals.css",
-      "line": 6395,
+      "line": 6386,
       "ownership": "legacy-frozen",
       "owner": "legacy",
       "reason": "no explicit design-system owner matched"
@@ -3520,7 +3520,7 @@
     {
       "selector": ".latest-result-banner__dot",
       "source": "src/app/globals.css",
-      "line": 6333,
+      "line": 6324,
       "ownership": "legacy-frozen",
       "owner": "legacy",
       "reason": "no explicit design-system owner matched"
@@ -3528,7 +3528,7 @@
     {
       "selector": ".latest-result-banner__eyebrow",
       "source": "src/app/globals.css",
-      "line": 6370,
+      "line": 6361,
       "ownership": "legacy-frozen",
       "owner": "legacy",
       "reason": "no explicit design-system owner matched"
@@ -3536,7 +3536,7 @@
     {
       "selector": ".latest-result-banner__filename",
       "source": "src/app/globals.css",
-      "line": 6390,
+      "line": 6381,
       "ownership": "legacy-frozen",
       "owner": "legacy",
       "reason": "no explicit design-system owner matched"
@@ -3544,7 +3544,7 @@
     {
       "selector": ".latest-result-banner__footer",
       "source": "src/app/globals.css",
-      "line": 6414,
+      "line": 6405,
       "ownership": "legacy-frozen",
       "owner": "legacy",
       "reason": "no explicit design-system owner matched"
@@ -3552,7 +3552,7 @@
     {
       "selector": ".latest-result-banner__header",
       "source": "src/app/globals.css",
-      "line": 6326,
+      "line": 6317,
       "ownership": "legacy-frozen",
       "owner": "legacy",
       "reason": "no explicit design-system owner matched"
@@ -3560,7 +3560,7 @@
     {
       "selector": ".latest-result-banner__meta",
       "source": "src/app/globals.css",
-      "line": 6363,
+      "line": 6354,
       "ownership": "legacy-frozen",
       "owner": "legacy",
       "reason": "no explicit design-system owner matched"
@@ -3568,7 +3568,7 @@
     {
       "selector": ".latest-result-banner__repo",
       "source": "src/app/globals.css",
-      "line": 6342,
+      "line": 6333,
       "ownership": "legacy-frozen",
       "owner": "legacy",
       "reason": "no explicit design-system owner matched"
@@ -3576,7 +3576,7 @@
     {
       "selector": ".latest-result-banner__sep",
       "source": "src/app/globals.css",
-      "line": 6378,
+      "line": 6369,
       "ownership": "legacy-frozen",
       "owner": "legacy",
       "reason": "no explicit design-system owner matched"
@@ -3584,7 +3584,7 @@
     {
       "selector": ".latest-result-banner__sha",
       "source": "src/app/globals.css",
-      "line": 6403,
+      "line": 6394,
       "ownership": "legacy-frozen",
       "owner": "legacy",
       "reason": "no explicit design-system owner matched"
@@ -3592,7 +3592,7 @@
     {
       "selector": ".latest-result-banner__sha-plain",
       "source": "src/app/globals.css",
-      "line": 6408,
+      "line": 6399,
       "ownership": "legacy-frozen",
       "owner": "legacy",
       "reason": "no explicit design-system owner matched"
@@ -3608,7 +3608,7 @@
     {
       "selector": ".marketing-nav-enhanced",
       "source": "src/app/globals.css",
-      "line": 7482,
+      "line": 7473,
       "ownership": "legacy-frozen",
       "owner": "legacy",
       "reason": "no explicit design-system owner matched"
@@ -3728,7 +3728,7 @@
     {
       "selector": ".nav-links a.nav-active",
       "source": "src/app/globals.css",
-      "line": 5099,
+      "line": 5090,
       "ownership": "legacy-frozen",
       "owner": "legacy",
       "reason": "no explicit design-system owner matched"
@@ -3736,7 +3736,7 @@
     {
       "selector": ".nav-links a.nav-active::after",
       "source": "src/app/globals.css",
-      "line": 5104,
+      "line": 5095,
       "ownership": "legacy-frozen",
       "owner": "legacy",
       "reason": "no explicit design-system owner matched"
@@ -3752,7 +3752,7 @@
     {
       "selector": ".nav-right",
       "source": "src/app/globals.css",
-      "line": 5208,
+      "line": 5199,
       "ownership": "legacy-frozen",
       "owner": "legacy",
       "reason": "no explicit design-system owner matched"
@@ -3760,7 +3760,7 @@
     {
       "selector": ".nav-separator",
       "source": "src/app/globals.css",
-      "line": 5089,
+      "line": 5080,
       "ownership": "legacy-frozen",
       "owner": "legacy",
       "reason": "no explicit design-system owner matched"
@@ -4016,7 +4016,7 @@
     {
       "selector": ".pricing-card-enhanced",
       "source": "src/app/globals.css",
-      "line": 7553,
+      "line": 7544,
       "ownership": "feature-owned",
       "owner": "pricing",
       "reason": "matches feature selector prefix"
@@ -4024,7 +4024,7 @@
     {
       "selector": ".pricing-card-enhanced:hover",
       "source": "src/app/globals.css",
-      "line": 7558,
+      "line": 7549,
       "ownership": "feature-owned",
       "owner": "pricing",
       "reason": "matches feature selector prefix"
@@ -4032,7 +4032,7 @@
     {
       "selector": ".pricing-check-icon",
       "source": "src/app/globals.css",
-      "line": 5064,
+      "line": 5055,
       "ownership": "feature-owned",
       "owner": "pricing",
       "reason": "matches feature selector prefix"
@@ -4112,7 +4112,7 @@
     {
       "selector": ".pricing-feature-row",
       "source": "src/app/globals.css",
-      "line": 5047,
+      "line": 5038,
       "ownership": "feature-owned",
       "owner": "pricing",
       "reason": "matches feature selector prefix"
@@ -4120,7 +4120,7 @@
     {
       "selector": ".pricing-feature-row:first-child",
       "source": "src/app/globals.css",
-      "line": 5060,
+      "line": 5051,
       "ownership": "feature-owned",
       "owner": "pricing",
       "reason": "matches feature selector prefix"
@@ -4128,7 +4128,7 @@
     {
       "selector": ".pricing-feature-row:last-child",
       "source": "src/app/globals.css",
-      "line": 5055,
+      "line": 5046,
       "ownership": "feature-owned",
       "owner": "pricing",
       "reason": "matches feature selector prefix"
@@ -4136,7 +4136,7 @@
     {
       "selector": ".pricing-hero-price",
       "source": "src/app/globals.css",
-      "line": 5034,
+      "line": 5025,
       "ownership": "feature-owned",
       "owner": "pricing",
       "reason": "matches feature selector prefix"
@@ -4168,7 +4168,7 @@
     {
       "selector": ".pricing-section",
       "source": "src/app/globals.css",
-      "line": 4950,
+      "line": 4941,
       "ownership": "feature-owned",
       "owner": "pricing",
       "reason": "matches feature selector prefix"
@@ -4176,7 +4176,7 @@
     {
       "selector": ".pricing-section::before",
       "source": "src/app/globals.css",
-      "line": 4957,
+      "line": 4948,
       "ownership": "feature-owned",
       "owner": "pricing",
       "reason": "matches feature selector prefix"
@@ -4184,7 +4184,7 @@
     {
       "selector": ".pricing-split",
       "source": "src/app/globals.css",
-      "line": 4971,
+      "line": 4962,
       "ownership": "feature-owned",
       "owner": "pricing",
       "reason": "matches feature selector prefix"
@@ -4192,7 +4192,7 @@
     {
       "selector": ".pricing-split-card",
       "source": "src/app/globals.css",
-      "line": 4989,
+      "line": 4980,
       "ownership": "feature-owned",
       "owner": "pricing",
       "reason": "matches feature selector prefix"
@@ -4200,7 +4200,7 @@
     {
       "selector": ".pricing-split-card:hover",
       "source": "src/app/globals.css",
-      "line": 5002,
+      "line": 4993,
       "ownership": "feature-owned",
       "owner": "pricing",
       "reason": "matches feature selector prefix"
@@ -4208,7 +4208,7 @@
     {
       "selector": ".pricing-split-left",
       "source": "src/app/globals.css",
-      "line": 4979,
+      "line": 4970,
       "ownership": "feature-owned",
       "owner": "pricing",
       "reason": "matches feature selector prefix"
@@ -4216,7 +4216,7 @@
     {
       "selector": ".pricing-split-right",
       "source": "src/app/globals.css",
-      "line": 4985,
+      "line": 4976,
       "ownership": "feature-owned",
       "owner": "pricing",
       "reason": "matches feature selector prefix"
@@ -4304,7 +4304,7 @@
     {
       "selector": ".pricing-trust-item",
       "source": "src/app/globals.css",
-      "line": 5014,
+      "line": 5005,
       "ownership": "feature-owned",
       "owner": "pricing",
       "reason": "matches feature selector prefix"
@@ -4312,7 +4312,7 @@
     {
       "selector": ".pricing-trust-item::before",
       "source": "src/app/globals.css",
-      "line": 5024,
+      "line": 5015,
       "ownership": "feature-owned",
       "owner": "pricing",
       "reason": "matches feature selector prefix"
@@ -4320,7 +4320,7 @@
     {
       "selector": ".pricing-trust-row",
       "source": "src/app/globals.css",
-      "line": 5007,
+      "line": 4998,
       "ownership": "feature-owned",
       "owner": "pricing",
       "reason": "matches feature selector prefix"
@@ -4392,7 +4392,7 @@
     {
       "selector": ".project-card",
       "source": "src/app/globals.css",
-      "line": 5492,
+      "line": 5483,
       "ownership": "legacy-frozen",
       "owner": "legacy",
       "reason": "no explicit design-system owner matched"
@@ -4400,7 +4400,7 @@
     {
       "selector": ".project-card-actions",
       "source": "src/app/globals.css",
-      "line": 5569,
+      "line": 5560,
       "ownership": "legacy-frozen",
       "owner": "legacy",
       "reason": "no explicit design-system owner matched"
@@ -4408,7 +4408,7 @@
     {
       "selector": ".project-card-header",
       "source": "src/app/globals.css",
-      "line": 5509,
+      "line": 5500,
       "ownership": "legacy-frozen",
       "owner": "legacy",
       "reason": "no explicit design-system owner matched"
@@ -4416,7 +4416,7 @@
     {
       "selector": ".project-card-meta-row",
       "source": "src/app/globals.css",
-      "line": 5531,
+      "line": 5522,
       "ownership": "legacy-frozen",
       "owner": "legacy",
       "reason": "no explicit design-system owner matched"
@@ -4424,7 +4424,7 @@
     {
       "selector": ".project-card-repo",
       "source": "src/app/globals.css",
-      "line": 5517,
+      "line": 5508,
       "ownership": "legacy-frozen",
       "owner": "legacy",
       "reason": "no explicit design-system owner matched"
@@ -4432,7 +4432,7 @@
     {
       "selector": ".project-card-repo:hover",
       "source": "src/app/globals.css",
-      "line": 5527,
+      "line": 5518,
       "ownership": "legacy-frozen",
       "owner": "legacy",
       "reason": "no explicit design-system owner matched"
@@ -4440,7 +4440,7 @@
     {
       "selector": ".project-card-tag",
       "source": "src/app/globals.css",
-      "line": 5538,
+      "line": 5529,
       "ownership": "legacy-frozen",
       "owner": "legacy",
       "reason": "no explicit design-system owner matched"
@@ -4448,7 +4448,7 @@
     {
       "selector": ".project-card:hover",
       "source": "src/app/globals.css",
-      "line": 5504,
+      "line": 5495,
       "ownership": "legacy-frozen",
       "owner": "legacy",
       "reason": "no explicit design-system owner matched"
@@ -4456,7 +4456,7 @@
     {
       "selector": ".project-demo-badge",
       "source": "src/app/globals.css",
-      "line": 5435,
+      "line": 5426,
       "ownership": "legacy-frozen",
       "owner": "legacy",
       "reason": "no explicit design-system owner matched"
@@ -4464,7 +4464,7 @@
     {
       "selector": ".project-demo-note",
       "source": "src/app/globals.css",
-      "line": 5459,
+      "line": 5450,
       "ownership": "legacy-frozen",
       "owner": "legacy",
       "reason": "no explicit design-system owner matched"
@@ -4472,7 +4472,7 @@
     {
       "selector": ".project-detail-actions",
       "source": "src/app/globals.css",
-      "line": 6167,
+      "line": 6158,
       "ownership": "legacy-frozen",
       "owner": "legacy",
       "reason": "no explicit design-system owner matched"
@@ -4480,7 +4480,7 @@
     {
       "selector": ".project-detail-actions .env-action-button",
       "source": "src/app/globals.css",
-      "line": 6182,
+      "line": 6173,
       "ownership": "legacy-frozen",
       "owner": "legacy",
       "reason": "no explicit design-system owner matched"
@@ -4488,7 +4488,7 @@
     {
       "selector": ".project-detail-actions .ghost-button",
       "source": "src/app/globals.css",
-      "line": 6175,
+      "line": 6166,
       "ownership": "legacy-frozen",
       "owner": "legacy",
       "reason": "no explicit design-system owner matched"
@@ -4496,7 +4496,7 @@
     {
       "selector": ".project-detail-grid",
       "source": "src/app/globals.css",
-      "line": 6138,
+      "line": 6129,
       "ownership": "legacy-frozen",
       "owner": "legacy",
       "reason": "no explicit design-system owner matched"
@@ -4504,7 +4504,7 @@
     {
       "selector": ".project-detail-grid dd",
       "source": "src/app/globals.css",
-      "line": 6159,
+      "line": 6150,
       "ownership": "legacy-frozen",
       "owner": "legacy",
       "reason": "no explicit design-system owner matched"
@@ -4512,7 +4512,7 @@
     {
       "selector": ".project-detail-grid div",
       "source": "src/app/globals.css",
-      "line": 6145,
+      "line": 6136,
       "ownership": "legacy-frozen",
       "owner": "legacy",
       "reason": "no explicit design-system owner matched"
@@ -4520,7 +4520,7 @@
     {
       "selector": ".project-detail-grid dt",
       "source": "src/app/globals.css",
-      "line": 6153,
+      "line": 6144,
       "ownership": "legacy-frozen",
       "owner": "legacy",
       "reason": "no explicit design-system owner matched"
@@ -4528,7 +4528,7 @@
     {
       "selector": ".project-detail-header",
       "source": "src/app/globals.css",
-      "line": 6115,
+      "line": 6106,
       "ownership": "legacy-frozen",
       "owner": "legacy",
       "reason": "no explicit design-system owner matched"
@@ -4536,7 +4536,7 @@
     {
       "selector": ".project-detail-header h3",
       "source": "src/app/globals.css",
-      "line": 6124,
+      "line": 6115,
       "ownership": "legacy-frozen",
       "owner": "legacy",
       "reason": "no explicit design-system owner matched"
@@ -4544,7 +4544,7 @@
     {
       "selector": ".project-detail-header p",
       "source": "src/app/globals.css",
-      "line": 6132,
+      "line": 6123,
       "ownership": "legacy-frozen",
       "owner": "legacy",
       "reason": "no explicit design-system owner matched"
@@ -4552,7 +4552,7 @@
     {
       "selector": ".project-detail-header-badges",
       "source": "src/app/globals.css",
-      "line": 5451,
+      "line": 5442,
       "ownership": "legacy-frozen",
       "owner": "legacy",
       "reason": "no explicit design-system owner matched"
@@ -4560,7 +4560,7 @@
     {
       "selector": ".project-detail-panel",
       "source": "src/app/globals.css",
-      "line": 6021,
+      "line": 6012,
       "ownership": "legacy-frozen",
       "owner": "legacy",
       "reason": "no explicit design-system owner matched"
@@ -4568,7 +4568,7 @@
     {
       "selector": ".project-inner-tab",
       "source": "src/app/globals.css",
-      "line": 6208,
+      "line": 6199,
       "ownership": "legacy-frozen",
       "owner": "legacy",
       "reason": "no explicit design-system owner matched"
@@ -4576,7 +4576,7 @@
     {
       "selector": ".project-inner-tab:focus-visible",
       "source": "src/app/globals.css",
-      "line": 6231,
+      "line": 6222,
       "ownership": "legacy-frozen",
       "owner": "legacy",
       "reason": "no explicit design-system owner matched"
@@ -4584,7 +4584,7 @@
     {
       "selector": ".project-inner-tab:hover",
       "source": "src/app/globals.css",
-      "line": 6222,
+      "line": 6213,
       "ownership": "legacy-frozen",
       "owner": "legacy",
       "reason": "no explicit design-system owner matched"
@@ -4592,7 +4592,7 @@
     {
       "selector": ".project-inner-tab.active",
       "source": "src/app/globals.css",
-      "line": 6226,
+      "line": 6217,
       "ownership": "legacy-frozen",
       "owner": "legacy",
       "reason": "no explicit design-system owner matched"
@@ -4600,7 +4600,7 @@
     {
       "selector": ".project-inner-tabs",
       "source": "src/app/globals.css",
-      "line": 6195,
+      "line": 6186,
       "ownership": "legacy-frozen",
       "owner": "legacy",
       "reason": "no explicit design-system owner matched"
@@ -4608,7 +4608,7 @@
     {
       "selector": ".project-inner-tabs::-webkit-scrollbar",
       "source": "src/app/globals.css",
-      "line": 6204,
+      "line": 6195,
       "ownership": "legacy-frozen",
       "owner": "legacy",
       "reason": "no explicit design-system owner matched"
@@ -4616,7 +4616,7 @@
     {
       "selector": ".project-kv-grid",
       "source": "src/app/globals.css",
-      "line": 5550,
+      "line": 5541,
       "ownership": "legacy-frozen",
       "owner": "legacy",
       "reason": "no explicit design-system owner matched"
@@ -4624,7 +4624,7 @@
     {
       "selector": ".project-kv-key",
       "source": "src/app/globals.css",
-      "line": 5557,
+      "line": 5548,
       "ownership": "legacy-frozen",
       "owner": "legacy",
       "reason": "no explicit design-system owner matched"
@@ -4632,7 +4632,7 @@
     {
       "selector": ".project-kv-val",
       "source": "src/app/globals.css",
-      "line": 5564,
+      "line": 5555,
       "ownership": "legacy-frozen",
       "owner": "legacy",
       "reason": "no explicit design-system owner matched"
@@ -4640,7 +4640,7 @@
     {
       "selector": ".project-list",
       "source": "src/app/globals.css",
-      "line": 6021,
+      "line": 6012,
       "ownership": "legacy-frozen",
       "owner": "legacy",
       "reason": "no explicit design-system owner matched"
@@ -4648,7 +4648,7 @@
     {
       "selector": ".project-list-header",
       "source": "src/app/globals.css",
-      "line": 6036,
+      "line": 6027,
       "ownership": "legacy-frozen",
       "owner": "legacy",
       "reason": "no explicit design-system owner matched"
@@ -4656,7 +4656,7 @@
     {
       "selector": ".project-list-header .ghost-button",
       "source": "src/app/globals.css",
-      "line": 6048,
+      "line": 6039,
       "ownership": "legacy-frozen",
       "owner": "legacy",
       "reason": "no explicit design-system owner matched"
@@ -4664,7 +4664,7 @@
     {
       "selector": ".project-list-item",
       "source": "src/app/globals.css",
-      "line": 6055,
+      "line": 6046,
       "ownership": "legacy-frozen",
       "owner": "legacy",
       "reason": "no explicit design-system owner matched"
@@ -4672,7 +4672,7 @@
     {
       "selector": ".project-list-item .project-list-badges",
       "source": "src/app/globals.css",
-      "line": 6098,
+      "line": 6089,
       "ownership": "legacy-frozen",
       "owner": "legacy",
       "reason": "no explicit design-system owner matched"
@@ -4680,7 +4680,7 @@
     {
       "selector": ".project-list-item:hover",
       "source": "src/app/globals.css",
-      "line": 6069,
+      "line": 6060,
       "ownership": "legacy-frozen",
       "owner": "legacy",
       "reason": "no explicit design-system owner matched"
@@ -4688,7 +4688,7 @@
     {
       "selector": ".project-list-item.selected",
       "source": "src/app/globals.css",
-      "line": 6069,
+      "line": 6060,
       "ownership": "legacy-frozen",
       "owner": "legacy",
       "reason": "no explicit design-system owner matched"
@@ -4696,7 +4696,7 @@
     {
       "selector": ".project-list-meta",
       "source": "src/app/globals.css",
-      "line": 6088,
+      "line": 6079,
       "ownership": "legacy-frozen",
       "owner": "legacy",
       "reason": "no explicit design-system owner matched"
@@ -4704,7 +4704,7 @@
     {
       "selector": ".project-list-title",
       "source": "src/app/globals.css",
-      "line": 6079,
+      "line": 6070,
       "ownership": "legacy-frozen",
       "owner": "legacy",
       "reason": "no explicit design-system owner matched"
@@ -4712,7 +4712,7 @@
     {
       "selector": ".project-status-badge",
       "source": "src/app/globals.css",
-      "line": 5405,
+      "line": 5396,
       "ownership": "legacy-frozen",
       "owner": "legacy",
       "reason": "no explicit design-system owner matched"
@@ -4720,7 +4720,7 @@
     {
       "selector": ".project-status-badge.failed",
       "source": "src/app/globals.css",
-      "line": 5429,
+      "line": 5420,
       "ownership": "legacy-frozen",
       "owner": "legacy",
       "reason": "no explicit design-system owner matched"
@@ -4728,7 +4728,7 @@
     {
       "selector": ".project-status-badge.provisioned",
       "source": "src/app/globals.css",
-      "line": 5417,
+      "line": 5408,
       "ownership": "legacy-frozen",
       "owner": "legacy",
       "reason": "no explicit design-system owner matched"
@@ -4736,7 +4736,7 @@
     {
       "selector": ".project-status-badge.provisioning",
       "source": "src/app/globals.css",
-      "line": 5423,
+      "line": 5414,
       "ownership": "legacy-frozen",
       "owner": "legacy",
       "reason": "no explicit design-system owner matched"
@@ -4744,7 +4744,7 @@
     {
       "selector": ".project-workspace",
       "source": "src/app/globals.css",
-      "line": 6014,
+      "line": 6005,
       "ownership": "legacy-frozen",
       "owner": "legacy",
       "reason": "no explicit design-system owner matched"
@@ -4752,7 +4752,7 @@
     {
       "selector": ".project-workspace .project-status-badge",
       "source": "src/app/globals.css",
-      "line": 6188,
+      "line": 6179,
       "ownership": "legacy-frozen",
       "owner": "legacy",
       "reason": "no explicit design-system owner matched"
@@ -4760,7 +4760,7 @@
     {
       "selector": ".provider-connection-fields",
       "source": "src/app/globals.css",
-      "line": 7164,
+      "line": 7155,
       "ownership": "legacy-frozen",
       "owner": "legacy",
       "reason": "no explicit design-system owner matched"
@@ -4768,7 +4768,7 @@
     {
       "selector": ".provider-connection-fields .primary-button",
       "source": "src/app/globals.css",
-      "line": 7171,
+      "line": 7162,
       "ownership": "legacy-frozen",
       "owner": "legacy",
       "reason": "no explicit design-system owner matched"
@@ -4776,7 +4776,7 @@
     {
       "selector": ".provider-connection-form",
       "source": "src/app/globals.css",
-      "line": 7159,
+      "line": 7150,
       "ownership": "legacy-frozen",
       "owner": "legacy",
       "reason": "no explicit design-system owner matched"
@@ -4784,7 +4784,7 @@
     {
       "selector": ".provider-connections-table",
       "source": "src/app/globals.css",
-      "line": 7180,
+      "line": 7171,
       "ownership": "legacy-frozen",
       "owner": "legacy",
       "reason": "no explicit design-system owner matched"
@@ -4792,7 +4792,7 @@
     {
       "selector": ".provider-connections-table .ghost-button",
       "source": "src/app/globals.css",
-      "line": 7208,
+      "line": 7199,
       "ownership": "legacy-frozen",
       "owner": "legacy",
       "reason": "no explicit design-system owner matched"
@@ -4800,7 +4800,7 @@
     {
       "selector": ".provider-connections-table tbody",
       "source": "src/app/globals.css",
-      "line": 7264,
+      "line": 7255,
       "ownership": "legacy-frozen",
       "owner": "legacy",
       "reason": "no explicit design-system owner matched"
@@ -4808,7 +4808,7 @@
     {
       "selector": ".provider-connections-table td",
       "source": "src/app/globals.css",
-      "line": 7186,
+      "line": 7177,
       "ownership": "legacy-frozen",
       "owner": "legacy",
       "reason": "no explicit design-system owner matched"
@@ -4816,7 +4816,7 @@
     {
       "selector": ".provider-connections-table td::before",
       "source": "src/app/globals.css",
-      "line": 7283,
+      "line": 7274,
       "ownership": "legacy-frozen",
       "owner": "legacy",
       "reason": "no explicit design-system owner matched"
@@ -4824,7 +4824,7 @@
     {
       "selector": ".provider-connections-table td:first-child",
       "source": "src/app/globals.css",
-      "line": 7203,
+      "line": 7194,
       "ownership": "legacy-frozen",
       "owner": "legacy",
       "reason": "no explicit design-system owner matched"
@@ -4832,7 +4832,7 @@
     {
       "selector": ".provider-connections-table td:last-child",
       "source": "src/app/globals.css",
-      "line": 7295,
+      "line": 7286,
       "ownership": "legacy-frozen",
       "owner": "legacy",
       "reason": "no explicit design-system owner matched"
@@ -4840,7 +4840,7 @@
     {
       "selector": ".provider-connections-table th",
       "source": "src/app/globals.css",
-      "line": 7186,
+      "line": 7177,
       "ownership": "legacy-frozen",
       "owner": "legacy",
       "reason": "no explicit design-system owner matched"
@@ -4848,7 +4848,7 @@
     {
       "selector": ".provider-connections-table thead",
       "source": "src/app/globals.css",
-      "line": 7260,
+      "line": 7251,
       "ownership": "legacy-frozen",
       "owner": "legacy",
       "reason": "no explicit design-system owner matched"
@@ -4856,7 +4856,7 @@
     {
       "selector": ".provider-connections-table tr",
       "source": "src/app/globals.css",
-      "line": 7264,
+      "line": 7255,
       "ownership": "legacy-frozen",
       "owner": "legacy",
       "reason": "no explicit design-system owner matched"
@@ -4864,7 +4864,7 @@
     {
       "selector": ".provider-connections-wrap",
       "source": "src/app/globals.css",
-      "line": 7176,
+      "line": 7167,
       "ownership": "legacy-frozen",
       "owner": "legacy",
       "reason": "no explicit design-system owner matched"
@@ -4872,7 +4872,7 @@
     {
       "selector": ".provider-empty-state",
       "source": "src/app/globals.css",
-      "line": 7214,
+      "line": 7205,
       "ownership": "legacy-frozen",
       "owner": "legacy",
       "reason": "no explicit design-system owner matched"
@@ -4912,7 +4912,7 @@
     {
       "selector": ".provider-settings-header",
       "source": "src/app/globals.css",
-      "line": 7141,
+      "line": 7132,
       "ownership": "legacy-frozen",
       "owner": "legacy",
       "reason": "no explicit design-system owner matched"
@@ -4920,7 +4920,7 @@
     {
       "selector": ".provider-settings-header h2",
       "source": "src/app/globals.css",
-      "line": 7146,
+      "line": 7137,
       "ownership": "legacy-frozen",
       "owner": "legacy",
       "reason": "no explicit design-system owner matched"
@@ -4928,7 +4928,7 @@
     {
       "selector": ".provider-settings-header p",
       "source": "src/app/globals.css",
-      "line": 7152,
+      "line": 7143,
       "ownership": "legacy-frozen",
       "owner": "legacy",
       "reason": "no explicit design-system owner matched"
@@ -4936,7 +4936,7 @@
     {
       "selector": ".provider-settings-panel",
       "source": "src/app/globals.css",
-      "line": 7132,
+      "line": 7123,
       "ownership": "legacy-frozen",
       "owner": "legacy",
       "reason": "no explicit design-system owner matched"
@@ -5336,7 +5336,7 @@
     {
       "selector": ".readiness-empty-state",
       "source": "src/app/globals.css",
-      "line": 7300,
+      "line": 7291,
       "ownership": "legacy-frozen",
       "owner": "legacy",
       "reason": "no explicit design-system owner matched"
@@ -5344,7 +5344,7 @@
     {
       "selector": ".readiness-empty-state p",
       "source": "src/app/globals.css",
-      "line": 7314,
+      "line": 7305,
       "ownership": "legacy-frozen",
       "owner": "legacy",
       "reason": "no explicit design-system owner matched"
@@ -5352,7 +5352,7 @@
     {
       "selector": ".readiness-empty-state strong",
       "source": "src/app/globals.css",
-      "line": 7309,
+      "line": 7300,
       "ownership": "legacy-frozen",
       "owner": "legacy",
       "reason": "no explicit design-system owner matched"
@@ -5360,7 +5360,7 @@
     {
       "selector": ".repo-card",
       "source": "src/app/globals.css",
-      "line": 5972,
+      "line": 5963,
       "ownership": "legacy-frozen",
       "owner": "legacy",
       "reason": "no explicit design-system owner matched"
@@ -5368,7 +5368,7 @@
     {
       "selector": ".repo-card-meta",
       "source": "src/app/globals.css",
-      "line": 6005,
+      "line": 5996,
       "ownership": "legacy-frozen",
       "owner": "legacy",
       "reason": "no explicit design-system owner matched"
@@ -5376,7 +5376,7 @@
     {
       "selector": ".repo-card-title",
       "source": "src/app/globals.css",
-      "line": 5991,
+      "line": 5982,
       "ownership": "legacy-frozen",
       "owner": "legacy",
       "reason": "no explicit design-system owner matched"
@@ -5384,7 +5384,7 @@
     {
       "selector": ".repo-card-title:hover",
       "source": "src/app/globals.css",
-      "line": 6001,
+      "line": 5992,
       "ownership": "legacy-frozen",
       "owner": "legacy",
       "reason": "no explicit design-system owner matched"
@@ -5392,7 +5392,7 @@
     {
       "selector": ".repo-card:hover",
       "source": "src/app/globals.css",
-      "line": 5984,
+      "line": 5975,
       "ownership": "legacy-frozen",
       "owner": "legacy",
       "reason": "no explicit design-system owner matched"
@@ -5400,7 +5400,7 @@
     {
       "selector": ".repo-full-item",
       "source": "src/app/globals.css",
-      "line": 5348,
+      "line": 5339,
       "ownership": "legacy-frozen",
       "owner": "legacy",
       "reason": "no explicit design-system owner matched"
@@ -5408,7 +5408,7 @@
     {
       "selector": ".repo-full-item:last-child",
       "source": "src/app/globals.css",
-      "line": 5358,
+      "line": 5349,
       "ownership": "legacy-frozen",
       "owner": "legacy",
       "reason": "no explicit design-system owner matched"
@@ -5416,7 +5416,7 @@
     {
       "selector": ".repo-full-list",
       "source": "src/app/globals.css",
-      "line": 5339,
+      "line": 5330,
       "ownership": "legacy-frozen",
       "owner": "legacy",
       "reason": "no explicit design-system owner matched"
@@ -5424,7 +5424,7 @@
     {
       "selector": ".repo-full-meta",
       "source": "src/app/globals.css",
-      "line": 5378,
+      "line": 5369,
       "ownership": "legacy-frozen",
       "owner": "legacy",
       "reason": "no explicit design-system owner matched"
@@ -5432,7 +5432,7 @@
     {
       "selector": ".repo-full-name",
       "source": "src/app/globals.css",
-      "line": 5362,
+      "line": 5353,
       "ownership": "legacy-frozen",
       "owner": "legacy",
       "reason": "no explicit design-system owner matched"
@@ -5440,7 +5440,7 @@
     {
       "selector": ".repo-full-name:hover",
       "source": "src/app/globals.css",
-      "line": 5373,
+      "line": 5364,
       "ownership": "legacy-frozen",
       "owner": "legacy",
       "reason": "no explicit design-system owner matched"
@@ -5448,7 +5448,7 @@
     {
       "selector": ".repo-grid",
       "source": "src/app/globals.css",
-      "line": 5966,
+      "line": 5957,
       "ownership": "legacy-frozen",
       "owner": "legacy",
       "reason": "no explicit design-system owner matched"
@@ -5480,7 +5480,7 @@
     {
       "selector": ".repo-visibility-badge",
       "source": "src/app/globals.css",
-      "line": 5385,
+      "line": 5376,
       "ownership": "legacy-frozen",
       "owner": "legacy",
       "reason": "no explicit design-system owner matched"
@@ -5488,7 +5488,7 @@
     {
       "selector": ".repo-visibility-badge.public",
       "source": "src/app/globals.css",
-      "line": 5397,
+      "line": 5388,
       "ownership": "legacy-frozen",
       "owner": "legacy",
       "reason": "no explicit design-system owner matched"
@@ -5504,7 +5504,7 @@
     {
       "selector": ".result-actions > *",
       "source": "src/app/globals.css",
-      "line": 7348,
+      "line": 7339,
       "ownership": "legacy-frozen",
       "owner": "legacy",
       "reason": "no explicit design-system owner matched"
@@ -5656,7 +5656,7 @@
     {
       "selector": ".section-glow-center",
       "source": "src/app/globals.css",
-      "line": 4680,
+      "line": 4671,
       "ownership": "legacy-frozen",
       "owner": "legacy",
       "reason": "no explicit design-system owner matched"
@@ -5664,15 +5664,7 @@
     {
       "selector": ".section-glow-center::before",
       "source": "src/app/globals.css",
-      "line": 4685,
-      "ownership": "legacy-frozen",
-      "owner": "legacy",
-      "reason": "no explicit design-system owner matched"
-    },
-    {
-      "selector": ".section-gradient-divider",
-      "source": "src/app/globals.css",
-      "line": 4670,
+      "line": 4676,
       "ownership": "legacy-frozen",
       "owner": "legacy",
       "reason": "no explicit design-system owner matched"
@@ -5712,7 +5704,7 @@
     {
       "selector": ".sign-out-icon-btn",
       "source": "src/app/globals.css",
-      "line": 5175,
+      "line": 5166,
       "ownership": "legacy-frozen",
       "owner": "legacy",
       "reason": "no explicit design-system owner matched"
@@ -5720,7 +5712,7 @@
     {
       "selector": ".sign-out-icon-btn:disabled",
       "source": "src/app/globals.css",
-      "line": 5201,
+      "line": 5192,
       "ownership": "legacy-frozen",
       "owner": "legacy",
       "reason": "no explicit design-system owner matched"
@@ -5728,7 +5720,7 @@
     {
       "selector": ".sign-out-icon-btn:focus-visible",
       "source": "src/app/globals.css",
-      "line": 5196,
+      "line": 5187,
       "ownership": "legacy-frozen",
       "owner": "legacy",
       "reason": "no explicit design-system owner matched"
@@ -5736,7 +5728,7 @@
     {
       "selector": ".sign-out-icon-btn:hover",
       "source": "src/app/globals.css",
-      "line": 5190,
+      "line": 5181,
       "ownership": "legacy-frozen",
       "owner": "legacy",
       "reason": "no explicit design-system owner matched"
@@ -5760,7 +5752,7 @@
     {
       "selector": ".stat-block-enhanced",
       "source": "src/app/globals.css",
-      "line": 7537,
+      "line": 7528,
       "ownership": "legacy-frozen",
       "owner": "legacy",
       "reason": "no explicit design-system owner matched"
@@ -5768,7 +5760,7 @@
     {
       "selector": ".stat-block-enhanced:first-child",
       "source": "src/app/globals.css",
-      "line": 7543,
+      "line": 7534,
       "ownership": "legacy-frozen",
       "owner": "legacy",
       "reason": "no explicit design-system owner matched"
@@ -5776,7 +5768,7 @@
     {
       "selector": ".stat-block-enhanced:last-child",
       "source": "src/app/globals.css",
-      "line": 7547,
+      "line": 7538,
       "ownership": "legacy-frozen",
       "owner": "legacy",
       "reason": "no explicit design-system owner matched"
@@ -5856,7 +5848,7 @@
     {
       "selector": ".stats-row-enhanced",
       "source": "src/app/globals.css",
-      "line": 7533,
+      "line": 7524,
       "ownership": "legacy-frozen",
       "owner": "legacy",
       "reason": "no explicit design-system owner matched"
@@ -6104,7 +6096,7 @@
     {
       "selector": ".subtab-bar",
       "source": "src/app/globals.css",
-      "line": 5579,
+      "line": 5570,
       "ownership": "legacy-frozen",
       "owner": "legacy",
       "reason": "no explicit design-system owner matched"
@@ -6112,7 +6104,7 @@
     {
       "selector": ".subtab-btn",
       "source": "src/app/globals.css",
-      "line": 5587,
+      "line": 5578,
       "ownership": "legacy-frozen",
       "owner": "legacy",
       "reason": "no explicit design-system owner matched"
@@ -6120,7 +6112,7 @@
     {
       "selector": ".subtab-btn:focus-visible",
       "source": "src/app/globals.css",
-      "line": 5612,
+      "line": 5603,
       "ownership": "legacy-frozen",
       "owner": "legacy",
       "reason": "no explicit design-system owner matched"
@@ -6128,7 +6120,7 @@
     {
       "selector": ".subtab-btn:hover",
       "source": "src/app/globals.css",
-      "line": 5601,
+      "line": 5592,
       "ownership": "legacy-frozen",
       "owner": "legacy",
       "reason": "no explicit design-system owner matched"
@@ -6136,7 +6128,7 @@
     {
       "selector": ".subtab-btn.active",
       "source": "src/app/globals.css",
-      "line": 5606,
+      "line": 5597,
       "ownership": "legacy-frozen",
       "owner": "legacy",
       "reason": "no explicit design-system owner matched"
@@ -6168,7 +6160,7 @@
     {
       "selector": ".tab-section-heading",
       "source": "src/app/globals.css",
-      "line": 6488,
+      "line": 6479,
       "ownership": "primitive-owned",
       "owner": "tab",
       "reason": "matches primitive selector prefix"
@@ -6176,7 +6168,7 @@
     {
       "selector": ".tab-section-subtext",
       "source": "src/app/globals.css",
-      "line": 6495,
+      "line": 6486,
       "ownership": "primitive-owned",
       "owner": "tab",
       "reason": "matches primitive selector prefix"
@@ -6184,7 +6176,7 @@
     {
       "selector": ".target-action-btn",
       "source": "src/app/globals.css",
-      "line": 6270,
+      "line": 6261,
       "ownership": "legacy-frozen",
       "owner": "legacy",
       "reason": "no explicit design-system owner matched"
@@ -6192,7 +6184,7 @@
     {
       "selector": ".target-action-btn--confirm",
       "source": "src/app/globals.css",
-      "line": 6304,
+      "line": 6295,
       "ownership": "legacy-frozen",
       "owner": "legacy",
       "reason": "no explicit design-system owner matched"
@@ -6200,7 +6192,7 @@
     {
       "selector": ".target-action-btn--detach",
       "source": "src/app/globals.css",
-      "line": 6292,
+      "line": 6283,
       "ownership": "legacy-frozen",
       "owner": "legacy",
       "reason": "no explicit design-system owner matched"
@@ -6208,7 +6200,7 @@
     {
       "selector": ".target-action-btn--detach:hover",
       "source": "src/app/globals.css",
-      "line": 6297,
+      "line": 6288,
       "ownership": "legacy-frozen",
       "owner": "legacy",
       "reason": "no explicit design-system owner matched"
@@ -6216,7 +6208,7 @@
     {
       "selector": ".target-actions",
       "source": "src/app/globals.css",
-      "line": 6238,
+      "line": 6229,
       "ownership": "legacy-frozen",
       "owner": "legacy",
       "reason": "no explicit design-system owner matched"
@@ -6224,7 +6216,7 @@
     {
       "selector": ".target-actions-destructive",
       "source": "src/app/globals.css",
-      "line": 6263,
+      "line": 6254,
       "ownership": "legacy-frozen",
       "owner": "legacy",
       "reason": "no explicit design-system owner matched"
@@ -6232,7 +6224,7 @@
     {
       "selector": ".target-actions-primary",
       "source": "src/app/globals.css",
-      "line": 6246,
+      "line": 6237,
       "ownership": "legacy-frozen",
       "owner": "legacy",
       "reason": "no explicit design-system owner matched"
@@ -6240,7 +6232,7 @@
     {
       "selector": ".target-actions-secondary",
       "source": "src/app/globals.css",
-      "line": 6254,
+      "line": 6245,
       "ownership": "legacy-frozen",
       "owner": "legacy",
       "reason": "no explicit design-system owner matched"
@@ -6248,7 +6240,7 @@
     {
       "selector": ".target-upcoming-hint",
       "source": "src/app/globals.css",
-      "line": 6278,
+      "line": 6269,
       "ownership": "legacy-frozen",
       "owner": "legacy",
       "reason": "no explicit design-system owner matched"
@@ -6368,7 +6360,7 @@
     {
       "selector": ".toggle-row",
       "source": "src/app/globals.css",
-      "line": 6517,
+      "line": 6508,
       "ownership": "legacy-frozen",
       "owner": "legacy",
       "reason": "no explicit design-system owner matched"
@@ -6376,7 +6368,7 @@
     {
       "selector": ".toggle-row input",
       "source": "src/app/globals.css",
-      "line": 6629,
+      "line": 6620,
       "ownership": "legacy-frozen",
       "owner": "legacy",
       "reason": "no explicit design-system owner matched"
@@ -6440,7 +6432,7 @@
     {
       "selector": ".user-pill",
       "source": "src/app/globals.css",
-      "line": 5117,
+      "line": 5108,
       "ownership": "legacy-frozen",
       "owner": "legacy",
       "reason": "no explicit design-system owner matched"
@@ -6448,7 +6440,7 @@
     {
       "selector": ".user-pill-avatar",
       "source": "src/app/globals.css",
-      "line": 5129,
+      "line": 5120,
       "ownership": "legacy-frozen",
       "owner": "legacy",
       "reason": "no explicit design-system owner matched"
@@ -6456,7 +6448,7 @@
     {
       "selector": ".user-pill-login",
       "source": "src/app/globals.css",
-      "line": 5151,
+      "line": 5142,
       "ownership": "legacy-frozen",
       "owner": "legacy",
       "reason": "no explicit design-system owner matched"
@@ -6464,7 +6456,7 @@
     {
       "selector": ".user-pill-placeholder",
       "source": "src/app/globals.css",
-      "line": 5137,
+      "line": 5128,
       "ownership": "legacy-frozen",
       "owner": "legacy",
       "reason": "no explicit design-system owner matched"
@@ -6472,7 +6464,7 @@
     {
       "selector": ".user-pill-plan",
       "source": "src/app/globals.css",
-      "line": 5161,
+      "line": 5152,
       "ownership": "legacy-frozen",
       "owner": "legacy",
       "reason": "no explicit design-system owner matched"
@@ -6536,7 +6528,7 @@
     {
       "selector": ".welcome-editorial",
       "source": "src/app/globals.css",
-      "line": 5268,
+      "line": 5259,
       "ownership": "legacy-frozen",
       "owner": "legacy",
       "reason": "no explicit design-system owner matched"
@@ -6544,7 +6536,7 @@
     {
       "selector": ".welcome-editorial h1",
       "source": "src/app/globals.css",
-      "line": 5314,
+      "line": 5305,
       "ownership": "legacy-frozen",
       "owner": "legacy",
       "reason": "no explicit design-system owner matched"
@@ -6552,7 +6544,7 @@
     {
       "selector": ".welcome-editorial-actions",
       "source": "src/app/globals.css",
-      "line": 5330,
+      "line": 5321,
       "ownership": "legacy-frozen",
       "owner": "legacy",
       "reason": "no explicit design-system owner matched"
@@ -6560,7 +6552,7 @@
     {
       "selector": ".welcome-editorial-avatar",
       "source": "src/app/globals.css",
-      "line": 5290,
+      "line": 5281,
       "ownership": "legacy-frozen",
       "owner": "legacy",
       "reason": "no explicit design-system owner matched"
@@ -6568,7 +6560,7 @@
     {
       "selector": ".welcome-editorial-avatar-placeholder",
       "source": "src/app/globals.css",
-      "line": 5299,
+      "line": 5290,
       "ownership": "legacy-frozen",
       "owner": "legacy",
       "reason": "no explicit design-system owner matched"
@@ -6576,7 +6568,7 @@
     {
       "selector": ".welcome-editorial-identity",
       "source": "src/app/globals.css",
-      "line": 5284,
+      "line": 5275,
       "ownership": "legacy-frozen",
       "owner": "legacy",
       "reason": "no explicit design-system owner matched"
@@ -6584,7 +6576,7 @@
     {
       "selector": ".welcome-editorial-sub",
       "source": "src/app/globals.css",
-      "line": 5323,
+      "line": 5314,
       "ownership": "legacy-frozen",
       "owner": "legacy",
       "reason": "no explicit design-system owner matched"
@@ -6592,7 +6584,7 @@
     {
       "selector": ".welcome-editorial-top",
       "source": "src/app/globals.css",
-      "line": 5276,
+      "line": 5267,
       "ownership": "legacy-frozen",
       "owner": "legacy",
       "reason": "no explicit design-system owner matched"

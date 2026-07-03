@@ -1,7 +1,7 @@
 import { act, useEffect } from "react";
 import { createRoot, type Root } from "react-dom/client";
 
-import { projectBorderClass, projectStatusChipClass } from "../../src/features/dashboard/home/home-repositories-panel";
+import { projectBorderClass, projectStatusBadgeTone } from "../../src/features/dashboard/home/home-repositories-panel";
 import { useHomeDashboardData } from "../../src/features/dashboard/home/use-home-dashboard-data";
 import { disconnectProject, getGithubRepos, getProjects, getWorkflowHistory, syncProjects } from "../../src/lib/api/client";
 
@@ -129,9 +129,9 @@ describe("useHomeDashboardData", () => {
     expect(latest?.projects).toHaveLength(0);
   });
 
-  it("maps project status classes", () => {
+  it("maps project status badge tones", () => {
     expect(projectBorderClass("provisioned")).toBe("repo-card-success");
     expect(projectBorderClass("failed")).toBe("repo-card-danger");
-    expect(projectStatusChipClass("orphaned")).toBe("status-chip status-chip-amber");
+    expect(projectStatusBadgeTone("orphaned")).toBe("warning");
   });
 });

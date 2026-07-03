@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { motion } from "framer-motion";
 
+import { Badge, type BadgeProps } from "@/components/ui/badge";
 import type { GitHubRepo, ProvisionedProject } from "@/lib/api/contracts";
 
 import { EASE_OUT } from "./home-bento-grid";
@@ -38,11 +39,11 @@ export function projectBorderClass(status: string) {
   return "repo-card-brand";
 }
 
-export function projectStatusChipClass(status: string) {
-  if (status === "provisioned") return "status-chip status-chip-success";
-  if (status === "failed") return "status-chip status-chip-danger";
-  if (status === "orphaned") return "status-chip status-chip-amber";
-  return "status-chip status-chip-brand";
+export function projectStatusBadgeTone(status: string): BadgeProps["tone"] {
+  if (status === "provisioned") return "success";
+  if (status === "failed") return "danger";
+  if (status === "orphaned") return "warning";
+  return "info";
 }
 
 export function HomeRepositoriesPanel({
@@ -148,9 +149,9 @@ export function HomeRepositoriesPanel({
                             {project.repoFullName.split("/")[1] ?? project.repoFullName}
                           </span>
                         </a>
-                        <span className={projectStatusChipClass(project.status)}>
+                        <Badge tone={projectStatusBadgeTone(project.status)} dot>
                           {project.status}
-                        </span>
+                        </Badge>
                       </div>
 
                       <p style={{ color: "var(--text-secondary)", fontSize: "0.78rem", margin: 0, fontFamily: "ui-monospace, monospace", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
@@ -265,9 +266,9 @@ export function HomeRepositoriesPanel({
                       <a href={repo.htmlUrl} target="_blank" rel="noreferrer" className="dash-repo-row-name">
                         {repo.fullName.split("/")[1]}
                       </a>
-                      <span className={`dash-repo-row-chip ${repo.private ? "status-chip status-chip-muted" : "status-chip status-chip-success"}`}>
+                      <Badge className="dash-repo-row-chip" tone={repo.private ? "neutral" : "success"} dot>
                         {repo.private ? "private" : "public"}
-                      </span>
+                      </Badge>
                       <p className="dash-repo-row-desc">
                         {repo.description ?? "No description provided."}
                       </p>

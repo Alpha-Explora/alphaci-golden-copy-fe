@@ -1,6 +1,5 @@
 "use client";
 
-import type { CSSProperties } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 
 import type {
@@ -23,6 +22,8 @@ import { DeploymentProvisioningSetup } from "./deployment-provisioning-setup";
 import { useWorkflowSetupState } from "./use-workflow-setup-state";
 import { formatQuotaStatus } from "./workflow-builder-utils";
 import { HelpTip } from "./help-tip";
+import { WorkflowSetupGithubPanel } from "./workflow-setup-github-panel";
+import { inferProjectKind, setupLabelAccentStyle, withTestSuffix } from "./workflow-setup-utils";
 
 interface WorkflowSetupTabProps {
   createResult: CreateProjectResult | null;
@@ -57,46 +58,6 @@ const projectOptionDescriptions: Record<MvpProjectOptionKey, string> = {
   security: "Run dependency and workflow security checks.",
   docker:   "Build a container image when the recipe supports it.",
 };
-
-const labelAccentStyle: CSSProperties = {
-  borderLeft: "2px solid var(--brand)",
-  paddingLeft: "0.5rem",
-  color: "var(--text-secondary)",
-  fontSize: "0.72rem",
-  letterSpacing: "0.08em",
-  textTransform: "uppercase",
-};
-
-function inferProjectKind(
-  selectedProjectType: ProjectOptionsCatalogState["selectedProjectType"],
-): "frontend" | "backend" | undefined {
-  if (selectedProjectType?.kind) {
-    return selectedProjectType.kind;
-  }
-
-  const text = [
-    selectedProjectType?.id,
-    selectedProjectType?.label,
-    selectedProjectType?.framework,
-    selectedProjectType?.runtime,
-  ]
-    .filter(Boolean)
-    .join(" ")
-    .toLowerCase();
-
-  if (/(next|react|frontend|web|vue|svelte)/.test(text)) {
-    return "frontend";
-  }
-  if (/(nest|node|api|backend|server)/.test(text)) {
-    return "backend";
-  }
-  return undefined;
-}
-
-function withTestSuffix(value: string) {
-  const base = value.trim() || "flowci-project";
-  return base.endsWith("-test") ? base : `${base}-test`;
-}
 
 export function WorkflowSetupTab({
   createResult,
@@ -175,126 +136,7 @@ export function WorkflowSetupTab({
       {/* ── Left sidebar: GitHub App + Catalog ──────────────────────── */}
       <aside className="create-project-sidebar">
 
-        {/* GitHub App */}
-        <div>
-          <span className="cp-section-heading">GitHub App</span>
-          <p style={{ color: "var(--text-muted)", fontSize: "0.78rem", margin: "0 0 0.75rem", lineHeight: 1.5 }}>
-            {github.installationStatusCopy}
-          </p>
-
-          {github.installationAccounts.length > 0 ? (
-            <div style={{ display: "grid", gap: "0.35rem", marginBottom: "0.65rem" }}>
-              {github.installationAccounts.map((account) => (
-                <div
-                  key={account.installationId}
-                  style={{
-                    borderLeft: "2px solid var(--border-brand)",
-                    paddingLeft: "0.6rem",
-                    color: "var(--text-secondary)",
-                    fontSize: "0.76rem",
-                  }}
-                >
-                  <strong style={{ color: "var(--text-primary)" }}>
-                    {account.accountLogin ? `@${account.accountLogin}` : `Installation ${account.installationId}`}
-                  </strong>
-                  <span style={{ color: "var(--text-muted)" }}>
-                    {" "}· {account.repositorySelection} repos
-                  </span>
-                </div>
-              ))}
-            </div>
-          ) : null}
-
-          {github.linkedRepos.length > 0 ? (
-            <p style={{ color: "var(--text-muted)", fontSize: "0.74rem", margin: "0 0 0.65rem", lineHeight: 1.45 }}>
-              {github.linkedRepos.slice(0, 3).map((r) => r.repoFullName).join(", ")}
-              {github.linkedRepos.length > 3 ? ` +${github.linkedRepos.length - 3} more` : ""}
-            </p>
-          ) : null}
-
-          {github.installUrl ? (
-            <a
-              href={github.installUrl}
-              target="_blank"
-              rel="noreferrer"
-              style={{
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                gap: "0.4rem",
-                padding: "0.5rem 0.85rem",
-                border: "1px solid var(--border-strong)",
-                background: "transparent",
-                color: "var(--text-secondary)",
-                fontSize: "0.82rem",
-                borderRadius: "6px",
-                textDecoration: "none",
-                marginBottom: "0.65rem",
-                fontWeight: 600,
-                transition: "border-color 0.15s, color 0.15s",
-              }}
-            >
-              Install GitHub App
-            </a>
-          ) : (
-            <button
-              type="button"
-              disabled
-              style={{
-                display: "block",
-                width: "100%",
-                padding: "0.5rem 0.85rem",
-                border: "1px solid var(--border)",
-                background: "transparent",
-                color: "var(--text-muted)",
-                fontSize: "0.82rem",
-                borderRadius: "6px",
-                textAlign: "center",
-                cursor: "not-allowed",
-                marginBottom: "0.65rem",
-              }}
-            >
-              {github.loadingInstallUrl ? "Loading install link…" : "Install link unavailable"}
-            </button>
-          )}
-
-          <details>
-            <summary style={{
-              fontSize: "0.78rem",
-              color: "var(--text-muted)",
-              cursor: "pointer",
-              userSelect: "none",
-              listStyle: "none",
-              display: "flex",
-              alignItems: "center",
-              gap: "0.35rem",
-            }}>
-              <span style={{ fontSize: "0.65rem" }}>&#9654;</span>
-              Already installed? Link by ID
-            </summary>
-            <div style={{ marginTop: "0.65rem" }}>
-              <label className="input-label compact-label" htmlFor="installation-id" style={labelAccentStyle}>
-                Installation ID
-              </label>
-              <input
-                id="installation-id"
-                value={github.installationId}
-                onChange={(event) => github.setInstallationId(event.target.value.replaceAll(/\D/g, ""))}
-                placeholder="12345678"
-                className="premium-input"
-              />
-              <button
-                type="button"
-                className="github-repo-load-btn"
-                onClick={() => void github.handleLinkInstallation()}
-                disabled={github.linkingInstallation}
-                style={{ marginTop: "0.45rem" }}
-              >
-                {github.linkingInstallation ? "Linking…" : "Link installation"}
-              </button>
-            </div>
-          </details>
-        </div>
+        <WorkflowSetupGithubPanel github={github} />
 
         <hr className="controls-panel-rule" style={{ margin: "1.25rem 0" }} />
 
@@ -303,7 +145,7 @@ export function WorkflowSetupTab({
           <span className="cp-section-heading">Catalog</span>
 
           <fieldset data-tour="repo-shape" style={{ border: "none", margin: 0, padding: 0, minInlineSize: "auto" }}>
-            <legend className="input-label" style={{ ...labelAccentStyle, padding: 0 }}>
+            <legend className="input-label" style={{ ...setupLabelAccentStyle, padding: 0 }}>
               Repository shape
             </legend>
             <div style={{ display: "grid", gap: "0.5rem", marginTop: "0.35rem" }}>
@@ -384,7 +226,7 @@ export function WorkflowSetupTab({
 
           {!projectCatalog.isMicroservicesShape && !projectCatalog.isMultiRepoShape ? (
             <>
-              <label className="input-label" htmlFor="project-type-select" style={{ ...labelAccentStyle, marginTop: "1rem", display: "block" }}>
+              <label className="input-label" htmlFor="project-type-select" style={{ ...setupLabelAccentStyle, marginTop: "1rem", display: "block" }}>
                 Language / framework
               </label>
               <select
@@ -404,7 +246,7 @@ export function WorkflowSetupTab({
                 TypeScript • JavaScript
               </p>
 
-              <label className="input-label" htmlFor="workflow-recipe-select" style={{ ...labelAccentStyle, marginTop: "1rem", display: "block" }}>
+              <label className="input-label" htmlFor="workflow-recipe-select" style={{ ...setupLabelAccentStyle, marginTop: "1rem", display: "block" }}>
                 Workflow recipe
               </label>
               <select
@@ -437,7 +279,7 @@ export function WorkflowSetupTab({
               {/* Backend service — no container box */}
               <div style={{ marginTop: "1rem" }}>
                 <span className="cp-section-heading" style={{ fontSize: "0.6rem" }}>Backend service</span>
-                <label className="input-label" htmlFor="backend-project-type-select" style={{ ...labelAccentStyle, display: "block" }}>
+                <label className="input-label" htmlFor="backend-project-type-select" style={{ ...setupLabelAccentStyle, display: "block" }}>
                   Language
                 </label>
                 <select
@@ -454,7 +296,7 @@ export function WorkflowSetupTab({
                     <option value="nestjs">NestJS</option>
                   ) : null}
                 </select>
-                <label className="input-label" htmlFor="backend-service-name" style={{ ...labelAccentStyle, marginTop: "0.55rem", display: "block" }}>
+                <label className="input-label" htmlFor="backend-service-name" style={{ ...setupLabelAccentStyle, marginTop: "0.55rem", display: "block" }}>
                   Service name
                 </label>
                 <input
@@ -466,7 +308,7 @@ export function WorkflowSetupTab({
                 />
                 {projectCatalog.isMicroservicesShape ? (
                   <>
-                    <label className="input-label" htmlFor="backend-service-path" style={{ ...labelAccentStyle, marginTop: "0.55rem", display: "block" }}>
+                    <label className="input-label" htmlFor="backend-service-path" style={{ ...setupLabelAccentStyle, marginTop: "0.55rem", display: "block" }}>
                       Service path
                       <HelpTip text="The folder inside the repository where the backend service's code lives. Build commands run from this path, and only changes under it trigger this service's pipeline." />
                     </label>
@@ -484,7 +326,7 @@ export function WorkflowSetupTab({
               {/* Frontend service — no container box */}
               <div style={{ marginTop: "1.25rem" }}>
                 <span className="cp-section-heading" style={{ fontSize: "0.6rem" }}>Frontend service</span>
-                <label className="input-label" htmlFor="frontend-project-type-select" style={{ ...labelAccentStyle, display: "block" }}>
+                <label className="input-label" htmlFor="frontend-project-type-select" style={{ ...setupLabelAccentStyle, display: "block" }}>
                   Language
                 </label>
                 <select
@@ -501,7 +343,7 @@ export function WorkflowSetupTab({
                     <option value="nextjs">Next.js</option>
                   ) : null}
                 </select>
-                <label className="input-label" htmlFor="frontend-service-name" style={{ ...labelAccentStyle, marginTop: "0.55rem", display: "block" }}>
+                <label className="input-label" htmlFor="frontend-service-name" style={{ ...setupLabelAccentStyle, marginTop: "0.55rem", display: "block" }}>
                   Service name
                 </label>
                 <input
@@ -513,7 +355,7 @@ export function WorkflowSetupTab({
                 />
                 {projectCatalog.isMicroservicesShape ? (
                   <>
-                    <label className="input-label" htmlFor="frontend-service-path" style={{ ...labelAccentStyle, marginTop: "0.55rem", display: "block" }}>
+                    <label className="input-label" htmlFor="frontend-service-path" style={{ ...setupLabelAccentStyle, marginTop: "0.55rem", display: "block" }}>
                       Service path
                       <HelpTip text="The folder inside the repository where the frontend service's code lives. Build commands run from this path, and only changes under it trigger this service's pipeline." />
                     </label>
@@ -611,7 +453,7 @@ export function WorkflowSetupTab({
 
               <div className="form-pair-row" style={{ gap: "1rem" }}>
                 <div>
-                  <label className="input-label" htmlFor="existing-repo-select" style={labelAccentStyle}>
+                  <label className="input-label" htmlFor="existing-repo-select" style={setupLabelAccentStyle}>
                     Linked repository
                   </label>
                   <select
@@ -632,7 +474,7 @@ export function WorkflowSetupTab({
                   </select>
                 </div>
                 <div>
-                  <label className="input-label" htmlFor="existing-base-branch" style={labelAccentStyle}>
+                  <label className="input-label" htmlFor="existing-base-branch" style={setupLabelAccentStyle}>
                     Base branch
                   </label>
                   <input
@@ -700,7 +542,7 @@ export function WorkflowSetupTab({
               {/* Repository name + Visibility */}
               <div className="form-pair-row" style={{ gap: "1rem" }}>
                 <div>
-                  <label className="input-label" htmlFor="repo-name" style={labelAccentStyle}>
+                  <label className="input-label" htmlFor="repo-name" style={setupLabelAccentStyle}>
                     Repository name
                   </label>
                   <input
@@ -712,7 +554,7 @@ export function WorkflowSetupTab({
                   />
                 </div>
                 <div>
-                  <label className="input-label" htmlFor="repo-visibility" style={labelAccentStyle}>
+                  <label className="input-label" htmlFor="repo-visibility" style={setupLabelAccentStyle}>
                     Visibility
                   </label>
                   <select
@@ -731,7 +573,7 @@ export function WorkflowSetupTab({
               {!projectCatalog.isMicroservicesShape && !projectCatalog.isMultiRepoShape ? (
                 <div className="form-pair-row" style={{ marginTop: "1.5rem", gap: "1rem" }}>
                   <div>
-                    <label className="input-label" htmlFor="service-name" style={labelAccentStyle}>
+                    <label className="input-label" htmlFor="service-name" style={setupLabelAccentStyle}>
                       Service name
                     </label>
                     <input
@@ -743,7 +585,7 @@ export function WorkflowSetupTab({
                     />
                   </div>
                   <div>
-                    <label className="input-label" htmlFor="service-path" style={labelAccentStyle}>
+                    <label className="input-label" htmlFor="service-path" style={setupLabelAccentStyle}>
                       Service path
                       <HelpTip text="The folder inside the repository where this service's code lives. Use '.' if the app sits at the repository root. Build commands run from this path." />
                     </label>
@@ -760,7 +602,7 @@ export function WorkflowSetupTab({
 
               {/* Workflow file name */}
               <div style={{ marginTop: "1.5rem" }}>
-                <label className="input-label" htmlFor="output-file-name" style={labelAccentStyle}>
+                <label className="input-label" htmlFor="output-file-name" style={setupLabelAccentStyle}>
                   Workflow file name
                 </label>
                 <input
@@ -775,7 +617,7 @@ export function WorkflowSetupTab({
               {/* Node version + Coverage */}
               <div className="form-pair-row" style={{ marginTop: "1.5rem", gap: "1rem" }}>
                 <div>
-                  <label className="input-label" htmlFor="node-version" style={labelAccentStyle}>
+                  <label className="input-label" htmlFor="node-version" style={setupLabelAccentStyle}>
                     Node version
                   </label>
                   <select
@@ -799,7 +641,7 @@ export function WorkflowSetupTab({
                   </select>
                 </div>
                 <div>
-                  <label className="input-label" htmlFor="coverage-threshold" style={labelAccentStyle}>
+                  <label className="input-label" htmlFor="coverage-threshold" style={setupLabelAccentStyle}>
                     Coverage
                     <HelpTip text="The minimum percentage of code that unit tests must exercise. Pipeline runs fail the Quality stage if coverage drops below this number." />
                   </label>
@@ -822,7 +664,7 @@ export function WorkflowSetupTab({
               <div style={{ marginTop: "1.5rem" }}>
                 <span
                   className="input-label"
-                  style={{ ...labelAccentStyle, marginTop: 0, marginBottom: "0.6rem", display: "block" }}
+                  style={{ ...setupLabelAccentStyle, marginTop: 0, marginBottom: "0.6rem", display: "block" }}
                 >
                   Workflow checks
                 </span>

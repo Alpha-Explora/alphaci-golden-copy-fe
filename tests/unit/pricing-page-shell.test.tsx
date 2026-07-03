@@ -43,10 +43,11 @@ describe("PricingPageShell migration", () => {
 
   it("keeps pricing shell ownership outside the route CSS module", () => {
     const pageSource = fs.readFileSync(path.join(process.cwd(), "src/app/pricing/page.tsx"), "utf8");
-    const appPricingCss = fs.readFileSync(path.join(process.cwd(), "src/app/pricing/pricing.module.css"), "utf8");
+    const appPricingCssPath = path.join(process.cwd(), "src/app/pricing/pricing.module.css");
+    const appPricingCss = fs.existsSync(appPricingCssPath) ? fs.readFileSync(appPricingCssPath, "utf8") : "";
     const shellSource = fs.readFileSync(path.join(process.cwd(), "src/features/public-site/pricing/pricing-page-shell.tsx"), "utf8");
 
-    expect(pageSource).toContain("PricingPageShell");
+    expect(pageSource).toContain("@/features/public-site/pricing/pricing-page");
     expect(pageSource).not.toContain("<main className={styles.shell}");
     expect(appPricingCss).not.toContain(".shell");
     expect(shellSource).toContain("pricing-page-shell.module.css");

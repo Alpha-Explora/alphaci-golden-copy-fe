@@ -6,6 +6,7 @@ import { Suspense, useEffect, useState } from "react";
 import { motion, useReducedMotion, AnimatePresence } from "framer-motion";
 
 import { AppNav } from "@/components/layout/app-nav";
+import { DashboardPageContent, DashboardShell } from "@/components/layout/app-shell/dashboard-shell";
 import { FlowBackground } from "@/components/layout/flow-background";
 import { PipelineLoader } from "@/components/layout/pipeline-loader";
 import { useAuthSession } from "@/hooks/use-auth-session";
@@ -195,7 +196,7 @@ function RunsContent({ guest, session, onLogout, isLoggingOut, prefersReducedMot
   const reduced = prefersReducedMotion ?? false;
 
   return (
-    <main className="dash-shell" suppressHydrationWarning style={{ overflowX: "hidden" }}>
+    <DashboardShell>
       <a href="#main-content" className="skip-link">Skip to main content</a>
       <FlowBackground />
 
@@ -222,7 +223,7 @@ function RunsContent({ guest, session, onLogout, isLoggingOut, prefersReducedMot
         </div>
       )}
 
-      <div id="main-content" className="dash-page-content">
+      <DashboardPageContent>
 
         {/* Page header */}
         <motion.div
@@ -367,8 +368,8 @@ function RunsContent({ guest, session, onLogout, isLoggingOut, prefersReducedMot
           </motion.section>
         )}
 
-      </div>
-    </main>
+      </DashboardPageContent>
+    </DashboardShell>
   );
 }
 
@@ -412,7 +413,7 @@ export default function RunsPage() {
   /* Guard: error */
   if (status === "error") {
     return (
-      <main className="dash-shell">
+      <DashboardShell suppressHydrationWarning={false}>
         <FlowBackground />
         <div className="state-body">
           <div className="state-card">
@@ -432,7 +433,7 @@ export default function RunsPage() {
             </div>
           </div>
         </div>
-      </main>
+      </DashboardShell>
     );
   }
 

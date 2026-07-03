@@ -21,6 +21,9 @@ describe("runs route migration", () => {
     expect(featureSource).toContain("function RunsContent");
     expect(featureSource).toContain('router.replace("/signup")');
     expect(featureSource).toContain("Sign up to see your pipeline runs.");
+    expect(featureSource).not.toContain("dash-shell");
+    expect(featureSource).not.toContain("dash-page-content");
+    expect(featureSource.trim().split(/\r?\n/).length).toBeLessThanOrEqual(500);
     expect(featureSource).not.toContain("preview mode");
     expect(featureSource).not.toMatch(/[^\x00-\x7F]/);
   });

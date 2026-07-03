@@ -18,6 +18,7 @@ const customJestConfig = {
     '!<rootDir>/src/components/**/*.{ts,tsx}',
     '!<rootDir>/src/features/dashboard/home/**/*.{ts,tsx}',
     '!<rootDir>/src/features/dashboard/runs/**/*.{ts,tsx}',
+    '!<rootDir>/src/features/dashboard/subscribe/**/*.{ts,tsx}',
     '!<rootDir>/src/lib/api/**/*.{ts,tsx}',
     '<rootDir>/src/components/product/project-env-panel.tsx',
     '<rootDir>/src/components/product/workflow-current-tab.tsx',

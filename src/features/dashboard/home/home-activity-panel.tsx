@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { motion } from "framer-motion";
 
+import { Badge } from "@/components/ui/badge";
 import type { WorkflowHistoryItem } from "@/lib/api/contracts";
 
 import { EASE_OUT } from "./home-bento-grid";
@@ -65,7 +66,7 @@ export function HomeActivityPanel({
             {history.map((item) => (
               <article key={item.id} className="repo-card glass-panel repo-card-brand">
                 <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                  <span className="status-chip status-chip-brand">{item.stack}</span>
+                  <Badge tone="info" dot>{item.stack}</Badge>
                   <span style={{ fontSize: "0.72rem", color: "var(--text-muted)" }}>
                     {new Intl.DateTimeFormat("en-PH", { dateStyle: "short", timeStyle: "short" }).format(new Date(item.createdAt))}
                   </span>

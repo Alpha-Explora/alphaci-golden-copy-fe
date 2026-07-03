@@ -44,6 +44,9 @@ describe("home route migration", () => {
       const componentSource = fs.readFileSync(componentPath, "utf8");
       expect(componentSource).not.toMatch(/[^\x00-\x7F]/);
       expect(componentSource.trim().split(/\r?\n/).length).toBeLessThanOrEqual(350);
+      if (componentPath.endsWith("home-activity-panel.tsx")) {
+        expect(componentSource).not.toContain("status-chip");
+      }
     }
     for (const stylePath of stylePaths) {
       const styleSource = fs.readFileSync(stylePath, "utf8");

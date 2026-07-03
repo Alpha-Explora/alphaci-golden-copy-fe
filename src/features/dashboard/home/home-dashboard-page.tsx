@@ -6,6 +6,7 @@ import { useEffect, useState } from "react";
 import { AnimatePresence, useReducedMotion } from "framer-motion";
 
 import { AppNav } from "@/components/layout/app-nav";
+import { DashboardPageContent, DashboardShell } from "@/components/layout/app-shell/dashboard-shell";
 import { FlowBackground } from "@/components/layout/flow-background";
 import { PipelineLoader } from "@/components/layout/pipeline-loader";
 import { WorkspaceProvider, useWorkspaceSelection } from "@/components/layout/workspace-context";
@@ -102,7 +103,7 @@ function HomeDashboardContent() {
   /* Guard: error */
   if (status === "error") {
     return (
-      <main className="dash-shell">
+      <DashboardShell suppressHydrationWarning={false}>
         <FlowBackground />
         <div className="state-body">
           <div className="state-card">
@@ -123,7 +124,7 @@ function HomeDashboardContent() {
             </div>
           </div>
         </div>
-      </main>
+      </DashboardShell>
     );
   }
 
@@ -141,7 +142,7 @@ function HomeDashboardContent() {
   const avatarInitial = (session?.user.name ?? session?.user.login ?? "U").slice(0, 1).toUpperCase();
 
   return (
-    <main className="dash-shell" suppressHydrationWarning style={{ overflowX: "hidden" }}>
+    <DashboardShell>
       <a href="#main-content" className="skip-link">Skip to main content</a>
       <FlowBackground />
 
@@ -186,7 +187,7 @@ function HomeDashboardContent() {
         </div>
       )}
 
-      <div id="main-content" className="dash-page-content">
+      <DashboardPageContent>
 
         <HomeDashboardHeader
           avatarInitial={avatarInitial}
@@ -256,8 +257,8 @@ function HomeDashboardContent() {
           )}
         </AnimatePresence>
 
-      </div>
-    </main>
+      </DashboardPageContent>
+    </DashboardShell>
   );
 }
 

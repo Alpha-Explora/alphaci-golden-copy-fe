@@ -5,6 +5,12 @@ describe("home route migration", () => {
   const routePath = path.join(process.cwd(), "src/app/home/page.tsx");
   const featurePath = path.join(process.cwd(), "src/features/dashboard/home/home-dashboard-page.tsx");
   const bentoPath = path.join(process.cwd(), "src/features/dashboard/home/home-bento-grid.tsx");
+  const componentPaths = [
+    path.join(process.cwd(), "src/features/dashboard/home/home-dashboard-header.tsx"),
+    path.join(process.cwd(), "src/features/dashboard/home/home-dashboard-tabs.tsx"),
+    path.join(process.cwd(), "src/features/dashboard/home/home-overview-panel.tsx"),
+    path.join(process.cwd(), "src/features/dashboard/home/home-activity-panel.tsx"),
+  ];
 
   it("keeps the app route as a thin entry point", () => {
     const routeSource = fs.readFileSync(routePath, "utf8");
@@ -21,8 +27,16 @@ describe("home route migration", () => {
 
     expect(featureSource).toContain('"use client"');
     expect(featureSource).toContain("function HomeDashboardContent");
+    expect(featureSource.trim().split(/\r?\n/).length).toBeLessThanOrEqual(500);
+    expect(featureSource).toContain("HomeDashboardHeader");
+    expect(featureSource).toContain("HomeDashboardTabs");
     expect(featureSource).not.toMatch(/[^\x00-\x7F]/);
     expect(bentoSource).toContain("export function BentoGrid");
     expect(bentoSource).not.toMatch(/[^\x00-\x7F]/);
+    for (const componentPath of componentPaths) {
+      const componentSource = fs.readFileSync(componentPath, "utf8");
+      expect(componentSource).not.toMatch(/[^\x00-\x7F]/);
+      expect(componentSource.trim().split(/\r?\n/).length).toBeLessThanOrEqual(350);
+    }
   });
 });

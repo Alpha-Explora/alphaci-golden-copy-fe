@@ -1,7 +1,6 @@
 "use client";
 
 import Link from "next/link";
-import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
@@ -16,7 +15,11 @@ import { logout } from "@/lib/api/client";
 import { completeOnboarding } from "@/lib/api/auth";
 import { isGuest } from "@/lib/auth/subscription";
 
-import { BentoGrid, EASE_OUT, PipelineTrack, sectionVariants, type DashTab } from "./home-bento-grid";
+import { EASE_OUT } from "./home-bento-grid";
+import { HomeActivityPanel } from "./home-activity-panel";
+import { HomeDashboardHeader } from "./home-dashboard-header";
+import { HomeDashboardTabs } from "./home-dashboard-tabs";
+import { HomeOverviewPanel } from "./home-overview-panel";
 import { projectBorderClass, projectStatusChipClass, useHomeDashboardData } from "./use-home-dashboard-data";
 
 
@@ -185,210 +188,38 @@ function HomeDashboardContent() {
 
       <div id="main-content" className="dash-page-content">
 
-        {/* Welcome header: flat, no outer panel box */}
-        <motion.section
-          className="welcome-banner-flat"
-          aria-label="Welcome"
-          custom={0}
-          variants={sectionVariants}
-          initial={prefersReducedMotion ? false : "hidden"}
-          animate="visible"
-        >
-          <div className="welcome-banner-flat-accent" aria-hidden="true" />
-
-          <div style={{ display: "flex", justifyContent: "space-between", flexWrap: "wrap", gap: "1.5rem", marginBottom: "1.25rem" }}>
-            {/* Identity */}
-            <div style={{ display: "flex", alignItems: "center", gap: "1rem" }}>
-              {!guest && (session?.user.avatarUrl ? (
-                <Image
-                  src={session.user.avatarUrl}
-                  alt={session.user.name ?? session.user.login}
-                  className="welcome-editorial-avatar"
-                  width={44}
-                  height={44}
-                  style={{ borderRadius: "50%", border: "2px solid var(--border-brand)", boxShadow: "0 0 12px var(--brand-glow)" }}
-                  unoptimized
-                />
-              ) : (
-                <span aria-hidden="true" style={{
-                  width: 44,
-                  height: 44,
-                  fontSize: "1.15rem",
-                  fontWeight: 700,
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  borderRadius: "50%",
-                  background: "var(--brand-light)",
-                  border: "2px solid var(--border-brand)",
-                  color: "var(--brand)",
-                }}>{avatarInitial}</span>
-              ))}
-              <div style={{ display: "flex", flexDirection: "column", gap: "0.2rem" }}>
-                <p style={{ margin: 0, fontSize: "0.7rem", color: "var(--brand)", fontWeight: 700, letterSpacing: "0.1em", textTransform: "uppercase" }}>
-                  SYSTEM.DASHBOARD
-                </p>
-                <h1 style={{ padding: 0, border: "none", margin: 0, fontSize: "clamp(1.4rem, 2.5vw, 1.85rem)", fontWeight: 800 }}>
-                  {guest
-                    ? "AlphaCI Dashboard"
-                    : `Welcome back, ${session?.user.name ?? session?.user.login ?? "builder"}.`}
-                </h1>
-              </div>
-            </div>
-
-            {/* Pipeline track */}
-            <div style={{
-              borderLeft: "1px solid var(--border)",
-              paddingLeft: "clamp(0.75rem, 1.5vw, 1.25rem)",
-              alignSelf: "start",
-              display: "flex",
-              flexDirection: "column",
-              gap: "0.35rem",
-            }} className="pipeline-track-aside">
-              <p className="eyebrow" style={{ fontSize: "0.7rem" }}>LIVE STATUS PIPELINE</p>
-              <PipelineTrack reduced={prefersReducedMotion} />
-            </div>
-          </div>
-
-          <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", flexWrap: "wrap", gap: "0.75rem", borderTop: "1px solid var(--border-soft)", paddingTop: "1rem" }}>
-            <p style={{ margin: 0, fontSize: "0.85rem", color: "var(--text-secondary)" }}>
-              {guest
-                ? "You are browsing in guest mode. Sign up to unlock all features."
-                : (
-                  <>Connected on{" "}
-                    <span className="dash-badge-violet" style={{ display: "inline-flex" }}>
-                      {session?.subscription.plan ?? "pro"}
-                    </span>
-                  </>
-                )}
-            </p>
-            <div style={{ display: "flex", gap: "0.5rem" }}>
-              {guest ? (
-                <>
-                  <Link className="primary-button" href="/signup" style={{ padding: "0.4rem 1rem", fontSize: "0.8rem", minHeight: "2.2rem" }}>Sign up free</Link>
-                  <Link className="ghost-button" href="/login" style={{ padding: "0.4rem 1rem", fontSize: "0.8rem", minHeight: "2.2rem" }}>Log in</Link>
-                </>
-              ) : (
-                <>
-                  <Link className="primary-button" href="/workflows" style={{ padding: "0.4rem 1.2rem", fontSize: "0.8rem", minHeight: "2.2rem" }}>Create project</Link>
-                  <Link className="ghost-button" href="/subscribe" style={{ padding: "0.4rem 1.2rem", fontSize: "0.8rem", minHeight: "2.2rem" }}>Subscription</Link>
-                </>
-              )}
-            </div>
-          </div>
-
-          {error        ? <p className="error-text" style={{ marginTop: "1rem" }}>{error}</p>         : null}
-          {logoutMessage ? <p className="error-text" style={{ marginTop: "1rem" }}>{logoutMessage}</p> : null}
-        </motion.section>
-
-        {/* Dashboard tab bar */}
-        <motion.div
-          custom={1}
-          variants={sectionVariants}
-          initial={prefersReducedMotion ? false : "hidden"}
-          animate="visible"
-        >
-          <div className="dash-tab-bar" role="tablist" aria-label="Dashboard sections" style={{
-            position: "relative",
-            display: "flex",
-            gap: "0.25rem",
-            padding: "0.25rem",
-            background: "rgba(15, 23, 42, 0.4)",
-            border: "1px solid var(--border-soft)",
-            borderRadius: "0.6rem",
-            width: "fit-content",
-          }}>
-            {(["overview", "repositories", "activity"] as DashTab[]).map((tab) => (
-              <button
-                key={tab}
-                type="button"
-                role="tab"
-                id={`dash-tab-${tab}`}
-                aria-controls={`dash-panel-${tab}`}
-                aria-selected={activeTab === tab}
-                onClick={() => setActiveTab(tab)}
-                style={{
-                  position: "relative",
-                  padding: "0.45rem 1.2rem",
-                  border: "none",
-                  background: "transparent",
-                  cursor: "pointer",
-                  transition: "color 0.2s ease",
-                  color: activeTab === tab ? "var(--text-primary)" : "var(--text-secondary)",
-                  zIndex: 1,
-                  fontWeight: 600,
-                  fontSize: "0.85rem",
-                  fontFamily: "inherit",
-                }}
-              >
-                {activeTab === tab && (
-                  <motion.span
-                    layoutId="dash-tab-indicator"
-                    style={{
-                      position: "absolute",
-                      inset: 0,
-                      borderRadius: "0.4rem",
-                      background: "rgba(56, 189, 248, 0.1)",
-                      border: "1px solid rgba(56, 189, 248, 0.3)",
-                      boxShadow: "0 0 12px rgba(56, 189, 248, 0.15)",
-                      zIndex: -1,
-                    }}
-                    transition={{ type: "spring", stiffness: 380, damping: 30 }}
-                  />
-                )}
-                {tab === "overview"      ? "Overview"
-                 : tab === "repositories" ? "Repositories"
-                 : "Activity"}
-              </button>
-            ))}
-          </div>
-        </motion.div>
-
+        <HomeDashboardHeader
+          avatarInitial={avatarInitial}
+          error={error}
+          guest={guest}
+          logoutMessage={logoutMessage}
+          prefersReducedMotion={prefersReducedMotion}
+          session={session}
+        />
+        <HomeDashboardTabs
+          activeTab={activeTab}
+          onTabChange={setActiveTab}
+          prefersReducedMotion={prefersReducedMotion}
+        />
         {/* Tab panels */}
         <AnimatePresence mode="wait">
 
-          {/* Overview tab */}
           {activeTab === "overview" && (
-            <motion.div
-              key="overview"
-              id="dash-panel-overview"
-              role="tabpanel"
-              aria-labelledby="dash-tab-overview"
-              initial={prefersReducedMotion ? false : { opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={prefersReducedMotion ? undefined : { opacity: 0, y: -6 }}
-              transition={{ duration: 0.28, ease: EASE_OUT }}
-              style={{ display: "flex", flexDirection: "column", gap: "1.5rem" }}
-            >
-              <section aria-label="Release pulse">
-                <BentoGrid
-                  historyLoading={historyLoading}
-                  projectsLoading={projectsLoading}
-                  historyLength={history.length}
-                  projectsLength={projects.length}
-                  uniqueServices={uniqueServices}
-                  lastActivityValue={lastActivityValue}
-                  prefersReducedMotion={prefersReducedMotion}
-                />
-              </section>
-
-              {!guest && projectsError ? (
-                <div className="error-inline glass-panel" role="alert" style={{ background: "rgba(248, 113, 113, 0.05)", border: "1px solid rgba(248, 113, 113, 0.2)", borderRadius: "10px" }}>
-                  <span className="error-inline-icon" aria-hidden="true" style={{ color: "var(--danger)" }}>!</span>
-                  <p className="error-inline-msg" style={{ margin: 0, fontSize: "0.82rem" }}>{projectsError}</p>
-                  <button className="error-retry-btn" type="button" onClick={loadProjects}>Retry</button>
-                </div>
-              ) : null}
-              {!guest && historyError ? (
-                <div className="error-inline glass-panel" role="alert" style={{ background: "rgba(248, 113, 113, 0.05)", border: "1px solid rgba(248, 113, 113, 0.2)", borderRadius: "10px" }}>
-                  <span className="error-inline-icon" aria-hidden="true" style={{ color: "var(--danger)" }}>!</span>
-                  <p className="error-inline-msg" style={{ margin: 0, fontSize: "0.82rem" }}>{historyError}</p>
-                  <button className="error-retry-btn" type="button" onClick={loadHistory}>Retry</button>
-                </div>
-              ) : null}
-            </motion.div>
+            <HomeOverviewPanel
+              guest={guest}
+              historyError={historyError}
+              historyLength={history.length}
+              historyLoading={historyLoading}
+              lastActivityValue={lastActivityValue}
+              loadHistory={loadHistory}
+              loadProjects={loadProjects}
+              prefersReducedMotion={prefersReducedMotion}
+              projectsError={projectsError}
+              projectsLength={projects.length}
+              projectsLoading={projectsLoading}
+              uniqueServices={uniqueServices}
+            />
           )}
-
           {/* Repositories tab */}
           {activeTab === "repositories" && (
             <motion.div
@@ -619,82 +450,15 @@ function HomeDashboardContent() {
             </motion.div>
           )}
 
-          {/* Activity tab */}
           {activeTab === "activity" && (
-            <motion.div
-              key="activity"
-              id="dash-panel-activity"
-              role="tabpanel"
-              aria-labelledby="dash-tab-activity"
-              initial={prefersReducedMotion ? false : { opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={prefersReducedMotion ? undefined : { opacity: 0, y: -6 }}
-              transition={{ duration: 0.28, ease: EASE_OUT }}
-            >
-              <section aria-label="Recent workflows">
-                <div className="dash-section-label">
-                  <div className="dash-section-label-left">
-                    <p className="file-path-label" style={{ marginBottom: 0, color: "var(--brand)" }}>workflows/recent.yml</p>
-                    {!historyLoading && history.length > 0 && (
-                      <span className="dash-count-chip">{history.length} generated workflows</span>
-                    )}
-                  </div>
-                </div>
-
-                {historyLoading ? (
-                  <div className="repo-grid">
-                    {[0, 1, 2].map((i) => (
-                      <div key={i} className="skeleton-card glass-panel" style={{ minHeight: "8rem", background: "rgba(15, 23, 42, 0.3)", animation: "state-pulse 1.5s infinite" }} />
-                    ))}
-                  </div>
-                ) : historyError ? (
-                  <div className="error-inline glass-panel" role="alert" style={{ background: "rgba(248, 113, 113, 0.05)" }}>
-                    <span className="error-inline-icon" aria-hidden="true">!</span>
-                    <p className="error-inline-msg">{historyError}</p>
-                    <button className="error-retry-btn" type="button" onClick={loadHistory}>Retry</button>
-                  </div>
-                ) : history.length === 0 ? (
-                  <div className="glass-panel" style={{ textAlign: "center", padding: "3rem 1.5rem", background: "rgba(15, 23, 42, 0.3)" }}>
-                    <p style={{ color: "var(--text-secondary)", marginBottom: "1.25rem" }}>No workflow history yet.</p>
-                    <Link className="primary-button" href="/workflows" style={{ padding: "0.65rem 1.5rem", fontSize: "0.9rem" }}>Create your first project</Link>
-                  </div>
-                ) : (
-                  <div className="repo-grid">
-                    {history.map((item) => (
-                      <article key={item.id} className="repo-card glass-panel repo-card-brand">
-                        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                          <span className="status-chip status-chip-brand">{item.stack}</span>
-                          <span style={{ fontSize: "0.72rem", color: "var(--text-muted)" }}>
-                            {new Intl.DateTimeFormat("en-PH", { dateStyle: "short", timeStyle: "short" }).format(new Date(item.createdAt))}
-                          </span>
-                        </div>
-
-                        <h3 style={{ fontSize: "1rem", margin: 0, fontWeight: 700 }}>{item.serviceName}</h3>
-
-                        <div className="activity-code-block">
-                          <span className="activity-code-label">Workflow File</span>
-                          <span className="activity-code-value">{item.outputFileName}</span>
-                        </div>
-
-                        <div className="repo-card-meta">
-                          <span style={{ color: "var(--text-muted)", fontSize: "0.7rem" }}>
-                            Actions config built
-                          </span>
-                          <Link href="/workflows" style={{ fontSize: "0.7rem", color: "var(--brand)", fontWeight: 600, textDecoration: "none", display: "flex", alignItems: "center", gap: "0.25rem" }}>
-                            View Studio
-                            <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
-                              <line x1="5" y1="12" x2="19" y2="12" /><polyline points="12 5 19 12 12 19" />
-                            </svg>
-                          </Link>
-                        </div>
-                      </article>
-                    ))}
-                  </div>
-                )}
-              </section>
-            </motion.div>
+            <HomeActivityPanel
+              history={history}
+              historyError={historyError}
+              historyLoading={historyLoading}
+              loadHistory={loadHistory}
+              prefersReducedMotion={prefersReducedMotion}
+            />
           )}
-
         </AnimatePresence>
 
       </div>

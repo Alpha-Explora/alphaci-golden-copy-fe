@@ -3,14 +3,14 @@ import path from "path";
 
 describe("home route migration", () => {
   const routePath = path.join(process.cwd(), "src/app/home/page.tsx");
+  const homeFeatureDir = path.join(process.cwd(), "src/features/dashboard/home");
   const featurePath = path.join(process.cwd(), "src/features/dashboard/home/home-dashboard-page.tsx");
   const bentoPath = path.join(process.cwd(), "src/features/dashboard/home/home-bento-grid.tsx");
-  const componentPaths = [
-    path.join(process.cwd(), "src/features/dashboard/home/home-dashboard-header.tsx"),
-    path.join(process.cwd(), "src/features/dashboard/home/home-dashboard-tabs.tsx"),
-    path.join(process.cwd(), "src/features/dashboard/home/home-overview-panel.tsx"),
-    path.join(process.cwd(), "src/features/dashboard/home/home-activity-panel.tsx"),
-    path.join(process.cwd(), "src/features/dashboard/home/home-repositories-panel.tsx"),
+  const homeFeaturePaths = fs
+    .readdirSync(homeFeatureDir)
+    .filter((fileName) => fileName.endsWith(".tsx"))
+    .map((fileName) => path.join(homeFeatureDir, fileName));
+  const sharedComponentPaths = [
     path.join(process.cwd(), "src/components/layout/app-shell/dashboard-shell.tsx"),
   ];
   const stylePaths = [
@@ -37,19 +37,29 @@ describe("home route migration", () => {
     expect(featureSource).toContain("HomeDashboardTabs");
     expect(featureSource).not.toContain("dash-shell");
     expect(featureSource).not.toContain("dash-page-content");
+    expect(featureSource).not.toContain("primary-button");
+    expect(featureSource).not.toContain("ghost-button");
     expect(featureSource).not.toMatch(/[^\x00-\x7F]/);
     expect(bentoSource).toContain("export function BentoGrid");
     expect(bentoSource).not.toMatch(/[^\x00-\x7F]/);
-    for (const componentPath of componentPaths) {
+    for (const componentPath of homeFeaturePaths) {
       const componentSource = fs.readFileSync(componentPath, "utf8");
       expect(componentSource).not.toMatch(/[^\x00-\x7F]/);
-      expect(componentSource.trim().split(/\r?\n/).length).toBeLessThanOrEqual(350);
+      const lineBudget = componentPath.endsWith("home-dashboard-page.tsx") ? 500 : 350;
+      expect(componentSource.trim().split(/\r?\n/).length).toBeLessThanOrEqual(lineBudget);
+      expect(componentSource).not.toContain("primary-button");
+      expect(componentSource).not.toContain("ghost-button");
       if (componentPath.endsWith("home-activity-panel.tsx")) {
         expect(componentSource).not.toContain("status-chip");
       }
       if (componentPath.endsWith("home-dashboard-header.tsx")) {
         expect(componentSource).not.toContain("dash-badge");
       }
+    }
+    for (const sharedComponentPath of sharedComponentPaths) {
+      const sharedSource = fs.readFileSync(sharedComponentPath, "utf8");
+      expect(sharedSource).not.toMatch(/[^\x00-\x7F]/);
+      expect(sharedSource.trim().split(/\r?\n/).length).toBeLessThanOrEqual(350);
     }
     for (const stylePath of stylePaths) {
       const styleSource = fs.readFileSync(stylePath, "utf8");

@@ -10,6 +10,7 @@
   justify-content: center;
   line-height: 1;
   min-height: 2.5rem;
+  text-decoration: none;
   transition:
     background-color 160ms ease,
     border-color 160ms ease,

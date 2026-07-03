@@ -1,11 +1,11 @@
 "use client";
 
-import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { AnimatePresence, useReducedMotion } from "framer-motion";
 
 import { AppNav } from "@/components/layout/app-nav";
+import { Button, ButtonLink } from "@/components/ui/button";
 import { DashboardPageContent, DashboardShell } from "@/components/layout/app-shell/dashboard-shell";
 import { FlowBackground } from "@/components/layout/flow-background";
 import { PipelineLoader } from "@/components/layout/pipeline-loader";
@@ -117,10 +117,10 @@ function HomeDashboardContent() {
             <h1>Session verification failed</h1>
             <p>We could not verify your session. Please retry or sign in again.</p>
             <div className="hero-actions">
-              <button className="primary-button" type="button" onClick={() => void refresh()}>
+              <Button type="button" onClick={() => void refresh()}>
                 Retry
-              </button>
-              <Link className="ghost-button" href="/login?next=/home">Go to login</Link>
+              </Button>
+              <ButtonLink variant="ghost" href="/login?next=/home">Go to login</ButtonLink>
             </div>
           </div>
         </div>
@@ -177,12 +177,12 @@ function HomeDashboardContent() {
             Sign up to unlock AlphaCI.
           </p>
           <div style={{ display: "flex", gap: "0.5rem" }}>
-            <Link className="primary-button" href="/signup" style={{ padding: "0.4rem 1rem", fontSize: "0.82rem" }}>
+            <ButtonLink href="/signup" size="sm">
               Sign up free
-            </Link>
-            <Link className="ghost-button" href="/login" style={{ padding: "0.4rem 0.9rem", fontSize: "0.82rem" }}>
+            </ButtonLink>
+            <ButtonLink href="/login" size="sm" variant="ghost">
               Log in
-            </Link>
+            </ButtonLink>
           </div>
         </div>
       )}

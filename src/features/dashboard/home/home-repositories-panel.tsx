@@ -1,9 +1,9 @@
 "use client";
 
-import Link from "next/link";
 import { motion } from "framer-motion";
 
 import { Badge, type BadgeProps } from "@/components/ui/badge";
+import { ButtonLink } from "@/components/ui/button";
 import type { GitHubRepo, ProvisionedProject } from "@/lib/api/contracts";
 
 import { EASE_OUT } from "./home-bento-grid";
@@ -84,7 +84,7 @@ export function HomeRepositoriesPanel({
       {guest ? (
         <div className="glass-panel" style={{ textAlign: "center", padding: "3rem 1.5rem", background: "rgba(15, 23, 42, 0.3)", borderRadius: "var(--radius-card)" }}>
           <p style={{ color: "var(--text-secondary)", marginBottom: "1.25rem", fontSize: "0.9rem" }}>Sign in to see your repositories.</p>
-          <Link className="primary-button" href="/login" style={{ padding: "0.65rem 1.5rem", fontSize: "0.9rem" }}>Sign in</Link>
+          <ButtonLink href="/login">Sign in</ButtonLink>
         </div>
       ) : (
         <>
@@ -113,7 +113,7 @@ export function HomeRepositoriesPanel({
             ) : projects.length === 0 ? (
               <div className="glass-panel" style={{ textAlign: "center", padding: "3rem 1.5rem", background: "rgba(15, 23, 42, 0.3)", borderRadius: "var(--radius-card)" }}>
                 <p style={{ color: "var(--text-secondary)", marginBottom: "1.25rem", fontSize: "0.88rem" }}>No projects provisioned yet.</p>
-                <Link className="primary-button" href="/workflows" style={{ padding: "0.65rem 1.5rem", fontSize: "0.9rem" }}>Create your first project</Link>
+                <ButtonLink href="/workflows">Create your first project</ButtonLink>
               </div>
             ) : (
               <>

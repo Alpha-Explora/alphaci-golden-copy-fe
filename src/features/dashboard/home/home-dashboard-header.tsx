@@ -1,10 +1,10 @@
 "use client";
 
 import Image from "next/image";
-import Link from "next/link";
 import { motion } from "framer-motion";
 
 import { Badge } from "@/components/ui/badge";
+import { ButtonLink } from "@/components/ui/button";
 import type { AuthMeResponse } from "@/lib/api/contracts";
 
 import { PipelineTrack, sectionVariants } from "./home-bento-grid";
@@ -104,13 +104,13 @@ export function HomeDashboardHeader({
         <div style={{ display: "flex", gap: "0.5rem" }}>
           {guest ? (
             <>
-              <Link className="primary-button" href="/signup" style={{ padding: "0.4rem 1rem", fontSize: "0.8rem", minHeight: "2.2rem" }}>Sign up free</Link>
-              <Link className="ghost-button" href="/login" style={{ padding: "0.4rem 1rem", fontSize: "0.8rem", minHeight: "2.2rem" }}>Log in</Link>
+              <ButtonLink href="/signup" size="sm">Sign up free</ButtonLink>
+              <ButtonLink href="/login" size="sm" variant="ghost">Log in</ButtonLink>
             </>
           ) : (
             <>
-              <Link className="primary-button" href="/workflows" style={{ padding: "0.4rem 1.2rem", fontSize: "0.8rem", minHeight: "2.2rem" }}>Create project</Link>
-              <Link className="ghost-button" href="/subscribe" style={{ padding: "0.4rem 1.2rem", fontSize: "0.8rem", minHeight: "2.2rem" }}>Subscription</Link>
+              <ButtonLink href="/workflows" size="sm">Create project</ButtonLink>
+              <ButtonLink href="/subscribe" size="sm" variant="ghost">Subscription</ButtonLink>
             </>
           )}
         </div>

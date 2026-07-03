@@ -1,8 +1,10 @@
+import fs from "fs";
+import path from "path";
 import { act } from "react";
 import { createRoot, type Root } from "react-dom/client";
 
 import { Badge } from "../../src/components/ui/badge";
-import { Button } from "../../src/components/ui/button";
+import { Button, ButtonLink } from "../../src/components/ui/button";
 import { Card } from "../../src/components/ui/card";
 import { PublicLink } from "../../src/components/ui/public-link";
 import { Logo, PixelWordmark } from "../../src/components/brand";
@@ -41,6 +43,21 @@ describe("design-system primitives", () => {
     expect(button?.className).toContain("button");
     expect(button?.className).toContain("primary");
     expect(button?.className).toContain("sm");
+  });
+
+  it("renders a typed button link with the same variant contract", () => {
+    const result = render(<ButtonLink href="/workflows" variant="ghost" size="sm">Create project</ButtonLink>);
+    root = result.root;
+
+    const link = result.container.querySelector("a");
+    expect(link).toHaveAttribute("href", "/workflows");
+    expect(link).toHaveTextContent("Create project");
+    expect(link?.className).toContain("button");
+    expect(link?.className).toContain("ghost");
+    expect(link?.className).toContain("sm");
+
+    const buttonStyles = fs.readFileSync(path.join(process.cwd(), "src/components/ui/button/button.module.css"), "utf8");
+    expect(buttonStyles).toMatch(/\.button\s*{[\s\S]*text-decoration:\s*none;/);
   });
 
   it("renders public links with active state and optional chevron", () => {

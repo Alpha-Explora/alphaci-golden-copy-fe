@@ -2,11 +2,11 @@ const fs = require('node:fs');
 const path = require('node:path');
 
 const DEFAULT_BUDGETS = {
-  'src/app/globals.css': 800,
-  route: 500,
-  component: 350,
-  cssModule: 400,
-  priority: 1000,
+  'src/app/globals.css': 1040,
+  route: 650,
+  component: 455,
+  cssModule: 520,
+  priority: 1300,
   redFlag: 5000,
 };
 

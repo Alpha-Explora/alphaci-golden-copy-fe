@@ -1,4 +1,5 @@
 const {
+  DEFAULT_BUDGETS,
   countLines,
   detectMojibake,
   classifyGlobalSelector,
@@ -9,6 +10,17 @@ const {
 } = require('../../scripts/design-system/lib/report-helpers.cjs');
 
 describe('design-system report helpers', () => {
+  test('uses the approved buffered migration budgets', () => {
+    expect(DEFAULT_BUDGETS).toEqual({
+      'src/app/globals.css': 1040,
+      route: 650,
+      component: 455,
+      cssModule: 520,
+      priority: 1300,
+      redFlag: 5000,
+    });
+  });
+
   test('countLines handles empty, single-line, and multi-line text', () => {
     expect(countLines('')).toBe(0);
     expect(countLines('one')).toBe(1);
@@ -77,7 +89,7 @@ describe('design-system report helpers', () => {
   });
   test('createFileSizeReport marks files above their budget', () => {
     const report = createFileSizeReport([
-      { path: 'src/app/globals.css', lines: 900 },
+      { path: 'src/app/globals.css', lines: 1200 },
       { path: 'src/app/page.tsx', lines: 499 },
       { path: 'src/components/product/workflow-current-tab.tsx', lines: 1200 },
     ]);

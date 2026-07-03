@@ -200,14 +200,16 @@ Radix package approval is per primitive:
 
 ## File Budgets
 
-Budgets are report-only during migration:
+Budgets are report-only during migration. The strict targets remain the
+long-term architecture target, but the active migration uses an approved 30%
+acceptance buffer so product work can resume sooner:
 
-- `globals.css`: target under 800 lines after foundation split
-- Route pages: target under 500 lines
-- Components: target under 350 lines
-- CSS modules: target under 400 lines
-- Any file over 1,000 lines is a migration priority
-- Any file over 5,000 lines is a red flag and must not survive the refactor
+- `globals.css`: buffered target under 1,040 lines after foundation split
+- Route pages: buffered target under 650 lines
+- Components: buffered target under 455 lines
+- CSS modules: buffered target under 520 lines
+- Any file over 1,300 lines is a migration priority
+- Any file over 5,000 lines is a hard red flag and must not survive the refactor
 
 After migrated surfaces stabilize, these reports should become failing checks.
 

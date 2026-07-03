@@ -18,6 +18,11 @@ interface UseWorkflowDeploymentTargetsOptions {
   projectId: string;
 }
 
+type WorkflowTargetEditValue<K extends keyof UpdateDeploymentTargetRequest> =
+  K extends "renderEnvironmentName"
+    ? UpdateDeploymentTargetRequest[K] | ""
+    : UpdateDeploymentTargetRequest[K];
+
 export function useWorkflowDeploymentTargets({
   onDetached,
   onTargetChanged,
@@ -61,7 +66,7 @@ export function useWorkflowDeploymentTargets({
 
   const updateEditValue = <K extends keyof UpdateDeploymentTargetRequest>(
     key: K,
-    value: UpdateDeploymentTargetRequest[K],
+    value: WorkflowTargetEditValue<K>,
   ) => {
     setEditValues((current) => ({
       ...current,

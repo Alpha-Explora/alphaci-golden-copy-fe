@@ -291,6 +291,16 @@ describe("WorkflowBuilder project setup", () => {
         environments: ["test", "uat", "production"],
         modes: ["flowci_managed", "byo"],
       },
+      projectSyncSnapshots: {
+        enabled: true,
+        mode: "local_snapshot",
+      },
+      workflowSettingsPreview: {
+        enabled: true,
+      },
+      workflowUpdatePr: {
+        enabled: true,
+      },
     });
     mockedGetCategories.mockResolvedValue({ categories: [] });
     mockedGetTemplates.mockResolvedValue({ templates: [template] });

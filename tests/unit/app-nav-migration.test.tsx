@@ -109,10 +109,12 @@ describe("AppNav migration", () => {
     const compatibilitySource = fs.readFileSync(path.join(process.cwd(), "src/components/layout/app-nav.tsx"), "utf8");
     const implementationSource = fs.readFileSync(path.join(process.cwd(), "src/components/layout/app-shell/app-nav.tsx"), "utf8");
 
-    expect(compatibilitySource).toContain("@/components/layout/app-shell/app-nav");
+    expect(compatibilitySource).toContain("@/features/dashboard/app-shell/dashboard-app-nav");
+    const wrapperSource = fs.readFileSync(path.join(process.cwd(), "src/features/dashboard/app-shell/dashboard-app-nav.tsx"), "utf8");
+
     expect(implementationSource).toContain("app-nav.module.css");
+    expect(implementationSource).not.toContain("useAppNavData");
+    expect(wrapperSource).toContain("useAppNavData");
     expect(implementationSource).not.toMatch(new RegExp("[\\u00e2\\u00c2]"));
   });
 });
-
-

@@ -1,1 +1,1 @@
-export { AppNav } from "@/components/layout/app-shell/app-nav";
+export { DashboardAppNav as AppNav } from "@/features/dashboard/app-shell/dashboard-app-nav";

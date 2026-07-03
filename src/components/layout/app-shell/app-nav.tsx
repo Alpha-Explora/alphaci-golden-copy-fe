@@ -8,12 +8,9 @@ import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 
 import { NotificationCenter } from "@/components/layout/notification-center";
 import { PipelineLogo } from "@/components/layout/pipeline-logo";
-import { useWorkspaceSelection } from "@/components/layout/workspace-context";
 import { WorkspaceSwitcher } from "@/components/layout/workspace-switcher";
 import type { useAuthSession } from "@/hooks/use-auth-session";
 import type { NotificationsResponse, WorkspacesMeResponse } from "@/lib/api/contracts";
-import { getNotifications, markNotificationRead } from "@/lib/api/notifications";
-import { getMyWorkspaces } from "@/lib/api/workspaces";
 
 import {
   AdminIcon,
@@ -34,18 +31,26 @@ interface AppNavProps {
   session: ReturnType<typeof useAuthSession>["session"];
   onLogout: () => void;
   isLoggingOut: boolean;
+  workspaces: WorkspacesMeResponse | null;
+  notifications: NotificationsResponse | null;
+  onMarkNotificationRead: (id: string) => Promise<void> | void;
 }
 
 function cx(...classes: Array<string | false | null | undefined>) {
   return classes.filter(Boolean).join(" ");
 }
 
-export function AppNav({ guest, session, onLogout, isLoggingOut }: Readonly<AppNavProps>) {
+export function AppNav({
+  guest,
+  session,
+  onLogout,
+  isLoggingOut,
+  workspaces,
+  notifications,
+  onMarkNotificationRead,
+}: Readonly<AppNavProps>) {
   const pathname = usePathname();
   const [collapsed, setCollapsed] = useState(false);
-  const [workspaces, setWorkspacesState] = useState<WorkspacesMeResponse | null>(null);
-  const [notifications, setNotifications] = useState<NotificationsResponse | null>(null);
-  const { setWorkspaces } = useWorkspaceSelection();
   const prefersReducedMotion = useReducedMotion();
   const reduced = prefersReducedMotion ?? false;
   const sidebarRef = useRef<HTMLElement>(null);
@@ -65,41 +70,6 @@ export function AppNav({ guest, session, onLogout, isLoggingOut }: Readonly<AppN
   useEffect(() => {
     document.documentElement.style.setProperty("--sidebar-width", collapsed ? "64px" : "220px");
   }, [collapsed]);
-
-  useEffect(() => {
-    if (guest) return;
-    let active = true;
-    void getMyWorkspaces()
-      .then((response) => {
-        if (!active) return;
-        setWorkspacesState(response);
-        setWorkspaces(response);
-      })
-      .catch(() => {
-        if (!active) return;
-        setWorkspacesState({ enabled: false, items: [] });
-        setWorkspaces(null);
-      });
-    return () => { active = false; };
-  }, [guest, setWorkspaces]);
-
-  useEffect(() => {
-    if (guest) return;
-    let active = true;
-    void getNotifications()
-      .then((response) => { if (active) setNotifications(response); })
-      .catch(() => { if (active) setNotifications({ enabled: false, items: [], unreadCount: 0 }); });
-    return () => { active = false; };
-  }, [guest]);
-
-  async function handleMarkNotificationRead(id: string) {
-    await markNotificationRead(id);
-    setNotifications((current) => current ? {
-      ...current,
-      unreadCount: Math.max(0, current.unreadCount - 1),
-      items: current.items.map((item) => item.id === id ? { ...item, readAt: item.readAt ?? new Date().toISOString() } : item),
-    } : current);
-  }
 
   const sidebarWidth = collapsed ? 64 : 220;
 
@@ -130,7 +100,7 @@ export function AppNav({ guest, session, onLogout, isLoggingOut }: Readonly<AppN
       <div className={styles.bottomZone}>
         {!guest && (
           <>
-            <div className={styles.bottomUtilities}><WorkspaceSwitcher workspaces={workspaces} /><div className={styles.utilityActions}><NotificationCenter notifications={notifications} onMarkRead={handleMarkNotificationRead} /></div></div>
+            <div className={styles.bottomUtilities}><WorkspaceSwitcher workspaces={workspaces} /><div className={styles.utilityActions}><NotificationCenter notifications={notifications} onMarkRead={onMarkNotificationRead} /></div></div>
             <div className={styles.userChip} aria-label={`Signed in as ${session?.user.login ?? "user"}`}>
               <span className={styles.userAvatarRing}>{session?.user.avatarUrl ? <Image src={session.user.avatarUrl} alt={session.user.name ?? session.user.login} width={28} height={28} className={styles.userAvatarImg} unoptimized /> : <span className={styles.userAvatarFallback} aria-hidden="true">{avatarInitial}</span>}</span>
               <AnimatePresence initial={false}>{!collapsed && <motion.div className={styles.userInfo} initial={reduced ? false : { opacity: 0, x: -8 }} animate={{ opacity: 1, x: 0 }} exit={reduced ? undefined : { opacity: 0, x: -8 }} transition={{ duration: 0.16 }}><span className={styles.userLogin}>{session?.user.login ?? "user"}</span>{session?.subscription.plan && <span className={styles.userPlanBadge}>{session.subscription.plan}</span>}</motion.div>}</AnimatePresence>

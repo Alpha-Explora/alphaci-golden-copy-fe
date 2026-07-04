@@ -13,12 +13,7 @@
     "clean:next": "node scripts/dev/clean-next.cjs",
     "dev:clean": "node scripts/dev/run-next-dev.cjs --mode turbo --port 3000",
     "dev:webpack": "node scripts/dev/run-next-dev.cjs --mode webpack --port 3000",
-    "build:clean": "node scripts/dev/clean-next.cjs && next build",
-    "check:file-size": "node scripts/design-system/report-file-size.cjs",
-    "check:css-boundaries": "node scripts/design-system/report-css-boundaries.cjs",
-    "check:mojibake": "node scripts/design-system/report-mojibake.cjs",
-    "check:routes": "node scripts/design-system/route-smoke.cjs",
-    "check:design-system": "node scripts/design-system/check-design-system.cjs"
+    "build:clean": "node scripts/dev/clean-next.cjs && next build"
   },
   "dependencies": {
     "driver.js": "^1.4.0",

@@ -26,10 +26,10 @@ function isPortReachable(port, host = '127.0.0.1') {
 }
 
 function writeRuntimeMarker(baseUrl, mode) {
-  const dir = path.join(process.cwd(), '.design-system', 'runtime');
+  const dir = path.join(process.cwd(), '.next');
   fs.mkdirSync(dir, { recursive: true });
   fs.writeFileSync(
-    path.join(dir, 'dev-server.json'),
+    path.join(dir, 'alphaci-dev-server.json'),
     `${JSON.stringify({
       version: 1,
       baseUrl,

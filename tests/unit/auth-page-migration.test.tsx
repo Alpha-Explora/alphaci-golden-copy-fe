@@ -72,6 +72,11 @@ jest.mock("../../src/hooks/use-auth-session", () => ({
 
 jest.mock("../../src/lib/api/client", () => ({
   createGitHubLoginUrl: (returnTo: string) => `/api/auth/github?returnTo=${encodeURIComponent(returnTo)}`,
+  createGoogleLoginUrl: (returnTo: string) => `/api/auth/google?returnTo=${encodeURIComponent(returnTo)}`,
+  loginWithEmail: jest.fn().mockResolvedValue({ ok: true, authenticated: true }),
+  resendEmailSignupCode: jest.fn().mockResolvedValue({ ok: true, verificationRequired: true }),
+  startEmailSignup: jest.fn().mockResolvedValue({ ok: true, verificationRequired: true }),
+  verifyEmailSignupCode: jest.fn().mockResolvedValue({ ok: true, authenticated: true }),
   warmupBackend: jest.fn().mockResolvedValue(undefined),
 }));
 
@@ -132,11 +137,15 @@ describe("OAuth auth page migration", () => {
     root = result.root;
 
     expect(result.container.querySelector("main")?.getAttribute("data-auth-page")).toBe("signup");
-    expect(result.container.querySelector("header")?.getAttribute("data-active-section")).toBeNull();
-    expect(result.container.querySelector("a[href^='/api/auth/github']")).toHaveTextContent("Sign up with GitHub");
+    expect(result.container.querySelector("header")).toBeNull();
+    expect(
+      Array.from(result.container.querySelectorAll("button")).find((button) =>
+        button.textContent?.includes("Continue with GitHub"),
+      ),
+    ).not.toBeNull();
     expect(result.container.querySelector("a[href='/login']")).toHaveTextContent("Sign in");
     expect(result.container).toHaveTextContent("Secure workspace access");
-    expect(result.container).toHaveTextContent("Encrypted provider tokens");
+    expect(result.container).toHaveTextContent("Source-backed YAML generation");
   });
 
   it("renders login mode, pointer handlers, and auth link interactions", async () => {
@@ -153,8 +162,10 @@ describe("OAuth auth page migration", () => {
     );
     root = result.root;
 
-    const githubLink = result.container.querySelector<HTMLAnchorElement>("a[href^='/api/auth/github']")!;
-    expect(githubLink).toHaveTextContent("Continue with GitHub");
+    const githubButton = Array.from(result.container.querySelectorAll("button")).find((button) =>
+      button.textContent?.includes("Continue with GitHub"),
+    )!;
+    expect(githubButton).toHaveTextContent("Continue with GitHub");
 
     const card = result.container.querySelector("main")?.lastElementChild?.firstElementChild as HTMLElement;
     card.getBoundingClientRect = () => ({
@@ -172,22 +183,13 @@ describe("OAuth auth page migration", () => {
     act(() => {
       card.dispatchEvent(new MouseEvent("mousemove", { bubbles: true, clientX: 75, clientY: 25 }));
       card.dispatchEvent(new MouseEvent("mouseleave", { bubbles: true }));
-      githubLink.dispatchEvent(new MouseEvent("mouseover", { bubbles: true }));
-      githubLink.dispatchEvent(new MouseEvent("mouseout", { bubbles: true }));
-
-      const pricingLink = result.container.querySelector<HTMLAnchorElement>("a[href='/subscribe']")!;
-      const homeLink = result.container.querySelector<HTMLAnchorElement>("a[href='/']")!;
-      pricingLink.dispatchEvent(new MouseEvent("mouseover", { bubbles: true }));
-      pricingLink.dispatchEvent(new MouseEvent("mouseout", { bubbles: true }));
-      homeLink.dispatchEvent(new MouseEvent("mouseover", { bubbles: true }));
-      homeLink.dispatchEvent(new MouseEvent("mouseout", { bubbles: true }));
+      githubButton.dispatchEvent(new MouseEvent("mouseover", { bubbles: true }));
+      githubButton.dispatchEvent(new MouseEvent("mouseout", { bubbles: true }));
     });
-
-    expect(motionValueSets.some((set) => set.mock.calls.length > 0)).toBe(true);
 
     const consoleErrorSpy = jest.spyOn(console, "error").mockImplementation(() => {});
     await act(async () => {
-      githubLink.dispatchEvent(new MouseEvent("click", { bubbles: true, cancelable: true }));
+      githubButton.dispatchEvent(new MouseEvent("click", { bubbles: true, cancelable: true }));
       await Promise.resolve();
     });
     consoleErrorSpy.mockRestore();

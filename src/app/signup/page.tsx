@@ -12,7 +12,7 @@ export default function SignupPage() {
         subtitle="Start with GitHub and generate your first governed workflow in minutes."
         switchText="Already have an account?"
         switchHref="/login"
-        switchCta="Log in"
+        switchCta="Sign In"
       />
     </Suspense>
   );

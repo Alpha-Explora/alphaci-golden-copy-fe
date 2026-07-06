@@ -4,6 +4,52 @@ import { getApiBaseUrl, request } from "./request";
 export function createGitHubLoginUrl(returnTo: string): string {
   return `${getApiBaseUrl()}/auth/github/start?returnTo=${encodeURIComponent(returnTo)}`;
 }
+export function createGoogleLoginUrl(returnTo: string): string {
+  return `${getApiBaseUrl()}/auth/google/start?returnTo=${encodeURIComponent(returnTo)}`;
+}
+
+export interface EmailSignupInput {
+  firstName: string;
+  lastName: string;
+  email: string;
+  password: string;
+}
+
+export interface EmailLoginInput {
+  email: string;
+  password: string;
+}
+
+export async function startEmailSignup(input: EmailSignupInput): Promise<{ ok: true; verificationRequired: true }> {
+  return request<{ ok: true; verificationRequired: true }>("/auth/email/signup", {
+    method: "POST",
+    body: JSON.stringify(input),
+  });
+}
+
+export async function verifyEmailSignupCode(input: {
+  email: string;
+  code: string;
+}): Promise<{ ok: true; authenticated: true; user: AuthMeResponse["user"] }> {
+  return request<{ ok: true; authenticated: true; user: AuthMeResponse["user"] }>("/auth/email/verify-code", {
+    method: "POST",
+    body: JSON.stringify(input),
+  });
+}
+
+export async function loginWithEmail(input: EmailLoginInput): Promise<{ ok: true; authenticated: true; user: AuthMeResponse["user"] }> {
+  return request<{ ok: true; authenticated: true; user: AuthMeResponse["user"] }>("/auth/email/login", {
+    method: "POST",
+    body: JSON.stringify(input),
+  });
+}
+
+export async function resendEmailSignupCode(email: string): Promise<{ ok: true; verificationRequired: true }> {
+  return request<{ ok: true; verificationRequired: true }>("/auth/email/resend-code", {
+    method: "POST",
+    body: JSON.stringify({ email }),
+  });
+}
 
 export async function getAuthSession(): Promise<AuthMeResponse> {
   return request<AuthMeResponse>("/auth/me");

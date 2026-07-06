@@ -6,8 +6,9 @@ import { FormEvent, useEffect, useMemo, useState } from "react";
 
 import { Logo } from "@/components/brand";
 import { Button } from "@/components/ui/button";
+import { InputOTP } from "@/components/ui/input-otp";
 import { useAuthSession } from "@/hooks/use-auth-session";
-import { createGitHubLoginUrl, warmupBackend } from "@/lib/api/client";
+import { createGitHubLoginUrl, createGoogleLoginUrl, loginWithEmail, resendEmailSignupCode, startEmailSignup, verifyEmailSignupCode, warmupBackend } from "@/lib/api/client";
 import { getAuthenticatedRedirectPath } from "@/lib/auth/subscription";
 
 import cardStyles from "./oauth-auth-card.module.css";
@@ -212,8 +213,13 @@ export function OAuthAuthPage({
   const [isWarming, setIsWarming] = useState(false);
   const [browserOrigin, setBrowserOrigin] = useState<string | null>(null);
   const [authMessage, setAuthMessage] = useState<string | null>(null);
-  const [signupStep, setSignupStep] = useState<"identity" | "password">("identity");
+  const [signupStep, setSignupStep] = useState<"identity" | "password" | "verify">("identity");
   const [signupEmail, setSignupEmail] = useState("");
+  const [signupFirstName, setSignupFirstName] = useState("");
+  const [signupLastName, setSignupLastName] = useState("");
+  const [verificationCode, setVerificationCode] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [resendCooldown, setResendCooldown] = useState(29);
   const [showPassword, setShowPassword] = useState(false);
 
   const { status, session } = useAuthSession();
@@ -229,8 +235,19 @@ export function OAuthAuthPage({
     return browserOrigin ? `${browserOrigin}${relativeCallbackPath}` : relativeCallbackPath;
   }, [browserOrigin, mode, nextPath]);
 
+  const googleCallbackReturnTo = useMemo(() => {
+    const callbackPath = new URLSearchParams({
+      intent: mode,
+      next: nextPath,
+      provider: "google",
+    });
+    const relativeCallbackPath = `/auth/callback?${callbackPath.toString()}`;
+    return browserOrigin ? `${browserOrigin}${relativeCallbackPath}` : relativeCallbackPath;
+  }, [browserOrigin, mode, nextPath]);
+
   const githubLoginHref = useMemo(() => createGitHubLoginUrl(githubCallbackReturnTo), [githubCallbackReturnTo]);
-  const pageTitle = mode === "login" ? "Sign in to AlphaCI" : "Sign up for AlphaCI";
+  const googleLoginHref = useMemo(() => createGoogleLoginUrl(googleCallbackReturnTo), [googleCallbackReturnTo]);
+  const pageTitle = mode === "login" ? "Sign in to AlphaCI" : signupStep === "verify" ? "Verify your email" : "Sign up for AlphaCI";
   const normalSubmitLabel = mode === "login" ? "Sign in" : signupStep === "identity" ? "Continue" : "Create account";
 
   useEffect(() => {
@@ -243,7 +260,16 @@ export function OAuthAuthPage({
     if (redirectPath) router.replace(redirectPath);
   }, [nextPath, router, session, status]);
 
-  async function startGitHubLogin() {
+  useEffect(() => {
+    if (signupStep !== "verify" || resendCooldown <= 0) return undefined;
+    const timer = window.setInterval(() => {
+      setResendCooldown((current) => Math.max(0, current - 1));
+    }, 1000);
+
+    return () => window.clearInterval(timer);
+  }, [resendCooldown, signupStep]);
+
+  async function startProviderLogin(href: string) {
     setIsWarming(true);
     try {
       await warmupBackend();
@@ -252,26 +278,83 @@ export function OAuthAuthPage({
     } finally {
       setIsWarming(false);
     }
-    window.location.href = githubLoginHref;
+    window.location.href = href;
+  }
+
+  function startGitHubLogin() {
+    void startProviderLogin(githubLoginHref);
   }
 
   function handleGoogleStart() {
-    setAuthMessage("Google sign-in is ready in the UI, but the backend Google OAuth start route is not enabled yet.");
+    void startProviderLogin(googleLoginHref);
   }
 
-  function handleNormalSubmit(event: FormEvent<HTMLFormElement>) {
+  async function handleNormalSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     const formData = new FormData(event.currentTarget);
     const email = String(formData.get("email") ?? "").trim();
 
     if (mode === "signup" && signupStep === "identity") {
+      setSignupFirstName(String(formData.get("firstName") ?? "").trim());
+      setSignupLastName(String(formData.get("lastName") ?? "").trim());
       setSignupEmail(email);
       setSignupStep("password");
       setAuthMessage(null);
       return;
     }
 
-    setAuthMessage("Email and password access is not enabled on the backend yet. Use GitHub to continue for now.");
+    setIsSubmitting(true);
+    setAuthMessage(null);
+    try {
+      if (mode === "signup" && signupStep === "password") {
+        await startEmailSignup({
+          firstName: signupFirstName,
+          lastName: signupLastName,
+          email: signupEmail || email,
+          password: String(formData.get("password") ?? ""),
+        });
+        setSignupStep("verify");
+        setVerificationCode("");
+        setResendCooldown(29);
+        return;
+      }
+
+      await loginWithEmail({
+        email,
+        password: String(formData.get("password") ?? ""),
+      });
+      router.replace(nextPath);
+    } catch {
+      setAuthMessage(mode === "login" ? "We could not sign you in with that email and password." : "We could not start email verification. Please try again.");
+    } finally {
+      setIsSubmitting(false);
+    }
+  }
+
+  async function handleCodeComplete(code: string) {
+    setIsSubmitting(true);
+    setAuthMessage(null);
+    try {
+      await verifyEmailSignupCode({ email: signupEmail, code });
+      router.replace(nextPath);
+    } catch {
+      setAuthMessage("That verification code is invalid or expired.");
+    } finally {
+      setIsSubmitting(false);
+    }
+  }
+
+  async function handleResendCode() {
+    setIsSubmitting(true);
+    setAuthMessage(null);
+    try {
+      await resendEmailSignupCode(signupEmail);
+      setResendCooldown(29);
+    } catch {
+      setAuthMessage("We could not send a new verification code. Please try again.");
+    } finally {
+      setIsSubmitting(false);
+    }
   }
 
   return (
@@ -286,95 +369,140 @@ export function OAuthAuthPage({
             <h1 id="auth-title">{pageTitle}</h1>
           </div>
 
-          <form className={cardStyles.form} onSubmit={handleNormalSubmit}>
-            {mode === "signup" && signupStep === "identity" ? (
-              <div className={cardStyles.nameGrid}>
-                <label className={cardStyles.field}>
-                  <span>First name</span>
-                  <input name="firstName" autoComplete="given-name" placeholder="Your first name" required suppressHydrationWarning />
-                </label>
-                <label className={cardStyles.field}>
-                  <span>Last name</span>
-                  <input name="lastName" autoComplete="family-name" placeholder="Your last name" required suppressHydrationWarning />
-                </label>
+          {mode === "signup" && signupStep === "verify" ? (
+            <div className="flex flex-col gap-5 pt-2 font-[var(--font-dash-body)]">
+              <div className="rounded-lg border border-slate-700 bg-slate-950/20 px-5 py-5 shadow-none">
+                <div className="flex flex-col items-center gap-4 text-center">
+                  <p className="m-0 text-[0.95rem] leading-6 text-slate-200">
+                    Enter the code sent to <strong className="font-semibold text-slate-50">{signupEmail || "your email address"}</strong>
+                  </p>
+
+                  <InputOTP
+                    autoFocus
+                    id="verification-code"
+                    label="Email verification code"
+                    onChange={setVerificationCode}
+                    disabled={isSubmitting}
+                    onComplete={handleCodeComplete}
+                    value={verificationCode}
+                  />
+
+                  <div className="flex flex-col gap-1 text-sm leading-5">
+                    <span className="text-slate-100">Didn&apos;t receive a code?</span>
+                    <button
+                      className="rounded-sm border-0 bg-transparent p-0 text-slate-400 transition hover:text-slate-100 disabled:cursor-not-allowed disabled:text-slate-500"
+                      disabled={resendCooldown > 0 || isSubmitting}
+                      onClick={handleResendCode}
+                      type="button"
+                    >
+                      {resendCooldown > 0 ? `Resend in ${resendCooldown}` : "Resend code"}
+                    </button>
+                  </div>
+                </div>
               </div>
-            ) : null}
 
-            <label className={cardStyles.field}>
-              <span>Email</span>
-              <input
-                name="email"
-                type="email"
-                autoComplete="email"
-                placeholder="Your email address"
-                defaultValue={mode === "signup" ? signupEmail : ""}
-                readOnly={mode === "signup" && signupStep === "password"}
-                required
-                suppressHydrationWarning
-              />
-            </label>
+              <Link
+                className="self-center rounded-sm text-sm text-slate-400 no-underline transition before:mr-2 before:content-['<'] hover:text-slate-100 hover:underline hover:underline-offset-4"
+                href="/login"
+              >
+                Back to sign-in
+              </Link>
+            </div>
+          ) : (
+            <>
+              <form className={cardStyles.form} onSubmit={handleNormalSubmit}>
+                {mode === "signup" && signupStep === "identity" ? (
+                  <div className={cardStyles.nameGrid}>
+                    <label className={cardStyles.field}>
+                      <span>First name</span>
+                      <input name="firstName" autoComplete="given-name" placeholder="Your first name" required suppressHydrationWarning />
+                    </label>
+                    <label className={cardStyles.field}>
+                      <span>Last name</span>
+                      <input name="lastName" autoComplete="family-name" placeholder="Your last name" required suppressHydrationWarning />
+                    </label>
+                  </div>
+                ) : null}
 
-            {mode === "login" || signupStep === "password" ? (
-              <label className={cardStyles.field}>
-                <span>Password</span>
-                <span className={cardStyles.passwordControl}>
+                <label className={cardStyles.field}>
+                  <span>Email</span>
                   <input
-                    name="password"
-                    type={showPassword ? "text" : "password"}
-                    autoComplete={mode === "login" ? "current-password" : "new-password"}
-                    placeholder={mode === "login" ? "Enter your password" : "Create a password"}
-                    minLength={8}
+                    name="email"
+                    type="email"
+                    autoComplete="email"
+                    placeholder="Your email address"
+                    defaultValue={mode === "signup" ? signupEmail : ""}
+                    readOnly={mode === "signup" && signupStep === "password"}
                     required
                     suppressHydrationWarning
                   />
-                  <button
-                    type="button"
-                    aria-label={showPassword ? "Hide password" : "Show password"}
-                    onClick={() => setShowPassword((current) => !current)}
-                  >
-                    <EyeGlyph />
-                  </button>
-                </span>
-              </label>
-            ) : null}
+                </label>
 
-            <Button className={cardStyles.submitButton} size="lg" type="submit">
-              {normalSubmitLabel}
-            </Button>
-          </form>
+                {mode === "login" || signupStep === "password" ? (
+                  <label className={cardStyles.field}>
+                    <span>Password</span>
+                    <span className={cardStyles.passwordControl}>
+                      <input
+                        name="password"
+                        type={showPassword ? "text" : "password"}
+                        autoComplete={mode === "login" ? "current-password" : "new-password"}
+                        placeholder={mode === "login" ? "Enter your password" : "Create a password"}
+                        minLength={8}
+                        required
+                        suppressHydrationWarning
+                      />
+                      <button
+                        type="button"
+                        aria-label={showPassword ? "Hide password" : "Show password"}
+                        onClick={() => setShowPassword((current) => !current)}
+                      >
+                        <EyeGlyph />
+                      </button>
+                    </span>
+                  </label>
+                ) : null}
 
-          {mode === "signup" && signupStep === "password" ? (
-            <button className={cardStyles.backButton} type="button" onClick={() => setSignupStep("identity")}>
-              Go back
-            </button>
-          ) : null}
+                <Button className={cardStyles.submitButton} disabled={isSubmitting} size="lg" type="submit">
+                  {isSubmitting ? "Please wait..." : normalSubmitLabel}
+                </Button>
+              </form>
 
-          <div className={cardStyles.divider}>
-            <span>or</span>
-          </div>
+              {mode === "signup" && signupStep === "password" ? (
+                <button className={cardStyles.backButton} type="button" onClick={() => setSignupStep("identity")}>
+                  Go back
+                </button>
+              ) : null}
 
-          <div className={cardStyles.providerGroup}>
-            <button className={cardStyles.providerButton} disabled={isWarming} type="button" onClick={startGitHubLogin}>
-              <GitHubGlyph />
-              <span>{isWarming ? "Connecting..." : "Continue with GitHub"}</span>
-            </button>
-            <button className={cardStyles.providerButton} type="button" onClick={handleGoogleStart}>
-              <GoogleGlyph />
-              <span>Continue with Google</span>
-            </button>
-          </div>
+              <div className={cardStyles.divider}>
+                <span>or</span>
+              </div>
 
-          {authMessage ? <p className={cardStyles.notice} role="status">{authMessage}</p> : null}
-          {status === "loading" ? <p className={cardStyles.notice}>Checking current session...</p> : null}
+              <div className={cardStyles.providerGroup}>
+                <button className={cardStyles.providerButton} disabled={isWarming} type="button" onClick={startGitHubLogin}>
+                  <GitHubGlyph />
+                  <span>{isWarming ? "Connecting..." : "Continue with GitHub"}</span>
+                </button>
+                <button className={cardStyles.providerButton} disabled={isWarming} type="button" onClick={handleGoogleStart}>
+                  <GoogleGlyph />
+                  <span>Continue with Google</span>
+                </button>
+              </div>
 
-          <p className={cardStyles.switchText}>
-            {switchText} <Link href={switchHref}>{switchCta}</Link>
-          </p>
+              {authMessage ? <p className={cardStyles.notice} role="status">{authMessage}</p> : null}
+              {status === "loading" ? <p className={cardStyles.notice}>Checking current session...</p> : null}
+
+              <p className={cardStyles.switchText}>
+                {switchText} <Link href={switchHref}>{switchCta}</Link>
+              </p>
+            </>
+          )}
         </div>
 
-        <p className={cardStyles.terms}>
-          By creating an account, you agree to the <Link href="/pricing">Terms and Conditions</Link>
-        </p>
+        {mode === "signup" && signupStep !== "verify" ? (
+          <p className={cardStyles.terms}>
+            By creating an account, you agree to the <Link href="/pricing">Terms and Conditions</Link>
+          </p>
+        ) : null}
 
         <span className={styles.assistiveCopy}>{title} {subtitle}</span>
       </section>

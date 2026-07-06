@@ -51,6 +51,17 @@ export async function resendEmailSignupCode(email: string): Promise<{ ok: true; 
   });
 }
 
+export interface ConnectedIdentityMethod {
+  provider: "email" | "google" | "github";
+  email?: string;
+  emailVerified: boolean;
+}
+
+export async function getConnectedIdentities(): Promise<{
+  methods: ConnectedIdentityMethod[];
+}> {
+  return request<{ methods: ConnectedIdentityMethod[] }>("/auth/identities");
+}
 export async function getAuthSession(): Promise<AuthMeResponse> {
   return request<AuthMeResponse>("/auth/me");
 }

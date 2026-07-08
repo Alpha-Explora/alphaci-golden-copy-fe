@@ -1,5 +1,6 @@
 "use client";
 import { productSharedStyles } from "@/components/product/product-shared-styles";
+import { feedbackStyles } from "@/components/ui/feedback-styles";
 
 import type { Dispatch, SetStateAction } from "react";
 
@@ -243,7 +244,7 @@ export function WorkflowProjectWorkflowPanel({
           </div>
 
           {workflowSettingsError ? (
-            <p className="error-text" style={{ margin: 0 }}>{workflowSettingsError}</p>
+            <p className={feedbackStyles.errorText}>{workflowSettingsError}</p>
           ) : null}
 
           {workflowPreview?.validationWarnings.length ? (
@@ -294,7 +295,7 @@ export function WorkflowProjectWorkflowPanel({
                 </div>
               ) : null}
               {workflowUpdatePrError ? (
-                <p className="error-text" style={{ margin: 0 }}>{workflowUpdatePrError}</p>
+                <p className={feedbackStyles.errorText}>{workflowUpdatePrError}</p>
               ) : null}
             </>
           ) : null}

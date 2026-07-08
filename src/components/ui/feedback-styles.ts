@@ -7,6 +7,7 @@ export const feedbackStyles = {
     info: "border border-[rgba(79,142,255,0.3)] bg-[rgba(79,142,255,0.08)] text-[var(--brand)]",
     error: "border border-[rgba(255,79,79,0.3)] bg-[rgba(255,79,79,0.08)] text-[#ff8b8b]",
   } satisfies Record<StatusBannerTone, string>,
+  errorText: "m-0 rounded-[0.84rem] border border-[rgba(255,79,79,0.4)] bg-[rgba(255,79,79,0.08)] px-[0.74rem] py-[0.55rem] text-[#ff8b8b]",
   inlineError: "mt-3 flex items-center gap-[0.55rem] rounded-[0.84rem] border border-[rgba(255,79,79,0.3)] bg-[rgba(255,79,79,0.08)] px-[0.74rem] py-[0.55rem] text-[0.86rem] text-[#ff8b8b]",
   inlineErrorGlass: "!border-[rgba(248,113,113,0.2)] !bg-[rgba(248,113,113,0.05)]",
   inlineErrorIcon: "shrink-0 not-italic text-base",

@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
 
+import { feedbackStyles } from "@/components/ui/feedback-styles";
 import { useCapabilities } from "@/hooks/use-capabilities";
 import type {
   CreateProjectResult,
@@ -217,7 +218,7 @@ export function WorkflowCurrentTab({
                   <p className="env-empty-state">Loading project overview...</p>
                 ) : null}
                 {selectedOverviewError ? (
-                  <p className="error-text" style={{ margin: 0 }}>{selectedOverviewError}</p>
+                  <p className={feedbackStyles.errorText}>{selectedOverviewError}</p>
                 ) : null}
 
                 {projectDetailTab === "overview" ? (
@@ -264,7 +265,7 @@ export function WorkflowCurrentTab({
                 {projectDetailTab === "runs" ? (
                   ciRunTrackingEnabled && selectedOverview?.capabilities.ciRunTracking ? (
                     ciRunsError ? (
-                      <p className="error-text" style={{ margin: 0 }}>{ciRunsError}</p>
+                      <p className={feedbackStyles.errorText}>{ciRunsError}</p>
                     ) : (
                       <CiRunsList response={ciRunsResponse} />
                     )
@@ -277,7 +278,7 @@ export function WorkflowCurrentTab({
                   <div style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
                     {deploymentHistoryEnabled && selectedOverview?.capabilities.deploymentHistory ? (
                       deploymentsError ? (
-                        <p className="error-text" style={{ margin: 0 }}>{deploymentsError}</p>
+                        <p className={feedbackStyles.errorText}>{deploymentsError}</p>
                       ) : (
                         <DeploymentHistoryList response={deploymentsResponse} />
                       )
@@ -326,7 +327,7 @@ export function WorkflowCurrentTab({
 
                 {projectDetailTab === "audit" ? (
                   auditError ? (
-                    <p className="error-text" style={{ margin: 0 }}>{auditError}</p>
+                    <p className={feedbackStyles.errorText}>{auditError}</p>
                   ) : auditResponse?.items.length ? (
                     <div className="env-metadata-list">
                       {auditResponse.items.map((event) => (

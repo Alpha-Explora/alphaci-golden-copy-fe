@@ -4,8 +4,10 @@ import Image from "next/image";
 import { motion } from "framer-motion";
 
 import { Badge } from "@/components/ui/badge";
+import { feedbackStyles } from "@/components/ui/feedback-styles";
 import { ButtonLink } from "@/components/ui/button";
 import type { AuthMeResponse } from "@/lib/api/contracts";
+import { cn } from "@/lib/utils";
 
 import { PipelineTrack, sectionVariants } from "./home-bento-grid";
 
@@ -115,8 +117,8 @@ export function HomeDashboardHeader({
         </div>
       </div>
 
-      {error ? <p className="error-text" style={{ marginTop: "1rem" }}>{error}</p> : null}
-      {logoutMessage ? <p className="error-text" style={{ marginTop: "1rem" }}>{logoutMessage}</p> : null}
+      {error ? <p className={cn(feedbackStyles.errorText, "mt-4")}>{error}</p> : null}
+      {logoutMessage ? <p className={cn(feedbackStyles.errorText, "mt-4")}>{logoutMessage}</p> : null}
     </motion.section>
   );
 }

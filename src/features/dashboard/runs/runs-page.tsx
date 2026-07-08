@@ -11,6 +11,7 @@ import { DashboardPageContent, DashboardShell } from "@/components/layout/app-sh
 import { FlowBackground } from "@/components/layout/flow-background";
 import { PipelineLoader } from "@/components/layout/pipeline-loader";
 import { ButtonLink } from "@/components/ui/button";
+import { feedbackStyles } from "@/components/ui/feedback-styles";
 import { useAuthSession } from "@/hooks/use-auth-session";
 import { logout, getRuns } from "@/lib/api/client";
 import { ApiError } from "@/lib/api/request";
@@ -332,7 +333,7 @@ export default function RunsPage() {
 
   return (
     <>
-      {logoutMessage && <p className="error-text">{logoutMessage}</p>}
+      {logoutMessage && <p className={feedbackStyles.errorText}>{logoutMessage}</p>}
       <Suspense fallback={<PipelineLoader label="Loading pipeline runs" />}>
         <RunsContent
           guest={guest}

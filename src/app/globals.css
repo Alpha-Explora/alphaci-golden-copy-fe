@@ -191,14 +191,6 @@ select option {
   background: var(--bg-panel);
   color: var(--text-primary);
 }
-.error-text {
-  margin: 0;
-  padding: 0.55rem 0.74rem;
-  border-radius: 0.84rem;
-  border: 1px solid rgba(255, 79, 79, 0.4);
-  color: #ff8b8b;
-  background: rgba(255, 79, 79, 0.08);
-}
 @media (max-width: 900px) {
   .flow-shell,
   .product-shell {

@@ -2,6 +2,8 @@
 
 import { useEffect, useMemo, useState } from "react";
 
+import { feedbackStyles } from "@/components/ui/feedback-styles";
+
 import type {
   WorkspaceMemberSummary,
   WorkspaceRole,
@@ -183,7 +185,7 @@ export function WorkspaceMembersSection({
         </div>
       ) : null}
 
-      {message ? <p className="error-text" style={{ margin: 0 }}>{message}</p> : null}
+      {message ? <p className={feedbackStyles.errorText}>{message}</p> : null}
     </div>
   );
 }

@@ -1,5 +1,7 @@
 "use client";
 
+import { feedbackStyles } from "@/components/ui/feedback-styles";
+
 import type {
   ProjectDriftRepairAction,
   ProjectDriftResponse,
@@ -100,11 +102,11 @@ export function WorkflowProjectOverviewPanel({
       ) : null}
 
       {syncMessage ? (
-        <p className="error-text" style={{ margin: 0 }}>{syncMessage}</p>
+        <p className={feedbackStyles.errorText}>{syncMessage}</p>
       ) : null}
 
       {project.failureReason ? (
-        <p className="error-text" style={{ margin: 0 }}>
+        <p className={feedbackStyles.errorText}>
           {project.failureReason}
         </p>
       ) : null}
@@ -122,7 +124,7 @@ export function WorkflowProjectOverviewPanel({
 
       {driftDetectionEnabled && selectedOverview?.capabilities.driftDetection ? (
         driftError ? (
-          <p className="error-text" style={{ margin: 0 }}>{driftError}</p>
+          <p className={feedbackStyles.errorText}>{driftError}</p>
         ) : (
           <DriftFindingsPanel
             onRun={onRunDriftDetection}

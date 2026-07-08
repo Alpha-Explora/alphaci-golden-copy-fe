@@ -87,7 +87,7 @@ export function RunsSessionErrorState({ sessionError, onRetry }: { sessionError?
           </div>
           <h1>Session verification failed</h1>
           <p>We could not verify your session. Please retry or sign in again.</p>
-          {sessionError && <p className="error-text" style={{ fontSize: "0.82rem" }}>{sessionError}</p>}
+          {sessionError && <p className={cn(feedbackStyles.errorText, "text-[0.82rem]")}>{sessionError}</p>}
           <div className="hero-actions">
             <Button type="button" onClick={onRetry}>Retry</Button>
             <ButtonLink variant="ghost" href="/login?next=/runs">Go to login</ButtonLink>

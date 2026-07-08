@@ -1,5 +1,6 @@
 "use client";
 import { productSharedStyles } from "@/components/product/product-shared-styles";
+import { feedbackStyles } from "@/components/ui/feedback-styles";
 
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -14,6 +15,7 @@ import { WorkflowBuilder } from "../../components/product/workflow-builder";
 import { useAuthSession } from "@/hooks/use-auth-session";
 import { logout } from "@/lib/api/client";
 import { isGuest } from "@/lib/auth/subscription";
+import { cn } from "@/lib/utils";
 
 /* ── Page ───────────────────────────────────────────────────────────────────── */
 
@@ -74,7 +76,7 @@ export default function WorkflowsPage() {
               </button>
               <Link className="ghost-button" href="/login?next=/workflows">Go to login</Link>
             </div>
-            {error ? <p className="error-text" style={{ fontSize: "0.82rem" }}>{error}</p> : null}
+            {error ? <p className={cn(feedbackStyles.errorText, "text-[0.82rem]")}>{error}</p> : null}
           </div>
         </div>
       </main>
@@ -113,7 +115,7 @@ export default function WorkflowsPage() {
         </div>
       )}
 
-      {logoutMessage ? <p className="error-text">{logoutMessage}</p> : null}
+      {logoutMessage ? <p className={feedbackStyles.errorText}>{logoutMessage}</p> : null}
 
       <div id="main-content" style={{ padding: 0 }}>
         {/* Page header — compact single band: breadcrumb + title + studio badge inline */}

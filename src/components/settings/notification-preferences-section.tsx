@@ -2,6 +2,8 @@
 
 import { useEffect, useState } from "react";
 
+import { feedbackStyles } from "@/components/ui/feedback-styles";
+
 import type { NotificationPreferences } from "@/lib/api/contracts";
 import {
   getNotificationPreferences,
@@ -79,7 +81,7 @@ export function NotificationPreferencesSection() {
         </span>
         <input type="checkbox" checked={preferences.emailEnabled} disabled readOnly />
       </label>
-      {message ? <p className="error-text" style={{ margin: 0 }}>{message}</p> : null}
+      {message ? <p className={feedbackStyles.errorText}>{message}</p> : null}
     </div>
   );
 }

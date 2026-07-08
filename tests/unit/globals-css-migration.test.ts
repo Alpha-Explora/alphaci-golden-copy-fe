@@ -126,6 +126,15 @@ describe("globals css migration", () => {
       "@keyframes flowTravel",
       "@keyframes orb-drift-1",
       "@keyframes orb-drift-2",
+      ".landing-content",
+      ".marketing-nav",
+      ".dash-nav",
+      ".brand-mark",
+      ".nav-links",
+      ".nav-ghost",
+      ".landing-nav-actions",
+      ".landing-stage",
+      ".hero-block",
     ]) {
       expect(globalsSource).not.toContain(selector);
     }

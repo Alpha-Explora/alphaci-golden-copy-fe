@@ -14,16 +14,6 @@
 .flow-shell {
   background: var(--bg-base);
 }
-.landing-content {
-  position: relative;
-  z-index: 1;
-  width: min(var(--layout-max), calc(100% - (var(--layout-gutter) * 2)));
-  margin: 0 auto;
-  display: flex;
-  flex-direction: column;
-  gap: var(--stack-gap);
-}
-
 .workflow-surface {
   position: relative;
   z-index: 1;
@@ -59,28 +49,6 @@
   box-shadow: none;
   border-radius: 0;
 }
-.marketing-nav {
-  background: transparent;
-  padding: 0 clamp(2rem, 5vw, 4rem);
-  height: 72px;
-  display: flex;
-  align-items: center;
-  gap: 2rem;
-  position: sticky;
-  top: 0;
-  z-index: 100;
-  width: 100%;
-  transition:
-    background 0.3s ease,
-    border-color 0.3s ease,
-    box-shadow 0.3s ease;
-}
-.marketing-nav[data-scrolled="true"] {
-  background: rgba(15, 23, 42, 0.6);
-  backdrop-filter: blur(24px) saturate(150%);
-  -webkit-backdrop-filter: blur(24px) saturate(150%);
-  /* NO BORDER */
-}
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,
@@ -91,126 +59,22 @@
     scroll-behavior: auto !important;
   }
 }
-.marketing-nav,
-.hero-block,
 .section-card {
   position: relative;
   z-index: 1;
 }
-.dash-nav {
-  background: linear-gradient(
-    135deg,
-    rgba(26, 16, 66, 0.88) 0%,
-    rgba(12, 12, 42, 0.92) 50%,
-    rgba(8, 18, 52, 0.88) 100%
-  );
-  backdrop-filter: blur(32px) saturate(200%);
-  -webkit-backdrop-filter: blur(32px) saturate(200%);
-  border-bottom: 1px solid rgba(99, 102, 241, 0.2);
-  padding: 0 var(--layout-gutter);
-  height: 64px;
-  display: flex;
-  align-items: center;
-  gap: 1.5rem;
-  position: sticky;
-  top: 0;
-  z-index: 100;
-  margin-top: -1rem;
-  margin-left: calc(-1 * var(--layout-gutter));
-  margin-right: calc(-1 * var(--layout-gutter));
-  width: calc(100% + (2 * var(--layout-gutter)));
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
-}
-.brand-mark {
-  margin: 0;
-  font-family: "Sora", var(--font-display), sans-serif;
-  font-size: 0.95rem;
-  font-weight: 700;
-  color: var(--text-primary);
-  letter-spacing: -0.02em;
-  display: inline-flex;
-  align-items: center;
-  gap: 0.5rem;
-  white-space: nowrap;
-  text-decoration: none;
-  flex-shrink: 0;
-}
-.brand-mark::before {
-  display: none;
-}
-.brand-mark::after {
-  display: none;
-}
-.nav-links {
-  flex: 1;
-  display: flex;
-  justify-content: center;
-  gap: 0.25rem;
-  align-items: center;
-  flex-wrap: nowrap;
-  overflow-x: auto;
-  scrollbar-width: none;
-}
-.nav-links::-webkit-scrollbar {
-  display: none;
-}
-.nav-links a {
-  color: var(--text-secondary);
-  text-decoration: none;
-  font-size: 0.875rem;
-  font-weight: 500;
-  padding: 0.3rem 0.65rem;
-  border-radius: 0.4rem;
-  transition:
-    color 0.15s,
-    background 0.15s;
-  letter-spacing: -0.01em;
-  white-space: nowrap;
-}
-.nav-links a:hover {
-  color: var(--text-primary);
-  background: rgba(255, 255, 255, 0.06);
-}
-.nav-ghost {
-  color: var(--text-secondary) !important;
-  border-color: transparent !important;
-  background: transparent !important;
-}
-.nav-ghost:hover {
-  color: var(--text-primary) !important;
-  background: rgba(255, 255, 255, 0.06) !important;
-  border-color: transparent !important;
-}
-.landing-nav-actions {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  margin-left: auto;
-}
-.landing-stage {
-  min-height: calc(100dvh - clamp(5.8rem, 9vw, 7.8rem));
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  gap: clamp(0.95rem, 2vw, 1.5rem);
-  padding-block: clamp(0.4rem, 2vh, 1rem);
-}
-.hero-block,
 .section-card {
   padding: var(--panel-pad);
   display: grid;
   gap: 0.88rem;
 }
-.hero-block h1,
 .section-card h1 {
   font-size: clamp(2rem, 3.8vw, 3.45rem);
   line-height: 1.06;
 }
-.hero-block h2,
 .section-card h2 {
   font-size: clamp(1.36rem, 2.4vw, 2rem);
 }
-.hero-block p,
 .section-card p {
   margin: 0;
   color: var(--text-secondary);
@@ -334,12 +198,6 @@ select option {
   border: 1px solid rgba(255, 79, 79, 0.4);
   color: #ff8b8b;
   background: rgba(255, 79, 79, 0.08);
-}
-@media (max-width: 1180px) {
-  .landing-stage {
-    min-height: auto;
-    padding-block: clamp(0.85rem, 3vh, 1.3rem);
-  }
 }
 @media (max-width: 900px) {
   .flow-shell,

@@ -9,6 +9,7 @@ describe("workflow setup tab migration", () => {
   const githubPanelStylesPath = path.join(process.cwd(), "src/components/product/workflow-setup-github-panel.styles.ts");
   const setupResultPanelPath = path.join(process.cwd(), "src/components/product/setup-result-panel.tsx");
   const setupResultPanelStylesPath = path.join(process.cwd(), "src/components/product/setup-result-panel.styles.ts");
+  const deploymentProvisioningSetupPath = path.join(process.cwd(), "src/components/product/deployment-provisioning-setup.tsx");
   const studioTabsPath = path.join(process.cwd(), "src/components/product/workflow-studio-tabs.tsx");
   const studioTabsStylesPath = path.join(process.cwd(), "src/components/product/workflow-studio-tabs.styles.ts");
   const globalsPath = path.join(process.cwd(), "src/app/globals.css");
@@ -43,6 +44,7 @@ describe("workflow setup tab migration", () => {
     const githubPanelStylesSource = fs.existsSync(githubPanelStylesPath) ? fs.readFileSync(githubPanelStylesPath, "utf8") : "";
     const setupResultPanelSource = fs.existsSync(setupResultPanelPath) ? fs.readFileSync(setupResultPanelPath, "utf8") : "";
     const setupResultPanelStylesSource = fs.existsSync(setupResultPanelStylesPath) ? fs.readFileSync(setupResultPanelStylesPath, "utf8") : "";
+    const deploymentProvisioningSetupSource = fs.existsSync(deploymentProvisioningSetupPath) ? fs.readFileSync(deploymentProvisioningSetupPath, "utf8") : "";
     const studioTabsSource = fs.existsSync(studioTabsPath) ? fs.readFileSync(studioTabsPath, "utf8") : "";
     const studioTabsStylesSource = fs.existsSync(studioTabsStylesPath) ? fs.readFileSync(studioTabsStylesPath, "utf8") : "";
     const globalsSource = fs.readFileSync(globalsPath, "utf8");
@@ -64,6 +66,13 @@ describe("workflow setup tab migration", () => {
     expect(githubPanelSource).not.toContain("compact-label");
     expect(componentSource).not.toContain("result-branches");
     expect(componentSource).not.toContain("generate-workflow-hint");
+    expect(componentSource).toContain("@/components/ui/separator");
+    expect(componentSource).not.toContain("controls-panel-rule");
+    expect(componentSource).not.toContain("form-pair-row");
+    expect(componentSource).not.toContain("enhancement-chips");
+    expect(componentSource).not.toContain("enhancement-chip-label");
+    expect(componentSource).not.toContain("enhancement-chip-dot");
+    expect(deploymentProvisioningSetupSource).not.toContain("controls-panel-label");
     expect(setupResultPanelSource).not.toContain("result-branches");
     expect(setupResultPanelSource).toContain("setup-result-panel.styles");
     expect(setupResultPanelSource).not.toContain("result-repo-header");
@@ -92,6 +101,13 @@ describe("workflow setup tab migration", () => {
     expect(globalsSource).not.toContain(".kpi-grid-editorial");
     expect(globalsSource).not.toContain(".command-list");
     expect(globalsSource).not.toContain(".command-item");
+    expect(globalsSource).not.toContain(".controls-panel-label");
+    expect(globalsSource).not.toContain(".controls-panel-rule");
+    expect(globalsSource).not.toContain(".controls-panel-section");
+    expect(globalsSource).not.toContain(".form-pair-row");
+    expect(globalsSource).not.toContain(".enhancement-chips");
+    expect(globalsSource).not.toContain(".enhancement-chip-label");
+    expect(globalsSource).not.toContain(".enhancement-chip-dot");
     expect(hookSource).not.toMatch(mojibakePattern);
     expect(setupUtilsSource).not.toMatch(mojibakePattern);
     expect(githubPanelSource).not.toMatch(mojibakePattern);

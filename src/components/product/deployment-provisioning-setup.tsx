@@ -44,6 +44,7 @@ interface DeploymentProvisioningSetupProps {
   onChange: (value: DeploymentProvisioningRequest) => void;
   onEnabledChange?: (enabled: boolean) => void;
 }
+const controlsPanelLabelClasses = "m-0 mb-[0.65rem] block text-[0.65rem] font-bold uppercase tracking-[0.12em] text-[var(--text-muted)]";
 
 export function DeploymentProvisioningSetup({
   enabled,
@@ -92,7 +93,7 @@ export function DeploymentProvisioningSetup({
     <div className="deployment-provisioning-setup">
       <div className="deployment-provisioning-setup__header">
         <div>
-          <span className="controls-panel-label">Deployment provisioning</span>
+          <span className={controlsPanelLabelClasses}>Deployment provisioning</span>
           <p className="helper-text" style={{ margin: "0.35rem 0 0" }}>
             Create provider targets during setup, then send initial env vars directly to the provider.
           </p>

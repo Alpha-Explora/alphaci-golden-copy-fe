@@ -2,6 +2,8 @@
 
 import { motion, AnimatePresence } from "framer-motion";
 
+import { Separator } from "@/components/ui/separator";
+
 import type {
   CreateProjectResult,
   DiscoverExistingRepoResponse,
@@ -9,6 +11,7 @@ import type {
   SetupExistingRepoPrResponse,
 } from "@/lib/api/contracts";
 import { useCapabilities } from "@/hooks/use-capabilities";
+import { cn } from "@/lib/utils";
 import type { CreateProjectFormState } from "@/hooks/use-create-project-form";
 import type { DeploymentProvisioningFormState } from "@/hooks/use-deployment-provisioning-form";
 import type { GithubInstallationsState } from "@/hooks/use-github-installations";
@@ -58,6 +61,11 @@ const projectOptionDescriptions: Record<MvpProjectOptionKey, string> = {
   security: "Run dependency and workflow security checks.",
   docker:   "Build a container image when the recipe supports it.",
 };
+const formPairRowClasses = "mb-2 grid grid-cols-1 gap-4 min-[601px]:grid-cols-2";
+const formPairRowSpacedClasses = "mb-2 mt-6 grid grid-cols-1 gap-4 min-[601px]:grid-cols-2";
+const enhancementChipsClasses = "my-3 flex flex-wrap gap-2";
+const enhancementChipClasses = "inline-flex cursor-pointer select-none items-center gap-[0.35rem] rounded-[var(--radius-pill)] border border-[var(--border-strong)] bg-[var(--bg-panel)] px-3 py-[0.35rem] text-[0.78rem] font-semibold leading-none text-[var(--text-secondary)] transition-colors focus-within:outline focus-within:outline-2 focus-within:outline-offset-2 focus-within:outline-[var(--brand)]";
+const enhancementChipDotClasses = "size-[5px] shrink-0 rounded-full bg-[var(--text-muted)] transition-colors";
 
 export function WorkflowSetupTab({
   createResult,
@@ -138,7 +146,7 @@ export function WorkflowSetupTab({
 
         <WorkflowSetupGithubPanel github={github} />
 
-        <hr className="controls-panel-rule" style={{ margin: "1.25rem 0" }} />
+        <Separator className="my-5 bg-[var(--border)]" />
 
         {/* Catalog */}
         <div>
@@ -451,7 +459,7 @@ export function WorkflowSetupTab({
                 </div>
               ) : null}
 
-              <div className="form-pair-row" style={{ gap: "1rem" }}>
+              <div className={formPairRowClasses}>
                 <div>
                   <label className="input-label" htmlFor="existing-repo-select" style={setupLabelAccentStyle}>
                     Linked repository
@@ -540,7 +548,7 @@ export function WorkflowSetupTab({
               transition={{ duration: 0.28, ease: [0.25, 0.46, 0.45, 0.94] }}
             >
               {/* Repository name + Visibility */}
-              <div className="form-pair-row" style={{ gap: "1rem" }}>
+              <div className={formPairRowClasses}>
                 <div>
                   <label className="input-label" htmlFor="repo-name" style={setupLabelAccentStyle}>
                     Repository name
@@ -571,7 +579,7 @@ export function WorkflowSetupTab({
 
               {/* Service name + path — single-service mode only */}
               {!projectCatalog.isMicroservicesShape && !projectCatalog.isMultiRepoShape ? (
-                <div className="form-pair-row" style={{ marginTop: "1.5rem", gap: "1rem" }}>
+                <div className={formPairRowSpacedClasses}>
                   <div>
                     <label className="input-label" htmlFor="service-name" style={setupLabelAccentStyle}>
                       Service name
@@ -615,7 +623,7 @@ export function WorkflowSetupTab({
               </div>
 
               {/* Node version + Coverage */}
-              <div className="form-pair-row" style={{ marginTop: "1.5rem", gap: "1rem" }}>
+              <div className={formPairRowSpacedClasses}>
                 <div>
                   <label className="input-label" htmlFor="node-version" style={setupLabelAccentStyle}>
                     Node version
@@ -668,11 +676,15 @@ export function WorkflowSetupTab({
                 >
                   Workflow checks
                 </span>
-                <div data-tour="test-toggles" className="enhancement-chips" aria-label="Workflow checks" role="group" style={{ gap: "0.5rem", flexWrap: "wrap" }}>
+                <div data-tour="test-toggles" className={enhancementChipsClasses} aria-label="Workflow checks" role="group">
                   {projectCatalog.supportedTestOptions.map((option) => (
                     <motion.label
                       key={option.key}
-                      className={`enhancement-chip-label-premium${option.supported ? "" : " disabled"}${option.checked ? " enhancement-chip-label--active" : ""}`}
+                      className={cn(
+                        enhancementChipClasses,
+                        !option.supported && "cursor-not-allowed opacity-45",
+                        option.checked && "border-[var(--border-brand)] bg-[var(--brand-light)] text-[var(--brand)]",
+                      )}
                       htmlFor={`chip-${option.key}`}
                       title={projectOptionDescriptions[option.key]}
                       aria-label={`${projectOptionLabels[option.key]} — ${projectOptionDescriptions[option.key]}`}
@@ -687,8 +699,9 @@ export function WorkflowSetupTab({
                         checked={option.checked}
                         disabled={!option.supported}
                         onChange={() => projectCatalog.toggleTestOption(option.key)}
+                        className="sr-only"
                       />
-                      <span className="enhancement-chip-dot" aria-hidden="true" />
+                      <span className={cn(enhancementChipDotClasses, option.checked && "bg-[var(--brand)]")} aria-hidden="true" />
                       {projectOptionLabels[option.key]}
                     </motion.label>
                   ))}

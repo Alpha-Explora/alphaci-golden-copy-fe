@@ -322,13 +322,6 @@
   color: var(--text-secondary);
   line-height: 1.6;
 }
-.state-card .hero-actions {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  gap: 0.75rem;
-  margin-top: 0.65rem;
-}
 @media (max-width: 640px) {
   .state-body {
     padding: 1rem;

@@ -12,6 +12,7 @@ import { PipelineLoader } from "@/components/layout/pipeline-loader";
 import { WorkspaceProvider, useWorkspaceSelection } from "@/components/layout/workspace-context";
 import { Badge } from "@/components/ui/badge";
 import { Button, ButtonLink } from "@/components/ui/button";
+import { layoutStyles } from "@/components/ui/layout-styles";
 import { useAuthSession } from "@/hooks/use-auth-session";
 import { useCapabilities } from "@/hooks/use-capabilities";
 import { logout, deleteAccount, cancelMonthlySubscription, getMyUsage } from "@/lib/api/client";
@@ -249,7 +250,7 @@ function SettingsPageContent() {
             </div>
             <h1>Session verification failed</h1>
             <p>We could not verify your session. Please retry or sign in again.</p>
-            <div className="hero-actions">
+            <div className={layoutStyles.actionRow}>
               <Button type="button" onClick={() => void refresh()}>Retry</Button>
               <ButtonLink variant="ghost" href="/login?next=/settings">Go to login</ButtonLink>
             </div>

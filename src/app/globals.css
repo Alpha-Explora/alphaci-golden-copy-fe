@@ -79,13 +79,6 @@
   margin: 0;
   color: var(--text-secondary);
 }
-.hero-actions {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.75rem;
-  align-items: center;
-  justify-content: center;
-}
 .primary-button,
 .ghost-button {
   display: inline-flex;
@@ -211,13 +204,6 @@ select option {
   .dash-shell,
   .flow-shell {
     overflow-x: hidden;
-  }
-  .hero-actions {
-    align-items: stretch;
-  }
-  .hero-actions > * {
-    min-width: 0;
-    white-space: normal;
   }
   .workflow-surface {
     overflow-x: hidden;

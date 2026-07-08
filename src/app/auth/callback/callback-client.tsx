@@ -7,6 +7,7 @@ import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 
 import { FlowBackground } from "@/components/layout/flow-background";
 import { PipelineLoader } from "@/components/layout/pipeline-loader";
+import { layoutStyles } from "@/components/ui/layout-styles";
 import {
   ApiError,
   createGitHubLoginUrl,
@@ -413,7 +414,7 @@ function ArchivedSessionExpiredCard({ retryHref }: { retryHref: string }) {
       <p>
         The account-choice session could not be found. Please sign in again to continue.
       </p>
-      <div className="hero-actions">
+      <div className={layoutStyles.actionRow}>
         <Link className="primary-button" href={retryHref}>
           Sign in with GitHub
         </Link>
@@ -574,7 +575,7 @@ export function AuthCallbackClient() {
           </p>
           <h1>Authentication needs retry</h1>
           <p>{message}</p>
-          <div className="hero-actions">
+          <div className={layoutStyles.actionRow}>
             <Link className="primary-button" href={retryLoginHref}>
               Retry {providerName} sign in
             </Link>

@@ -8,6 +8,7 @@ import { AnimatePresence, useReducedMotion } from "framer-motion";
 
 import { AppNav } from "@/components/layout/app-nav";
 import { Button, ButtonLink } from "@/components/ui/button";
+import { layoutStyles } from "@/components/ui/layout-styles";
 import { DashboardPageContent, DashboardShell } from "@/components/layout/app-shell/dashboard-shell";
 import { FlowBackground } from "@/components/layout/flow-background";
 import { PipelineLoader } from "@/components/layout/pipeline-loader";
@@ -118,7 +119,7 @@ function HomeDashboardContent() {
             </div>
             <h1>Session verification failed</h1>
             <p>We could not verify your session. Please retry or sign in again.</p>
-            <div className="hero-actions">
+            <div className={layoutStyles.actionRow}>
               <Button type="button" onClick={() => void refresh()}>
                 Retry
               </Button>

@@ -5,6 +5,7 @@ import { cn } from "@/lib/utils";
 import { DashboardShell } from "@/components/layout/app-shell/dashboard-shell";
 import { FlowBackground } from "@/components/layout/flow-background";
 import { Button, ButtonLink } from "@/components/ui/button";
+import { layoutStyles } from "@/components/ui/layout-styles";
 
 export function RunsEmptyState() {
   return (
@@ -88,7 +89,7 @@ export function RunsSessionErrorState({ sessionError, onRetry }: { sessionError?
           <h1>Session verification failed</h1>
           <p>We could not verify your session. Please retry or sign in again.</p>
           {sessionError && <p className={cn(feedbackStyles.errorText, "text-[0.82rem]")}>{sessionError}</p>}
-          <div className="hero-actions">
+          <div className={layoutStyles.actionRow}>
             <Button type="button" onClick={onRetry}>Retry</Button>
             <ButtonLink variant="ghost" href="/login?next=/runs">Go to login</ButtonLink>
           </div>

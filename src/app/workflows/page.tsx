@@ -10,6 +10,7 @@ import { motion, useReducedMotion } from "framer-motion";
 import { AppNav } from "@/components/layout/app-nav";
 import { FlowBackground } from "@/components/layout/flow-background";
 import { PipelineLoader } from "@/components/layout/pipeline-loader";
+import { layoutStyles } from "@/components/ui/layout-styles";
 import { WorkspaceProvider } from "@/components/layout/workspace-context";
 import { WorkflowBuilder } from "../../components/product/workflow-builder";
 import { useAuthSession } from "@/hooks/use-auth-session";
@@ -70,7 +71,7 @@ export default function WorkflowsPage() {
             </div>
             <h1>Session verification failed</h1>
             <p>We could not verify your workflow access. Retry or sign in again.</p>
-            <div className="hero-actions">
+            <div className={layoutStyles.actionRow}>
               <button className="primary-button" type="button" onClick={() => void refresh()}>
                 Retry
               </button>

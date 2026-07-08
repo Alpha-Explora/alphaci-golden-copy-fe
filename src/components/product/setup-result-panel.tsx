@@ -265,7 +265,7 @@ export function SetupResultPanel({
     : null;
 
   return (
-    <aside className={`result-panel${setupResult ? " result-panel--success" : ""}`}>
+    <aside className={styles.panel}>
       <p className="cp-section-heading" style={{ marginBottom: "1rem" }}>
         {existingRepoResult ? "Pull request created" : "Project created"}
       </p>
@@ -300,7 +300,7 @@ export function SetupResultPanel({
               Workflow: <strong>{existingRepoResult.workflowPath}</strong>
             </p>
 
-            <div className="result-actions">
+            <div className={styles.actions}>
               <a className="primary-button" href={existingRepoResult.pullRequestUrl} target="_blank" rel="noreferrer">
                 Open PR
               </a>
@@ -370,7 +370,7 @@ export function SetupResultPanel({
               fullName={setupResult.secondaryRepoFullName}
             />
 
-            <div className="result-actions">
+            <div className={styles.actions}>
               <a className="primary-button" href={setupResult.repoUrl} target="_blank" rel="noreferrer">
                 Open repo
               </a>

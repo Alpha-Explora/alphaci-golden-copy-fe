@@ -79,6 +79,10 @@ describe("workflow setup tab migration", () => {
     expect(setupResultPanelSource).not.toContain("result-repo-header");
     expect(setupResultPanelSource).not.toContain("result-status-dot");
     expect(setupResultPanelSource).not.toContain("result-repo-name");
+    expect(setupResultPanelSource).not.toContain('className="result-panel');
+    expect(setupResultPanelSource).not.toContain('className="result-actions');
+    expect(setupResultPanelStylesSource).toContain("panel:");
+    expect(setupResultPanelStylesSource).toContain("actions:");
     expect(globalsSource).not.toContain(".studio-tab-");
     expect(globalsSource).not.toContain(".github-repo-load-btn");
     expect(globalsSource).not.toContain(".github-repo-select");
@@ -94,6 +98,11 @@ describe("workflow setup tab migration", () => {
     expect(globalsSource).not.toContain(".result-status-dot");
     expect(globalsSource).not.toContain(".result-repo-name");
     expect(globalsSource).not.toContain(".result-branches");
+    expect(globalsSource).not.toContain(".result-panel");
+    expect(globalsSource).not.toContain(".result-actions");
+    expect(globalsSource).not.toContain(".generate-form");
+    expect(globalsSource).not.toContain(".enhancement-option");
+    expect(globalsSource).not.toContain(".side-section-title");
     expect(globalsSource).not.toContain(".generate-workflow-hint");
     expect(globalsSource).not.toContain(".generate-workflow-row");
     expect(globalsSource).not.toContain(".create-repo-btn");

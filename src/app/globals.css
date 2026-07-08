@@ -188,7 +188,6 @@
 .intro-panel,
 .controls-panel,
 .templates-panel,
-.result-panel,
 .tab-content-panel {
   position: relative;
   z-index: 1;
@@ -673,7 +672,6 @@
 .intro-panel,
 .controls-panel,
 .templates-panel,
-.result-panel,
 .tab-content-panel {
   border-radius: var(--radius-card);
   border: 1px solid var(--border);
@@ -699,7 +697,6 @@
 }
 .controls-panel,
 .templates-panel,
-.result-panel,
 .tab-content-panel {
   padding: 1.5rem var(--panel-pad);
   transition:
@@ -711,7 +708,6 @@
 }
 .controls-panel h2,
 .templates-panel h2,
-.result-panel h2,
 .tab-content-panel h2 {
   margin: 0 0 0.65rem;
   font-size: 1.12rem;
@@ -772,140 +768,6 @@ select option {
   background: var(--bg-panel);
   color: var(--text-primary);
 }
-.generate-form {
-  margin-top: 0.9rem;
-  border-top: 1px solid var(--border);
-  padding-top: 0.86rem;
-}
-.generate-form h3 {
-  margin: 0;
-  font-size: 1.08rem;
-  color: var(--text-primary);
-}
-.input-row {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 0.6rem;
-  margin-top: 0.12rem;
-}
-.enhancement-grid {
-  margin: 0.82rem 0;
-  display: grid;
-  gap: 0.5rem;
-}
-.enhancement-option {
-  border: 1px solid var(--border);
-  border-radius: 0.9rem;
-  background: var(--bg-panel);
-  padding: 0.55rem 0.68rem;
-  display: flex;
-  align-items: flex-start;
-  gap: 0.6rem;
-  transition:
-    border-color 0.15s ease,
-    background 0.15s ease;
-  cursor: pointer;
-}
-.enhancement-option:has(input:checked) {
-  border-color: var(--border-brand);
-  background: var(--brand-light);
-}
-.enhancement-option input[type="checkbox"] {
-  appearance: none;
-  -webkit-appearance: none;
-  width: 2.2rem;
-  min-width: 2.2rem;
-  height: 1.25rem;
-  border-radius: var(--radius-pill);
-  background: var(--bg-elevated);
-  border: 1px solid var(--border-strong);
-  position: relative;
-  cursor: pointer;
-  flex-shrink: 0;
-  margin-top: 0.1rem;
-  transition:
-    background 0.2s ease,
-    border-color 0.2s ease;
-}
-.enhancement-option input[type="checkbox"]::before {
-  content: "";
-  position: absolute;
-  top: 50%;
-  left: 0.18rem;
-  transform: translateY(-50%);
-  width: 0.82rem;
-  height: 0.82rem;
-  border-radius: 50%;
-  background: var(--text-muted);
-  transition:
-    transform 0.2s cubic-bezier(0.4, 0, 0.2, 1),
-    background 0.2s ease;
-}
-.enhancement-option input[type="checkbox"]:checked {
-  background: var(--brand-light);
-  border-color: var(--brand);
-}
-.enhancement-option input[type="checkbox"]:checked::before {
-  transform: translateY(-50%) translateX(0.95rem);
-  background: var(--brand);
-}
-.enhancement-option input[type="checkbox"]:focus-visible {
-  outline: 2px solid var(--brand);
-  outline-offset: 2px;
-}
-.enhancement-option input[type="checkbox"]:disabled {
-  opacity: 0.4;
-  cursor: not-allowed;
-}
-.enhancement-option-body {
-  display: grid;
-  gap: 0.1rem;
-}
-.enhancement-option span {
-  font-size: 0.91rem;
-  font-weight: 700;
-  color: var(--text-primary);
-}
-.enhancement-option small {
-  color: var(--text-secondary);
-  font-size: 0.78rem;
-}
-.enhancement-option.disabled-option {
-  opacity: 0.5;
-  cursor: not-allowed;
-}
-.side-section-title {
-  margin-top: 1rem;
-  padding-top: 0.85rem;
-  border-top: 1px solid var(--border);
-  color: var(--text-primary);
-}
-.result-panel {
-  max-height: calc(100dvh - 12rem);
-  overflow: auto;
-  height: fit-content;
-}
-.result-actions {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.45rem;
-  margin-bottom: 0.35rem;
-}
-/* Terminal dark code block */
-.result-panel pre {
-  margin: 0;
-  border-radius: 0.8rem;
-  border: 1px solid rgba(79, 142, 255, 0.2);
-  background: #0d1117;
-  color: #e6edf3;
-  padding: 0.78rem;
-  font-family:
-    ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono",
-    "Courier New", monospace;
-  font-size: 0.78rem;
-  overflow: auto;
-  line-height: 1.6;
-}
 .helper-text {
   margin: 0;
   color: var(--text-secondary);
@@ -941,10 +803,6 @@ select option {
   }
   .studio-grid {
     grid-template-columns: minmax(230px, 280px) minmax(0, 1fr);
-  }
-  .result-panel {
-    grid-column: 1 / -1;
-    max-height: none;
   }
   .landing-stage {
     min-height: auto;
@@ -1135,11 +993,9 @@ select option {
   .repo-grid {
     grid-template-columns: minmax(0, 1fr) !important;
   }
-  .result-actions,
   .hero-actions {
     align-items: stretch;
   }
-  .result-actions > *,
   .hero-actions > * {
     min-width: 0;
     white-space: normal;

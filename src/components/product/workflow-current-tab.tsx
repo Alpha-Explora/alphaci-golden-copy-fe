@@ -38,6 +38,7 @@ import { useWorkflowProjectTelemetry } from "./use-workflow-project-telemetry";
 import { useWorkflowSettingsPreview } from "./use-workflow-settings-preview";
 
 import { formatDate } from "./workflow-builder-utils";
+import { workflowTabPanelStyles as tabPanelStyles } from "./workflow-tab-panel.styles";
 
 interface WorkflowCurrentTabProps {
   history: WorkflowHistoryItem[];
@@ -148,7 +149,7 @@ export function WorkflowCurrentTab({
 
   return (
     <motion.section
-      className="tab-content-panel"
+      className={tabPanelStyles.panel}
       id="workflow-panel-current"
       role="tabpanel"
       aria-labelledby="workflow-tab-current"
@@ -156,7 +157,6 @@ export function WorkflowCurrentTab({
       initial={{ opacity: 0, y: 16 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.3 }}
-      style={{ background: "transparent", border: "none", boxShadow: "none", padding: 0 }}
     >
       {latestResult ? <WorkflowLatestResultBanner result={latestResult} /> : null}
 

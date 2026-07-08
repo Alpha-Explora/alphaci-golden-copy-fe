@@ -12,6 +12,8 @@ describe("workflow current tab migration", () => {
   const resultBannerPath = path.join(process.cwd(), "src/components/product/workflow-current-result-banner.tsx");
   const navigationPath = path.join(process.cwd(), "src/components/product/workflow-current-navigation.tsx");
   const historyPanelPath = path.join(process.cwd(), "src/components/product/workflow-history-panel.tsx");
+  const allTabPath = path.join(process.cwd(), "src/components/product/workflow-all-tab.tsx");
+  const tabPanelStylesPath = path.join(process.cwd(), "src/components/product/workflow-tab-panel.styles.ts");
   const projectsPanelPath = path.join(process.cwd(), "src/components/product/workflow-projects-panel.tsx");
   const projectDetailShellPath = path.join(process.cwd(), "src/components/product/workflow-project-detail-shell.tsx");
   const projectOverviewPanelPath = path.join(process.cwd(), "src/components/product/workflow-project-overview-panel.tsx");
@@ -57,7 +59,10 @@ describe("workflow current tab migration", () => {
     expect(componentSource).toContain("WorkflowCurrentSubtabBar");
     expect(componentSource).not.toContain("current-subtab-bar");
     expect(fs.existsSync(historyPanelPath)).toBe(true);
+    expect(fs.existsSync(tabPanelStylesPath)).toBe(true);
     expect(componentSource).toContain("WorkflowHistoryPanel");
+    expect(componentSource).toContain("workflow-tab-panel.styles");
+    expect(componentSource).not.toContain("tab-content-panel");
     expect(componentSource).not.toContain("Preview YAML config");
     expect(componentSource).not.toContain("Generate your first workflow");
     expect(fs.existsSync(projectsPanelPath)).toBe(true);
@@ -99,6 +104,8 @@ describe("workflow current tab migration", () => {
     const resultBannerSource = fs.existsSync(resultBannerPath) ? fs.readFileSync(resultBannerPath, "utf8") : "";
     const navigationSource = fs.existsSync(navigationPath) ? fs.readFileSync(navigationPath, "utf8") : "";
     const historyPanelSource = fs.existsSync(historyPanelPath) ? fs.readFileSync(historyPanelPath, "utf8") : "";
+    const allTabSource = fs.existsSync(allTabPath) ? fs.readFileSync(allTabPath, "utf8") : "";
+    const tabPanelStylesSource = fs.existsSync(tabPanelStylesPath) ? fs.readFileSync(tabPanelStylesPath, "utf8") : "";
     const projectsPanelSource = fs.existsSync(projectsPanelPath) ? fs.readFileSync(projectsPanelPath, "utf8") : "";
     const projectDetailShellSource = fs.existsSync(projectDetailShellPath) ? fs.readFileSync(projectDetailShellPath, "utf8") : "";
     const projectOverviewPanelSource = fs.existsSync(projectOverviewPanelPath) ? fs.readFileSync(projectOverviewPanelPath, "utf8") : "";
@@ -119,6 +126,11 @@ describe("workflow current tab migration", () => {
     expect(resultBannerSource).not.toMatch(/className=["\'{][^"\'}]*file-path-label/);
     expect(navigationSource.trim().split(/\r?\n/).length).toBeLessThanOrEqual(90);
     expect(historyPanelSource.trim().split(/\r?\n/).length).toBeLessThanOrEqual(280);
+    expect(allTabSource.trim().split(/\r?\n/).length).toBeLessThanOrEqual(220);
+    expect(tabPanelStylesSource.trim().split(/\r?\n/).length).toBeLessThanOrEqual(10);
+    expect(allTabSource).toContain("workflow-tab-panel.styles");
+    expect(allTabSource).not.toContain("tab-content-panel");
+    expect(allTabSource).not.toContain("templates-header");
     expect(projectsPanelSource.trim().split(/\r?\n/).length).toBeLessThanOrEqual(220);
     expect(projectDetailShellSource.trim().split(/\r?\n/).length).toBeLessThanOrEqual(220);
     expect(projectOverviewPanelSource.trim().split(/\r?\n/).length).toBeLessThanOrEqual(220);
@@ -132,6 +144,11 @@ describe("workflow current tab migration", () => {
     expect(globalsSource).not.toContain(".subtab-bar");
     expect(globalsSource).not.toContain(".subtab-btn");
     expect(globalsSource).not.toContain(".history-entry-card");
+    expect(globalsSource).not.toContain(".tab-content-panel");
+    expect(globalsSource).not.toContain(".templates-header");
+    expect(globalsSource).not.toContain(".intro-panel");
+    expect(globalsSource).not.toContain(".controls-panel");
+    expect(globalsSource).not.toContain(".templates-panel");
     expect(hookSource).not.toMatch(mojibakePattern);
     expect(settingsHookSource).not.toMatch(mojibakePattern);
     expect(telemetryHookSource).not.toMatch(mojibakePattern);
@@ -141,6 +158,8 @@ describe("workflow current tab migration", () => {
     expect(resultBannerSource).not.toMatch(mojibakePattern);
     expect(navigationSource).not.toMatch(mojibakePattern);
     expect(historyPanelSource).not.toMatch(mojibakePattern);
+    expect(allTabSource).not.toMatch(mojibakePattern);
+    expect(tabPanelStylesSource).not.toMatch(mojibakePattern);
     expect(projectsPanelSource).not.toMatch(mojibakePattern);
     expect(projectDetailShellSource).not.toMatch(mojibakePattern);
     expect(projectOverviewPanelSource).not.toMatch(mojibakePattern);

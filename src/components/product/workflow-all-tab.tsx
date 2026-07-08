@@ -8,6 +8,7 @@ import { cn } from "@/lib/utils";
 import type { CatalogTemplate } from "@/lib/api/contracts";
 
 import { toSourcePath } from "./workflow-builder-utils";
+import { workflowTabPanelStyles as tabPanelStyles } from "./workflow-tab-panel.styles";
 
 interface WorkflowAllTabProps {
   allTemplates: CatalogTemplate[];
@@ -32,7 +33,7 @@ const cardVariants = {
 export function WorkflowAllTab({ allTemplates, onUseTemplate }: Readonly<WorkflowAllTabProps>) {
   return (
     <motion.section
-      className="tab-content-panel"
+      className={tabPanelStyles.panel}
       id="workflow-panel-all"
       role="tabpanel"
       aria-labelledby="workflow-tab-all"
@@ -40,11 +41,10 @@ export function WorkflowAllTab({ allTemplates, onUseTemplate }: Readonly<Workflo
       initial={{ opacity: 0, y: 16 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.3 }}
-      style={{ background: "transparent", border: "none", boxShadow: "none", padding: 0 }}
     >
-      <div className="templates-header" style={{ marginBottom: "1rem" }}>
-        <h2 style={{ fontSize: "1.2rem", fontWeight: 700 }}>All Templates</h2>
-        <p style={{ fontSize: "0.82rem", color: "var(--text-secondary)" }}>{allTemplates.length} templates loaded from cicd-workflow</p>
+      <div className={tabPanelStyles.header}>
+        <h2 className={tabPanelStyles.heading}>All Templates</h2>
+        <p className={tabPanelStyles.headerMeta}>{allTemplates.length} templates loaded from cicd-workflow</p>
       </div>
 
       {allTemplates.length === 0 ? (

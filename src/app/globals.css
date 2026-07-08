@@ -184,11 +184,7 @@
 }
 .marketing-nav,
 .hero-block,
-.section-card,
-.intro-panel,
-.controls-panel,
-.templates-panel,
-.tab-content-panel {
+.section-card {
   position: relative;
   z-index: 1;
 }
@@ -291,8 +287,7 @@
   padding-block: clamp(0.4rem, 2vh, 1rem);
 }
 .hero-block,
-.section-card,
-.tab-content-panel {
+.section-card {
   padding: var(--panel-pad);
   display: grid;
   gap: 0.88rem;
@@ -307,8 +302,7 @@
   font-size: clamp(1.36rem, 2.4vw, 2rem);
 }
 .hero-block p,
-.section-card p,
-.tab-content-panel p {
+.section-card p {
   margin: 0;
   color: var(--text-secondary);
 }
@@ -669,20 +663,6 @@
   opacity: 0.45;
   transform: none;
 }
-.intro-panel,
-.controls-panel,
-.templates-panel,
-.tab-content-panel {
-  border-radius: var(--radius-card);
-  border: 1px solid var(--border);
-  background: var(--bg-surface);
-  box-shadow: var(--shadow-soft);
-}
-.intro-panel {
-  padding: var(--panel-pad);
-  display: grid;
-  gap: 0.66rem;
-}
 .studio-grid {
   display: grid;
   gap: 1rem;
@@ -694,34 +674,6 @@
 }
 .studio-grid > * {
   min-width: 0;
-}
-.controls-panel,
-.templates-panel,
-.tab-content-panel {
-  padding: 1.5rem var(--panel-pad);
-  transition:
-    border-color 0.2s ease,
-    box-shadow 0.2s ease;
-}
-.controls-panel {
-  padding: 1.5rem 1.25rem;
-}
-.controls-panel h2,
-.templates-panel h2,
-.tab-content-panel h2 {
-  margin: 0 0 0.65rem;
-  font-size: 1.12rem;
-  color: var(--text-primary);
-}
-.templates-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  gap: 0.6rem;
-}
-.templates-header p {
-  font-size: 0.86rem;
-  color: var(--text-secondary);
 }
 .input-label {
   display: block;

@@ -3,7 +3,7 @@
 import { motion } from "framer-motion";
 
 import { Badge, type BadgeProps } from "@/components/ui/badge";
-import { ButtonLink } from "@/components/ui/button";
+import { Button, ButtonLink } from "@/components/ui/button";
 import type { GitHubRepo, ProvisionedProject } from "@/lib/api/contracts";
 
 import { EASE_OUT } from "./home-bento-grid";
@@ -108,7 +108,7 @@ export function HomeRepositoriesPanel({
               <div className="error-inline glass-panel" role="alert" style={{ background: "rgba(248, 113, 113, 0.05)" }}>
                 <span className="error-inline-icon" aria-hidden="true">!</span>
                 <p className="error-inline-msg">{projectsError}</p>
-                <button className="error-retry-btn" type="button" onClick={loadProjects}>Retry</button>
+                <Button variant="danger" size="sm" className="min-h-0 shrink-0 rounded-[0.55rem] px-[0.65rem] py-1 text-[0.78rem]" onClick={loadProjects}>Retry</Button>
               </div>
             ) : projects.length === 0 ? (
               <div className="glass-panel" style={{ textAlign: "center", padding: "3rem 1.5rem", background: "rgba(15, 23, 42, 0.3)", borderRadius: "var(--radius-card)" }}>
@@ -288,7 +288,7 @@ export function HomeRepositoriesPanel({
             <div className="error-inline glass-panel" role="alert" style={{ background: "rgba(248, 113, 113, 0.05)" }}>
               <span className="error-inline-icon" aria-hidden="true">!</span>
               <p className="error-inline-msg">{reposError}</p>
-              <button className="error-retry-btn" type="button" onClick={loadRepos}>Retry</button>
+              <Button variant="danger" size="sm" className="min-h-0 shrink-0 rounded-[0.55rem] px-[0.65rem] py-1 text-[0.78rem]" onClick={loadRepos}>Retry</Button>
             </div>
           )}
         </>

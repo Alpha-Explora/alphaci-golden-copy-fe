@@ -2,6 +2,8 @@
 
 import { motion } from "framer-motion";
 
+import { Button } from "@/components/ui/button";
+
 import { BentoGrid, EASE_OUT } from "./home-bento-grid";
 
 interface HomeOverviewPanelProps {
@@ -61,14 +63,14 @@ export function HomeOverviewPanel({
         <div className="error-inline glass-panel" role="alert" style={{ background: "rgba(248, 113, 113, 0.05)", border: "1px solid rgba(248, 113, 113, 0.2)", borderRadius: "10px" }}>
           <span className="error-inline-icon" aria-hidden="true" style={{ color: "var(--danger)" }}>!</span>
           <p className="error-inline-msg" style={{ margin: 0, fontSize: "0.82rem" }}>{projectsError}</p>
-          <button className="error-retry-btn" type="button" onClick={loadProjects}>Retry</button>
+          <Button variant="danger" size="sm" className="min-h-0 shrink-0 rounded-[0.55rem] px-[0.65rem] py-1 text-[0.78rem]" onClick={loadProjects}>Retry</Button>
         </div>
       ) : null}
       {!guest && historyError ? (
         <div className="error-inline glass-panel" role="alert" style={{ background: "rgba(248, 113, 113, 0.05)", border: "1px solid rgba(248, 113, 113, 0.2)", borderRadius: "10px" }}>
           <span className="error-inline-icon" aria-hidden="true" style={{ color: "var(--danger)" }}>!</span>
           <p className="error-inline-msg" style={{ margin: 0, fontSize: "0.82rem" }}>{historyError}</p>
-          <button className="error-retry-btn" type="button" onClick={loadHistory}>Retry</button>
+          <Button variant="danger" size="sm" className="min-h-0 shrink-0 rounded-[0.55rem] px-[0.65rem] py-1 text-[0.78rem]" onClick={loadHistory}>Retry</Button>
         </div>
       ) : null}
     </motion.div>

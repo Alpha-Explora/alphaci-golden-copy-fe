@@ -4,7 +4,7 @@ import Link from "next/link";
 import { motion } from "framer-motion";
 
 import { Badge } from "@/components/ui/badge";
-import { ButtonLink } from "@/components/ui/button";
+import { Button, ButtonLink } from "@/components/ui/button";
 import type { WorkflowHistoryItem } from "@/lib/api/contracts";
 
 import { EASE_OUT } from "./home-bento-grid";
@@ -55,7 +55,7 @@ export function HomeActivityPanel({
           <div className="error-inline glass-panel" role="alert" style={{ background: "rgba(248, 113, 113, 0.05)" }}>
             <span className="error-inline-icon" aria-hidden="true">!</span>
             <p className="error-inline-msg">{historyError}</p>
-            <button className="error-retry-btn" type="button" onClick={loadHistory}>Retry</button>
+            <Button variant="danger" size="sm" className="min-h-0 shrink-0 rounded-[0.55rem] px-[0.65rem] py-1 text-[0.78rem]" onClick={loadHistory}>Retry</Button>
           </div>
         ) : history.length === 0 ? (
           <div className="glass-panel" style={{ textAlign: "center", padding: "3rem 1.5rem", background: "rgba(15, 23, 42, 0.3)" }}>

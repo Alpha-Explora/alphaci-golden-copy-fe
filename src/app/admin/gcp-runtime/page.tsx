@@ -2,6 +2,8 @@
 
 import { useCallback, useEffect, useMemo, useState } from "react";
 
+import { Button } from "@/components/ui/button";
+
 import {
   getAdminGcpRuntimeProjects,
   type AdminGcpRuntimeProject,
@@ -137,7 +139,7 @@ export default function AdminGcpRuntimePage() {
         <div className="error-inline glass-panel" role="alert" style={{ background: "rgba(248, 113, 113, 0.05)" }}>
           <span className="error-inline-icon" aria-hidden="true">!</span>
           <p className="error-inline-msg">{error}</p>
-          <button className="error-retry-btn" type="button" onClick={() => void load()}>Retry</button>
+          <Button variant="danger" size="sm" className="min-h-0 shrink-0 rounded-[0.55rem] px-[0.65rem] py-1 text-[0.78rem]" onClick={() => void load()}>Retry</Button>
         </div>
       ) : !data || data.items.length === 0 ? (
         <p style={mutedStyle}>No GCP runtime targets match these filters.</p>

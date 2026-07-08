@@ -2,6 +2,8 @@
 
 import { useCallback, useEffect, useState } from "react";
 
+import { Button } from "@/components/ui/button";
+
 import {
   getAdminFeedback,
   triageAdminFeedback,
@@ -84,7 +86,7 @@ export default function AdminFeedbackPage() {
         <div className="error-inline glass-panel" role="alert" style={{ background: "rgba(248, 113, 113, 0.05)" }}>
           <span className="error-inline-icon" aria-hidden="true">!</span>
           <p className="error-inline-msg">{error}</p>
-          <button className="error-retry-btn" type="button" onClick={() => void load(filter)}>Retry</button>
+          <Button variant="danger" size="sm" className="min-h-0 shrink-0 rounded-[0.55rem] px-[0.65rem] py-1 text-[0.78rem]" onClick={() => void load(filter)}>Retry</Button>
         </div>
       ) : items.length === 0 ? (
         <p style={{ color: "var(--text-secondary)" }}>No feedback in this view.</p>

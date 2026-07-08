@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { Button } from "@/components/ui/button";
 import { useCallback, useEffect, useState } from "react";
 
 import { getAdminUsers, type AdminUsersPage } from "@/lib/api/client";
@@ -63,7 +64,7 @@ export default function AdminUsersPageRoute() {
         <div className="error-inline glass-panel" role="alert" style={{ background: "rgba(248, 113, 113, 0.05)" }}>
           <span className="error-inline-icon" aria-hidden="true">!</span>
           <p className="error-inline-msg">{error}</p>
-          <button className="error-retry-btn" type="button" onClick={() => void load(search.trim())}>Retry</button>
+          <Button variant="danger" size="sm" className="min-h-0 shrink-0 rounded-[0.55rem] px-[0.65rem] py-1 text-[0.78rem]" onClick={() => void load(search.trim())}>Retry</Button>
         </div>
       ) : !data || data.items.length === 0 ? (
         <p style={{ color: "var(--text-secondary)" }}>No users found.</p>

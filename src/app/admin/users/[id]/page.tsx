@@ -5,6 +5,7 @@ import { useParams } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
 
 import { useAdminContext } from "@/components/admin/admin-gate";
+import { ButtonLink } from "@/components/ui/button";
 import {
   getAdminUser,
   grantPlatformRole,
@@ -71,7 +72,7 @@ export default function AdminUserDetailPage() {
       <div className="error-inline glass-panel" role="alert" style={{ background: "rgba(248, 113, 113, 0.05)" }}>
         <span className="error-inline-icon" aria-hidden="true">!</span>
         <p className="error-inline-msg">{error ?? "User not found."}</p>
-        <Link className="error-retry-btn" href="/admin">Back to users</Link>
+        <ButtonLink href="/admin" variant="danger" size="sm" className="min-h-0 rounded-[0.55rem] px-[0.65rem] py-1 text-[0.78rem]">Back to users</ButtonLink>
       </div>
     );
   }

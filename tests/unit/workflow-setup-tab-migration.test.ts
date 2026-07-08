@@ -62,6 +62,9 @@ describe("workflow setup tab migration", () => {
     expect(githubPanelSource).toContain("workflow-setup-github-panel.styles");
     expect(githubPanelSource).not.toContain("github-repo-load-btn");
     expect(githubPanelSource).not.toContain("compact-label");
+    expect(componentSource).not.toContain("result-branches");
+    expect(componentSource).not.toContain("generate-workflow-hint");
+    expect(setupResultPanelSource).not.toContain("result-branches");
     expect(setupResultPanelSource).toContain("setup-result-panel.styles");
     expect(setupResultPanelSource).not.toContain("result-repo-header");
     expect(setupResultPanelSource).not.toContain("result-status-dot");
@@ -80,6 +83,15 @@ describe("workflow setup tab migration", () => {
     expect(globalsSource).not.toContain(".result-repo-header");
     expect(globalsSource).not.toContain(".result-status-dot");
     expect(globalsSource).not.toContain(".result-repo-name");
+    expect(globalsSource).not.toContain(".result-branches");
+    expect(globalsSource).not.toContain(".generate-workflow-hint");
+    expect(globalsSource).not.toContain(".generate-workflow-row");
+    expect(globalsSource).not.toContain(".create-repo-btn");
+    expect(globalsSource).not.toContain(".kpi-badge");
+    expect(globalsSource).not.toContain(".kpi-cell");
+    expect(globalsSource).not.toContain(".kpi-grid-editorial");
+    expect(globalsSource).not.toContain(".command-list");
+    expect(globalsSource).not.toContain(".command-item");
     expect(hookSource).not.toMatch(mojibakePattern);
     expect(setupUtilsSource).not.toMatch(mojibakePattern);
     expect(githubPanelSource).not.toMatch(mojibakePattern);

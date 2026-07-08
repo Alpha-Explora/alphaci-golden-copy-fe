@@ -516,7 +516,7 @@ export function WorkflowSetupTab({
               </div>
 
               {existingRepoDiscovery ? (
-                <div className="result-branches">
+                <div className="flex flex-wrap gap-[0.35rem]">
                   <span className="branch-chip">{existingRepoDiscovery.baseBranch}</span>
                   <span className="branch-chip">
                     {existingRepoDiscovery.detectedProjectTypeId ?? "manual"}
@@ -752,7 +752,7 @@ export function WorkflowSetupTab({
             </svg>
             {isCreatingProject ? "Generating…" : "Generate YAML only"}
           </button>
-          <span className="generate-workflow-hint">No repo — just the workflow file</span>
+          <span className="truncate text-xs text-[var(--text-muted)]">No repo — just the workflow file</span>
         </div>
 
         {/* Inline result — appears below the form after creation */}

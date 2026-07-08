@@ -111,6 +111,7 @@ describe("workflow current tab migration", () => {
     expect(targetManagementHookSource.trim().split(/\r?\n/).length).toBeLessThanOrEqual(250);
     expect(panelComponentsSource.trim().split(/\r?\n/).length).toBeLessThanOrEqual(320);
     expect(resultBannerSource.trim().split(/\r?\n/).length).toBeLessThanOrEqual(130);
+    expect(resultBannerSource).not.toContain("result-branches");
     expect(navigationSource.trim().split(/\r?\n/).length).toBeLessThanOrEqual(90);
     expect(historyPanelSource.trim().split(/\r?\n/).length).toBeLessThanOrEqual(280);
     expect(projectsPanelSource.trim().split(/\r?\n/).length).toBeLessThanOrEqual(220);

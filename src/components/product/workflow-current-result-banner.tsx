@@ -12,7 +12,7 @@ export function WorkflowLatestResultBanner({ result }: Readonly<{ result: Create
         <span className="latest-result-banner__repo">{result.repoFullName}</span>
       </div>
 
-      <div className="result-branches latest-result-banner__chips">
+      <div className="flex flex-wrap gap-[0.35rem] latest-result-banner__chips">
         <span className="branch-chip">{result.status}</span>
         <span className="branch-chip">{result.projectTypeId}</span>
         <span className="branch-chip">{result.workflowRecipeId}</span>

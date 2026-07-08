@@ -289,7 +289,7 @@ export function SetupResultPanel({
               </a>
             </div>
 
-            <div className="result-branches">
+            <div className="flex flex-wrap gap-[0.35rem]">
               <span className="branch-chip">pull request</span>
               <span className="branch-chip">#{existingRepoResult.pullRequestNumber}</span>
               <span className="branch-chip">{existingRepoResult.branchName}</span>
@@ -342,7 +342,7 @@ export function SetupResultPanel({
               </a>
             </div>
 
-            <div className="result-branches">
+            <div className="flex flex-wrap gap-[0.35rem]">
               <span className="branch-chip">{setupResult.status}</span>
               <span className="branch-chip">{setupResult.projectTypeId}</span>
               <span className="branch-chip">{setupResult.workflowRecipeId}</span>

@@ -50,6 +50,9 @@ describe("globals css migration", () => {
     const providerSettingsSource = fs.existsSync(providerSettingsPath)
       ? fs.readFileSync(providerSettingsPath, "utf8")
       : "";
+    const publicSiteSource = fs.existsSync(publicSitePath)
+      ? fs.readFileSync(publicSitePath, "utf8")
+      : "";
 
     expect(fs.existsSync(productWorkflowsPath)).toBe(true);
     expect(fs.existsSync(providerSettingsPath)).toBe(true);
@@ -57,9 +60,15 @@ describe("globals css migration", () => {
     expect(globalsSource).toContain('@import "../styles/provider-settings.css";');
     expect(globalsSource).not.toContain(".deployment-provisioning-setup");
     expect(globalsSource).not.toContain(".project-workspace");
+    expect(globalsSource).not.toContain(".repo-grid");
+    expect(globalsSource).not.toContain(".state-body");
+    expect(globalsSource).not.toContain(".state-card");
     expect(globalsSource).not.toContain(".provider-settings-panel");
     expect(productWorkflowsSource).toContain(".deployment-provisioning-setup");
     expect(productWorkflowsSource).toContain(".project-workspace");
+    expect(productWorkflowsSource).toContain(".repo-grid");
+    expect(publicSiteSource).toContain(".state-body");
+    expect(publicSiteSource).toContain(".state-card");
     expect(providerSettingsSource).toContain(".provider-settings-panel");
     expect(providerSettingsSource).toContain(".provider-connections-table");
     expect(globalsSource).not.toContain(".cta-gradient-button");

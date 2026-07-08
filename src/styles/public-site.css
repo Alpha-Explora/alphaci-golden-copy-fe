@@ -330,6 +330,14 @@
   margin-top: 0.65rem;
 }
 @media (max-width: 640px) {
+  .state-body {
+    padding: 1rem;
+  }
+  .state-card {
+    max-width: 100%;
+    width: min(100%, calc(100vw - 5rem));
+    padding: 2rem 1.25rem 1.75rem;
+  }
   .public-guide-content {
     padding-top: 2.25rem;
   }

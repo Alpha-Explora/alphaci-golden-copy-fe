@@ -631,20 +631,9 @@ select option {
   }
 }
 @media (max-width: 640px) {
-  .state-body {
-    padding: 1rem;
-  }
-  .state-card {
-    max-width: 100%;
-    width: min(100%, calc(100vw - 5rem));
-    padding: 2rem 1.25rem 1.75rem;
-  }
   .dash-shell,
   .flow-shell {
     overflow-x: hidden;
-  }
-  .repo-grid {
-    grid-template-columns: minmax(0, 1fr) !important;
   }
   .hero-actions {
     align-items: stretch;

@@ -285,7 +285,7 @@ export default function GuidePage() {
   const guest = isGuest(session);
 
   return (
-    <main className="dash-shell" suppressHydrationWarning>
+    <main className="max-[640px]:overflow-x-hidden" suppressHydrationWarning>
       <a href="#guide-main" className="skip-link">Skip to guide content</a>
       <FlowBackground />
 

@@ -538,7 +538,7 @@ export function AuthCallbackClient() {
   // ── Archived choice ───────────────────────────────────────────────────────
   if (state === "archived_choice") {
     return (
-      <main className="dash-shell">
+      <main className="max-[640px]:overflow-x-hidden">
         <FlowBackground />
         <div className="state-body">
           {pendingSessionExpired || pendingAccount === null ? (
@@ -556,7 +556,7 @@ export function AuthCallbackClient() {
 
   // ── Failed / error ────────────────────────────────────────────────────────
   return (
-    <main className="dash-shell">
+    <main className="max-[640px]:overflow-x-hidden">
       <FlowBackground />
 
       <div className="state-body">

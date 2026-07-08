@@ -58,7 +58,7 @@ export default function WorkflowsPage() {
   /* ── Guard: error ───────────────────────────────────────────────────────── */
   if (status === "error") {
     return (
-      <main className="dash-shell">
+      <main className="max-[640px]:overflow-x-hidden">
         <FlowBackground />
         <div className="state-body">
           <div className="state-card">
@@ -89,7 +89,7 @@ export default function WorkflowsPage() {
 
   return (
     <WorkspaceProvider>
-    <main className="dash-shell" suppressHydrationWarning>
+    <main className="max-[640px]:overflow-x-hidden" suppressHydrationWarning>
       <a href="#main-content" className="skip-link">Skip to main content</a>
       <FlowBackground />
 

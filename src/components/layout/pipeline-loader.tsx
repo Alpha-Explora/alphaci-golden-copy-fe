@@ -46,7 +46,7 @@ export function PipelineLoader({ label = "Loading" }: Readonly<PipelineLoaderPro
   const activeStage = STAGES[activeIndex];
 
   return (
-    <main className="dash-shell pipeline-loader-shell">
+    <main className="pipeline-loader-shell max-[640px]:overflow-x-hidden">
       <FlowBackground />
 
       <div className="pipeline-loader-center" role="status" aria-label={label}>

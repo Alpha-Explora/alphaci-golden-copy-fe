@@ -33,7 +33,7 @@ export function AdminGate({ children }: { children: React.ReactNode }) {
 
   if (status === "loading") {
     return (
-      <main className="dash-shell" style={{ minHeight: "60vh", display: "grid", placeItems: "center" }}>
+      <main className="max-[640px]:overflow-x-hidden" style={{ minHeight: "60vh", display: "grid", placeItems: "center" }}>
         <p style={{ color: "var(--text-secondary)" }}>Verifying admin access…</p>
       </main>
     );
@@ -41,7 +41,7 @@ export function AdminGate({ children }: { children: React.ReactNode }) {
 
   if (status !== "signed-in" || !session?.authenticated || !session.platformRole) {
     return (
-      <main className="dash-shell" style={{ minHeight: "60vh", display: "grid", placeItems: "center" }}>
+      <main className="max-[640px]:overflow-x-hidden" style={{ minHeight: "60vh", display: "grid", placeItems: "center" }}>
         <div className="glass-panel" style={{ textAlign: "center", padding: "3rem 2rem", maxWidth: "26rem" }}>
           <h1 style={{ fontSize: "1.25rem", marginBottom: "0.75rem" }}>Admin access required</h1>
           <p style={{ color: "var(--text-secondary)", marginBottom: "1.5rem", fontSize: "0.9rem" }}>

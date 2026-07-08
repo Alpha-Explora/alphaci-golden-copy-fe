@@ -154,6 +154,8 @@ describe("globals css migration", () => {
       ".primary-button",
       ".page-shell .glass-panel",
       ".glass-panel",
+      ".dash-shell",
+      ".product-shell",
     ]) {
       expect(globalsSource).not.toContain(selector);
     }

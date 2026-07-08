@@ -56,18 +56,6 @@ select option {
   background: var(--bg-panel);
   color: var(--text-primary);
 }
-@media (max-width: 900px) {
-  .product-shell {
-    width: 100%;
-    padding-top: 0.65rem;
-  }
-}
-
-@media (max-width: 640px) {
-  .dash-shell {
-    overflow-x: hidden;
-  }
-}
 @theme inline {
   --font-heading: var(--font-sans);
   --font-sans: var(--font-sans);

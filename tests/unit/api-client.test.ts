@@ -2,8 +2,10 @@ import {
   createProject,
   createProviderConnection,
   createSubscriptionCheckout,
+  createSubscriptionPaymentIntent,
   createDeploymentTarget,
   getCheckoutStatus,
+  getPaymentIntentStatus,
   getGithubInstallationAccounts,
   getGithubAppInstallUrl,
   getMyWorkspaces,
@@ -1267,6 +1269,57 @@ describe("API client project setup helpers", () => {
     );
   });
 
+  it("creates a subscription payment intent", async () => {
+    fetchMock.mockResolvedValueOnce({
+      ok: true,
+      status: 201,
+      json: async () => ({
+        paymentIntentId: "pi_paymongo_123",
+        clientKey: "pi_client_key_123",
+        status: "awaiting_payment_method",
+      }),
+    });
+
+    await expect(createSubscriptionPaymentIntent("pro")).resolves.toEqual({
+      paymentIntentId: "pi_paymongo_123",
+      clientKey: "pi_client_key_123",
+      status: "awaiting_payment_method",
+    });
+
+    expect(fetchMock).toHaveBeenCalledWith(
+      "http://localhost:4000/api/v1/subscription/payment-intent",
+      expect.objectContaining({
+        method: "POST",
+        body: JSON.stringify({ plan: "pro" }),
+      }),
+    );
+  });
+
+  it("loads subscription payment intent status", async () => {
+    fetchMock.mockResolvedValueOnce({
+      ok: true,
+      status: 200,
+      json: async () => ({
+        status: "succeeded",
+        subscription: {
+          plan: "pro",
+          status: "active",
+          provider: "paymongo",
+          updatedAt: "2026-06-05T00:00:00.000Z",
+        },
+      }),
+    });
+
+    await expect(getPaymentIntentStatus("pi_paymongo_123")).resolves.toMatchObject({
+      status: "succeeded",
+      subscription: { provider: "paymongo" },
+    });
+
+    expect(fetchMock).toHaveBeenCalledWith(
+      "http://localhost:4000/api/v1/subscription/payment-intent/pi_paymongo_123/status",
+      expect.objectContaining({ credentials: "include" }),
+    );
+  });
   it("accepts NEXT_PUBLIC_API_URL for non-production local development", async () => {
     delete process.env.NEXT_PUBLIC_API_BASE_URL;
     process.env.NEXT_PUBLIC_API_URL = "http://127.0.0.1:4500";
@@ -1305,7 +1358,7 @@ describe("API client project setup helpers", () => {
     const errorSpy = jest.spyOn(console, "error").mockImplementation(() => {});
     try {
       const { getApiBaseUrl } = await import("../../src/lib/api/client");
-      // Build must not crash — it degrades to localhost...
+      // Build must not crash; it degrades to localhost...
       expect(getApiBaseUrl()).toBe("http://localhost:4000/api/v1");
       // ...but the misconfiguration is surfaced loudly for the operator.
       expect(errorSpy).toHaveBeenCalledWith(

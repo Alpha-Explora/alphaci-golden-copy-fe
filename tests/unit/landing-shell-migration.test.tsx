@@ -40,14 +40,16 @@ describe("LandingShell migration", () => {
     );
     root = result.root;
 
-    expect(result.container.querySelector("main")?.getAttribute("data-landing-shell")).toBe("true");
+    const shell = result.container.querySelector("main");
+    expect(shell?.getAttribute("data-landing-shell")).toBe("true");
+    expect(shell?.className).toContain("min-h-dvh");
+    expect(shell?.className).toContain("overflow-x-hidden");
     expect(result.container.querySelector("a[href='#main-content']")).toHaveTextContent("Skip to main content");
     expect(result.container.querySelector("#main-content")?.textContent).toContain("Hero");
     expect(result.container.querySelector("a[href='/pricing']")?.textContent).toContain("Pricing");
     expect(result.container.querySelector("main > [aria-hidden='true']")).toBeInTheDocument();
     expect(collectClasses(result.container)).not.toContain("landing-page-shell");
   });
-
 
   it("uses the default active public nav state", () => {
     const result = render(
@@ -60,14 +62,15 @@ describe("LandingShell migration", () => {
     expect(result.container.querySelector("#main-content")?.textContent).toContain("Default active state");
     expect(result.container.querySelector("a[href='/pricing']")).toBeInTheDocument();
   });
+
   it("keeps the root route using the feature-owned landing shell", () => {
     const source = fs.readFileSync(path.join(process.cwd(), "src/app/page.tsx"), "utf8");
     const globals = fs.readFileSync(path.join(process.cwd(), "src/app/globals.css"), "utf8");
     const shellSource = fs.readFileSync(path.join(process.cwd(), "src/features/public-site/landing/landing-shell.tsx"), "utf8");
 
     expect(source).toContain("LandingShell");
-    expect(shellSource).toContain("landing-shell.module.css");
-    expect(shellSource).toContain("className={styles.shell}");
+    expect(shellSource).not.toContain("landing-shell.module.css");
+    expect(shellSource).toContain("className=\"min-h-dvh overflow-x-hidden");
     expect(source).not.toContain('className="landing-page-shell"');
     expect(globals).not.toContain(".landing-page-shell");
   });

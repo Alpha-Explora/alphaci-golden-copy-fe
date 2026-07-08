@@ -52,21 +52,16 @@ describe("PipelineShowcaseSection migration", () => {
     const pageSource = fs.readFileSync(path.join(process.cwd(), "src/app/page.tsx"), "utf8");
     const globals = fs.readFileSync(path.join(process.cwd(), "src/app/globals.css"), "utf8");
     const sectionSource = fs.readFileSync(path.join(process.cwd(), "src/features/public-site/landing/pipeline-showcase-section.tsx"), "utf8");
-    const sectionStyles = fs.readFileSync(path.join(process.cwd(), "src/features/public-site/landing/pipeline-showcase-section.module.css"), "utf8");
 
     expect(pageSource).toContain("PipelineShowcaseSection");
     expect(pageSource).not.toContain("function PipelineVisualization");
     expect(pageSource).not.toContain("function HeroYamlTerminal");
-    expect(sectionSource).toContain("pipeline-showcase-section.module.css");
+    expect(sectionSource).not.toContain("pipeline-showcase-section.module.css");
     expect(sectionSource).toContain("className={styles.section}");
-    expect(sectionStyles).toContain("@keyframes pipelineNodeSuccess");
-    expect(sectionStyles).toContain("@keyframes pipelineCursorPulse");
-    expect(sectionStyles).toContain("@keyframes pipelineStatusPulse");
-    expect(sectionStyles).toContain(".statusPassing::before");
-    expect(sectionStyles).toContain("box-shadow: var(--shadow-elevated), var(--glow-brand)");
-    expect(sectionStyles).toMatch(/\.stagePanel\s*\{[\s\S]*border-radius: 0\.75rem;/);
-    expect(sectionStyles).not.toContain("radius-md");
-    expect(sectionStyles).not.toContain("flowPulse");
+    expect(sectionSource).toContain("function PathLabel");
+    expect(sectionSource).toContain("function StatusBadge");
+    expect(sectionSource).toContain("function ConnectorLine");
+    expect(sectionSource).toContain("function Cursor");
     expect(globals).not.toContain(".pipeline-section");
     expect(globals).not.toContain(".pipeline-node");
     expect(globals).not.toContain(".pipeline-connector-line");

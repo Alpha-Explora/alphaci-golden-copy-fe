@@ -1,6 +1,6 @@
 import Image from "next/image";
 
-import styles from "./logo.module.css";
+import { cn } from "@/lib/utils";
 
 const LOGO_ASPECT_RATIO = 942 / 834;
 
@@ -20,11 +20,10 @@ export function Logo({
   size = 28,
 }: Readonly<LogoProps>) {
   const width = Math.round(size * LOGO_ASPECT_RATIO);
-  const classNames = [styles.logo, className ?? ""].filter(Boolean).join(" ");
 
   return (
     <Image
-      className={classNames}
+      className={cn("block object-contain", className)}
       src="/alphaci-logo-blue-transparent-v3.png"
       alt={decorative ? "" : alt}
       aria-hidden={decorative ? "true" : undefined}

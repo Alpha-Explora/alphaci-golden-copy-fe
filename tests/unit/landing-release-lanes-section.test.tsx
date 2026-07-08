@@ -50,16 +50,13 @@ describe("ReleaseLanesSection migration", () => {
     const pageSource = fs.readFileSync(path.join(process.cwd(), "src/app/page.tsx"), "utf8");
     const globals = fs.readFileSync(path.join(process.cwd(), "src/app/globals.css"), "utf8");
     const sectionSource = fs.readFileSync(path.join(process.cwd(), "src/features/public-site/landing/release-lanes-section.tsx"), "utf8");
-    const sectionStyles = fs.readFileSync(path.join(process.cwd(), "src/features/public-site/landing/release-lanes-section.module.css"), "utf8");
 
     expect(pageSource).toContain("ReleaseLanesSection");
     expect(pageSource).not.toContain("function ReleaseLanesSection");
-    expect(sectionSource).toContain("release-lanes-section.module.css");
+    expect(sectionSource).not.toContain("release-lanes-section.module.css");
     expect(sectionSource).toContain("className={styles.section}");
-    expect(sectionStyles).toContain(".section::before");
-    expect(sectionStyles).toContain(".path::before");
-    expect(sectionStyles).toContain("@keyframes releaseLanePulse");
-    expect(sectionStyles).not.toContain("flowPulse");
+    expect(sectionSource).toContain("styles.ambient");
+    expect(sectionSource).toContain("styles.pathPrefix");
     expect(globals).not.toContain(".deploy-section");
     expect(globals).not.toContain(".deploy-provider");
     expect(globals).not.toContain(".deploy-step");

@@ -1,6 +1,3 @@
-import fs from "node:fs";
-import path from "node:path";
-
 import { act } from "react";
 import { createRoot, type Root } from "react-dom/client";
 
@@ -43,17 +40,18 @@ describe("PublicSiteNav migration", () => {
     expect(collectClasses(result.container).some((className) => className.startsWith("public-site-"))).toBe(false);
   });
 
-  it("keeps mobile breakpoints aligned with the legacy public shell", () => {
-    const css = fs.readFileSync(
-      path.join(process.cwd(), "src/components/layout/public-shell/public-nav.module.css"),
-      "utf8",
-    );
+  it("keeps the responsive public shell contract in Tailwind classes", () => {
+    const result = render(<PublicSiteNav active="pricing" fixed />);
+    root = result.root;
 
-    expect(css).toContain("@media (max-width: 820px)");
-    expect(css).toContain("@media (max-width: 520px)");
-    expect(css).not.toContain("@media (max-width: 720px)");
-    expect(css).toContain(".actions > a:first-child");
-    expect(css).toContain("display: none;");
+    const header = result.container.querySelector("header");
+    const primaryNav = result.container.querySelector("nav");
+    const loginLink = result.container.querySelector("a[href='/login']");
+
+    expect(header?.className).toContain("max-[820px]:px-4");
+    expect(header?.className).toContain("max-[520px]:grid-cols-[auto_auto]");
+    expect(primaryNav?.className).toContain("max-[520px]:col-span-full");
+    expect(loginLink?.className).toContain("max-[520px]:hidden");
   });
 
   it("can render a brand-only public shell for auth pages", () => {

@@ -1,7 +1,7 @@
 import type { ReactNode } from "react";
 
 import { LockIcon, PencilIcon } from "./settings-icons";
-import styles from "./settings-page.module.css";
+import styles from "./settings-page.styles";
 
 function cx(...classes: Array<string | false | null | undefined>) {
   return classes.filter(Boolean).join(" ");

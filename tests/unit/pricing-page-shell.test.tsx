@@ -50,6 +50,6 @@ describe("PricingPageShell migration", () => {
     expect(pageSource).toContain("@/features/public-site/pricing/pricing-page");
     expect(pageSource).not.toContain("<main className={styles.shell}");
     expect(appPricingCss).not.toContain(".shell");
-    expect(shellSource).toContain("pricing-page-shell.module.css");
+    expect(shellSource).not.toContain("pricing-page-shell.module.css");
   });
 });

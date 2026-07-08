@@ -51,8 +51,8 @@ describe("LandingPricingSection migration", () => {
 
     expect(result.container.querySelector("section#pricing")?.getAttribute("aria-label")).toBe("Pricing plans");
     expect(result.container.querySelector("[data-landing-pricing-section='true']")).toBeInTheDocument();
-    expect(result.container.querySelector("a[href='/subscribe']")).toHaveTextContent("View plans");
-    expect(result.container.querySelector("a[href='/home']")).toHaveTextContent("Start Pro");
+    expect(result.container.querySelector("a[href='/pricing']")).toHaveTextContent("View plans");
+    expect(result.container.querySelector("a[href='/signup?next=/subscribe']")).toHaveTextContent("Start Pro");
     expect(result.container).toHaveTextContent("Start free");
     expect(result.container).toHaveTextContent("PHP 300");
     expect(result.container.querySelectorAll("[data-pricing-feature-row='true']")).toHaveLength(7);
@@ -82,7 +82,7 @@ describe("LandingPricingSection migration", () => {
     expect(pageSource).toContain("<LandingPricingSection");
     expect(pageSource).not.toContain("pricing-section");
     expect(pageSource).not.toContain("function LandingPricingSection");
-    expect(sectionSource).toContain("landing-pricing-section.module.css");
+    expect(sectionSource).not.toContain("landing-pricing-section.module.css");
     expect(globals).not.toContain(".pricing-section");
     expect(globals).not.toContain(".pricing");
     expect(globals).not.toContain(".price-band");

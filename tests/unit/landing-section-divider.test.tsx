@@ -19,6 +19,7 @@ beforeAll(() => {
     value: MockIntersectionObserver,
   });
 });
+
 function render(node: React.ReactNode) {
   const container = document.createElement("div");
   document.body.appendChild(container);
@@ -47,9 +48,9 @@ describe("LandingSectionDivider migration", () => {
     const divider = result.container.querySelector("hr[data-landing-section-divider='true']");
     expect(divider).toBeInTheDocument();
     expect(divider).toHaveAttribute("aria-hidden", "true");
+    expect(divider?.className).toContain("bg-[linear-gradient");
     expect(divider?.className).not.toContain("section-gradient-divider");
   });
-
 
   it("renders animated motion props in standard mode", () => {
     const result = render(<LandingSectionDivider reduced={false} />);
@@ -59,6 +60,7 @@ describe("LandingSectionDivider migration", () => {
     expect(divider).toBeInTheDocument();
     expect(divider).toHaveAttribute("aria-hidden", "true");
   });
+
   it("keeps divider styling out of globals after migration", () => {
     const pageSource = fs.readFileSync(path.join(process.cwd(), "src/app/page.tsx"), "utf8");
     const globals = fs.readFileSync(path.join(process.cwd(), "src/app/globals.css"), "utf8");
@@ -68,8 +70,8 @@ describe("LandingSectionDivider migration", () => {
     expect(pageSource).toContain("LandingSectionDivider");
     expect(dividerUsages).toHaveLength(3);
     expect(pageSource).not.toContain("section-gradient-divider");
-    expect(dividerSource).toContain("landing-section-divider.module.css");
-    expect(dividerSource).toContain("className={styles.divider}");
+    expect(dividerSource).not.toContain("landing-section-divider.module.css");
+    expect(dividerSource).toContain("className=\"m-0 h-px w-full");
     expect(globals).not.toContain(".section-gradient-divider");
   });
 });

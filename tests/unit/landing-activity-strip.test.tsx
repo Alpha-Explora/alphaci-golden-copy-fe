@@ -37,7 +37,7 @@ describe("ActivityStrip migration", () => {
     root = result.root;
 
     expect(result.container.querySelector("[data-activity-strip='true']")).toBeInTheDocument();
-    expect(result.container).toHaveTextContent("activity/recent.log");
+    expect(result.container).toHaveTextContent("./activity/recent.log");
     expect(result.container).toHaveTextContent("live");
     expect(result.container.querySelectorAll("[data-activity-item]")).toHaveLength(4);
     expect(result.container).toHaveTextContent("payments-api");
@@ -52,10 +52,9 @@ describe("ActivityStrip migration", () => {
 
     expect(pageSource).toContain("ActivityStrip");
     expect(pageSource).not.toContain("function ActivityStrip");
-    expect(sectionSource).toContain("activity-strip.module.css");
-    expect(sectionSource).toContain("className={styles.section}");
-    expect(sectionSource).toContain("className={styles.item}");
-    expect(fs.readFileSync(path.join(process.cwd(), "src/features/public-site/landing/activity-strip.module.css"), "utf8")).toContain(".path::before");
+    expect(sectionSource).not.toContain("activity-strip.module.css");
+    expect(sectionSource).toContain("data-activity-strip");
+    expect(sectionSource).toContain("[animation:flowPulse_1.5s_ease-in-out_infinite]");
     expect(globals).not.toContain(".activity-section");
     expect(globals).not.toContain(".activity-item");
   });

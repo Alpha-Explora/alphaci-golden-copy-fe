@@ -1,10 +1,10 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 
 import { useWorkspaceSelection } from "@/components/layout/workspace-context";
-import type { NotificationsResponse, WorkspacesMeResponse } from "@/lib/api/contracts";
-import { getNotifications, markNotificationRead } from "@/lib/api/notifications";
+import type { ProvisionedProject, WorkspacesMeResponse } from "@/lib/api/contracts";
+import { getProjects } from "@/lib/api/projects";
 import { getMyWorkspaces } from "@/lib/api/workspaces";
 
 interface UseAppNavDataOptions {
@@ -13,8 +13,9 @@ interface UseAppNavDataOptions {
 
 export function useAppNavData({ guest }: Readonly<UseAppNavDataOptions>) {
   const [workspaces, setWorkspacesState] = useState<WorkspacesMeResponse | null>(null);
-  const [notifications, setNotifications] = useState<NotificationsResponse | null>(null);
-  const { setWorkspaces } = useWorkspaceSelection();
+  const [projects, setProjects] = useState<ProvisionedProject[]>([]);
+  const [selectedProjectId, setSelectedProjectId] = useState<string | null>(null);
+  const { selectedWorkspaceId, setWorkspaces } = useWorkspaceSelection();
 
   useEffect(() => {
     if (guest) return;
@@ -30,30 +31,38 @@ export function useAppNavData({ guest }: Readonly<UseAppNavDataOptions>) {
         setWorkspacesState({ enabled: false, items: [] });
         setWorkspaces(null);
       });
-    return () => { active = false; };
+    return () => {
+      active = false;
+    };
   }, [guest, setWorkspaces]);
 
   useEffect(() => {
     if (guest) return;
     let active = true;
-    void getNotifications()
-      .then((response) => { if (active) setNotifications(response); })
-      .catch(() => { if (active) setNotifications({ enabled: false, items: [], unreadCount: 0 }); });
-    return () => { active = false; };
-  }, [guest]);
+    void getProjects(25, { workspaceId: selectedWorkspaceId })
+      .then((response) => {
+        if (!active) return;
+        setProjects(response.items);
+        setSelectedProjectId((current) => {
+          const currentStillExists = current ? response.items.some((project) => project.id === current) : false;
+          if (currentStillExists) return current;
+          return response.items.find((project) => !project.isExample)?.id ?? response.items[0]?.id ?? null;
+        });
+      })
+      .catch(() => {
+        if (!active) return;
+        setProjects([]);
+        setSelectedProjectId(null);
+      });
+    return () => {
+      active = false;
+    };
+  }, [guest, selectedWorkspaceId]);
 
-  const handleMarkNotificationRead = useCallback(async (id: string) => {
-    await markNotificationRead(id);
-    setNotifications((current) => current ? {
-      ...current,
-      unreadCount: Math.max(0, current.unreadCount - 1),
-      items: current.items.map((item) => item.id === id ? { ...item, readAt: item.readAt ?? new Date().toISOString() } : item),
-    } : current);
-  }, []);
+  const selectedProject = useMemo(
+    () => projects.find((project) => project.id === selectedProjectId) ?? projects.find((project) => !project.isExample) ?? projects[0] ?? null,
+    [projects, selectedProjectId],
+  );
 
-  return {
-    workspaces,
-    notifications,
-    handleMarkNotificationRead,
-  };
+  return { projects, selectedProject, workspaces };
 }

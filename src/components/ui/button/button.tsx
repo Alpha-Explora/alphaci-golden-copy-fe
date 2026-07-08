@@ -1,7 +1,7 @@
 import Link, { type LinkProps } from "next/link";
 import type { AnchorHTMLAttributes, ButtonHTMLAttributes, ReactNode } from "react";
 
-import styles from "./button.module.css";
+import { cn } from "@/lib/utils";
 
 export type ButtonVariant = "primary" | "secondary" | "ghost" | "danger";
 export type ButtonSize = "sm" | "md" | "lg";
@@ -40,16 +40,39 @@ function buttonClassNames({
   size?: ButtonSize;
   variant?: ButtonVariant;
 }) {
-  return [
-    styles.button,
-    styles[variant],
-    styles[size],
-    styles[mode],
-    loading ? styles.loading : "",
-    className ?? "",
-  ]
-    .filter(Boolean)
-    .join(" ");
+  const baseClasses =
+    "inline-flex cursor-pointer items-center justify-center gap-2 whitespace-nowrap rounded-[10px] border border-transparent [font-family:var(--font-dash-body),var(--font-body),sans-serif] font-bold leading-none no-underline transition-[background-color,border-color,box-shadow,color,opacity,transform] duration-150 ease-in-out focus-visible:outline-2 focus-visible:outline-offset-[3px] focus-visible:outline-cyan-400 disabled:cursor-not-allowed disabled:opacity-[0.58] disabled:transform-none not-disabled:hover:-translate-y-0.5 not-disabled:active:scale-[0.98]";
+
+  const sizeClasses: Record<ButtonSize, string> = {
+    sm: "min-h-9 px-[0.9rem] text-[0.78rem]",
+    md: "min-h-[2.625rem] px-[1.1rem] text-sm",
+    lg: "min-h-12 px-[1.35rem] text-[0.95rem]",
+  };
+
+  const modeClasses: Record<ButtonMode, string> = {
+    dashboard: "tracking-normal",
+    public: "[font-family:var(--font-display),var(--font-dash-display),sans-serif] uppercase tracking-[0.08em]",
+  };
+
+  const variantClasses: Record<ButtonVariant, string> = {
+    danger:
+      "border-red-300/40 bg-red-500/15 text-red-200 not-disabled:hover:border-red-300/60 not-disabled:hover:bg-red-500/20",
+    ghost:
+      "border-[var(--border-strong)] bg-transparent text-[var(--text-secondary)] not-disabled:hover:border-[var(--brand)] not-disabled:hover:bg-[var(--brand-light)] not-disabled:hover:text-[var(--text-primary)] not-disabled:hover:shadow-[0_8px_16px_rgba(0,0,0,0.3),0_0_12px_rgba(121,192,255,0.1)]",
+    primary:
+      "border-cyan-400/70 bg-[var(--brand)] text-white shadow-[0_1px_2px_rgba(79,142,255,0.3)] not-disabled:hover:bg-[var(--brand-strong)] not-disabled:hover:shadow-[0_0_24px_rgba(121,192,255,0.5),0_8px_16px_rgba(0,0,0,0.4)]",
+    secondary:
+      "border-slate-400/30 bg-slate-900/70 text-[var(--text-primary)] not-disabled:hover:border-cyan-400/40 not-disabled:hover:bg-cyan-400/10",
+  };
+
+  return cn(
+    baseClasses,
+    variantClasses[variant],
+    sizeClasses[size],
+    modeClasses[mode],
+    loading && "cursor-wait",
+    className,
+  );
 }
 
 export function Button({
@@ -75,9 +98,9 @@ export function Button({
       aria-busy={loading ? "true" : undefined}
       {...props}
     >
-      {leadingIcon ? <span className={styles.iconSlot}>{leadingIcon}</span> : null}
-      <span className={styles.label}>{children}</span>
-      {trailingIcon ? <span className={styles.iconSlot}>{trailingIcon}</span> : null}
+      {leadingIcon ? <span className="inline-flex flex-none items-center">{leadingIcon}</span> : null}
+      <span className="min-w-0">{children}</span>
+      {trailingIcon ? <span className="inline-flex flex-none items-center">{trailingIcon}</span> : null}
     </button>
   );
 }
@@ -96,9 +119,9 @@ export function ButtonLink({
 
   return (
     <Link className={classNames} {...props}>
-      {leadingIcon ? <span className={styles.iconSlot}>{leadingIcon}</span> : null}
-      <span className={styles.label}>{children}</span>
-      {trailingIcon ? <span className={styles.iconSlot}>{trailingIcon}</span> : null}
+      {leadingIcon ? <span className="inline-flex flex-none items-center">{leadingIcon}</span> : null}
+      <span className="min-w-0">{children}</span>
+      {trailingIcon ? <span className="inline-flex flex-none items-center">{trailingIcon}</span> : null}
     </Link>
   );
 }

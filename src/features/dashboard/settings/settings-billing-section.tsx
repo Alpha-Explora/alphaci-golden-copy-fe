@@ -2,7 +2,7 @@ import { DeploymentProvidersSection } from "@/components/settings/deployment-pro
 import { Button, ButtonLink } from "@/components/ui/button";
 import type { AuthMeResponse, UsageMeResponse, WorkspaceRole } from "@/lib/api/contracts";
 
-import styles from "./settings-page.module.css";
+import styles from "./settings-page.styles";
 import { CreditCardIcon, ExternalLinkIcon } from "./settings-icons";
 import { SettingsSection } from "./settings-section";
 

@@ -1,6 +1,6 @@
 import { motion } from "framer-motion";
 
-import styles from "./feature-strip-section.module.css";
+import { cn } from "@/lib/utils";
 
 type FeatureIconType = "gen" | "cicd" | "agnt";
 type FeatureTone = "brand" | "accent";
@@ -80,11 +80,19 @@ interface FeatureStripSectionProps {
 
 export function FeatureStripSection({ reduced = false }: Readonly<FeatureStripSectionProps>) {
   return (
-    <section className={styles.section} aria-label="Key features" data-feature-strip-section="true">
+    <section
+      className="relative grid w-full grid-cols-3 gap-[clamp(1rem,2vw,1.5rem)] bg-transparent px-[clamp(2rem,7vw,8rem)] py-[clamp(3rem,5vw,5rem)] max-[700px]:grid-cols-1"
+      aria-label="Key features"
+      data-feature-strip-section="true"
+    >
+      <div
+        className="pointer-events-none absolute inset-0 z-0 bg-[linear-gradient(rgba(79,142,255,0.03)_1px,transparent_1px),linear-gradient(90deg,rgba(79,142,255,0.03)_1px,transparent_1px)] bg-[length:40px_40px]"
+        aria-hidden="true"
+      />
       {FEATURE_CARDS.map((card, index) => (
         <motion.div
           key={card.title}
-          className={styles.card}
+          className="relative z-[1] flex min-h-60 flex-col gap-4 overflow-hidden rounded-2xl border border-white/10 bg-slate-900/60 px-8 py-10 text-[var(--text-secondary)] backdrop-blur-md transition-[border-color,box-shadow,transform] duration-300 hover:border-cyan-400/30 hover:shadow-[var(--shadow-card),0_0_40px_rgba(56,189,248,0.1)]"
           data-feature-card="true"
           data-tone={card.tone}
           initial={reduced ? undefined : { opacity: 0, y: 16 }}
@@ -93,16 +101,29 @@ export function FeatureStripSection({ reduced = false }: Readonly<FeatureStripSe
           viewport={{ once: true, margin: "-60px" }}
           transition={{ delay: index * 0.12, duration: 0.4 }}
         >
-          <div className={styles.corner} aria-hidden="true" />
-          <span className={styles.number}>0{index + 1}</span>
-          <span className={styles.icon} aria-hidden="true">
+          <div
+            className={cn(
+              "pointer-events-none absolute right-0 top-0 size-20 rounded-tr-2xl bg-[radial-gradient(ellipse_at_top_right,rgba(56,189,248,0.12)_0%,transparent_70%)]",
+              card.tone === "accent" && "bg-[radial-gradient(ellipse_at_top_right,rgba(52,211,153,0.1)_0%,transparent_70%)]",
+              index === 2 && "bg-[radial-gradient(ellipse_at_top_right,rgba(56,189,248,0.08)_0%,transparent_70%)]",
+            )}
+            aria-hidden="true"
+          />
+          <span className="font-mono text-[0.65rem] font-bold uppercase tracking-[0.12em] text-[var(--brand)]">0{index + 1}</span>
+          <span
+            className={cn(
+              "inline-flex size-10 items-center justify-center rounded-[0.6rem] border border-[var(--border-brand)] bg-[linear-gradient(135deg,rgba(56,189,248,0.15),rgba(14,165,233,0.06))] text-[var(--brand)] shadow-[0_0_16px_rgba(56,189,248,0.15)]",
+              card.tone === "accent" && "border-emerald-300/35 bg-[linear-gradient(135deg,rgba(52,211,153,0.15),rgba(16,185,129,0.06))] text-[var(--brand-accent)] shadow-[0_0_16px_rgba(52,211,153,0.15)]",
+            )}
+            aria-hidden="true"
+          >
             <FeatureIcon type={card.icon} />
           </span>
           <div>
-            <p className={styles.eyebrow}>{card.eyebrow}</p>
-            <h3>{card.title}</h3>
+            <p className="mb-[0.15rem] mt-0 font-mono text-[0.65rem] font-bold uppercase tracking-[0.1em] text-[var(--text-muted)]">{card.eyebrow}</p>
+            <h3 className="m-0 text-[1.05rem] font-bold tracking-[-0.01em] text-[var(--text-primary)]">{card.title}</h3>
           </div>
-          <p>{card.body}</p>
+          <p className="m-0 text-[0.85rem] leading-[1.6] text-[var(--text-secondary)]">{card.body}</p>
         </motion.div>
       ))}
     </section>

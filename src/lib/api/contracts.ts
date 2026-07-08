@@ -471,6 +471,16 @@ export interface SubscriptionCheckoutStatusResponse {
   subscription?: SubscriptionInfo;
 }
 
+export interface SubscriptionPaymentIntentResponse {
+  paymentIntentId: string;
+  clientKey: string;
+  status: string;
+}
+
+export interface SubscriptionPaymentIntentStatusResponse {
+  status: string;
+  subscription?: SubscriptionInfo;
+}
 export type UsageLimitCode =
   | "projects"
   | "managed_render_services"
@@ -1074,7 +1084,7 @@ export interface PendingAccountResponse {
   retentionDays?: number;
 }
 
-/* ── CI Runs ─────────────────────────────────────────────────────────────── */
+/* â”€â”€ CI Runs â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
 
 export type RunOverallStatus = "success" | "failure" | "running" | "cancelled" | "partial";
 export type StageId = "access" | "quality" | "package";
@@ -1090,10 +1100,10 @@ export interface FriendlyMessage {
    * Optional list of concrete failure details already humanized by the backend.
    * Each item is one discrete failure: a failing test, a lint rule violation,
    * or a vulnerable dependency. Rendered as a friendly visual list inside the
-   * message card — never as raw log output.
+   * message card â€” never as raw log output.
    *
-   * `label`  — the primary identifier (test name, rule name, package name)
-   * `sub`    — optional secondary context (failure reason, file:line, severity)
+   * `label`  â€” the primary identifier (test name, rule name, package name)
+   * `sub`    â€” optional secondary context (failure reason, file:line, severity)
    */
   items?: { label: string; sub?: string }[];
 }

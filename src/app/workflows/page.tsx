@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { motion, useReducedMotion } from "framer-motion";
 
 import { AppNav } from "@/components/layout/app-nav";
@@ -38,8 +38,17 @@ export default function WorkflowsPage() {
   }
 
   /* ── Guard: loading ─────────────────────────────────────────────────────── */
+  useEffect(() => {
+    if (status === "signed-out") {
+      router.replace("/signup");
+    }
+  }, [router, status]);
   if (status === "loading") {
     return <PipelineLoader label="Loading Workflow Studio" />;
+  }
+
+  if (status === "signed-out") {
+    return <PipelineLoader label="Redirecting to sign up" />;
   }
 
   /* ── Guard: error ───────────────────────────────────────────────────────── */
@@ -71,7 +80,7 @@ export default function WorkflowsPage() {
     );
   }
 
-  /* ── Signed-in or guest preview ─────────────────────────────────────────── */
+  /* ── Signed-in app ─────────────────────────────────────────── */
   const guest = isGuest(session);
 
   return (
@@ -90,7 +99,7 @@ export default function WorkflowsPage() {
       {guest && (
         <div className="guest-banner" role="alert">
           <p className="guest-banner-text">
-            You are viewing AlphaCI in preview mode. Sign up to unlock all features.
+            Sign up to unlock AlphaCI.
           </p>
           <div className="guest-banner-actions">
             <Link className="primary-button" href="/signup" style={{ padding: "0.4rem 1rem", fontSize: "0.82rem" }}>

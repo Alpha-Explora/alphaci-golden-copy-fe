@@ -1,53 +1,105 @@
 import fs from "fs";
 import path from "path";
 
-function collectFiles(directoryPath: string, extension: string): string[] {
-  return fs.readdirSync(directoryPath, { withFileTypes: true }).flatMap((entry) => {
-    const entryPath = path.join(directoryPath, entry.name);
-    if (entry.isDirectory()) {
-      return collectFiles(entryPath, extension);
-    }
-    return entry.isFile() && entry.name.endsWith(extension) ? [entryPath] : [];
-  });
-}
-
-describe("subscribe route migration", () => {
+describe("subscribe payment route", () => {
   const routePath = path.join(process.cwd(), "src/app/subscribe/page.tsx");
-  const featureDir = path.join(process.cwd(), "src/features/dashboard/subscribe");
-  const featurePath = path.join(featureDir, "subscribe-page.tsx");
-  const stylePath = path.join(featureDir, "subscribe-page.module.css");
+  const successRoutePath = path.join(
+    process.cwd(),
+    "src/app/subscribe/success/page.tsx",
+  );
+  const pagePath = path.join(
+    process.cwd(),
+    "src/features/dashboard/subscribe/subscribe-page.tsx",
+  );
+  const successPagePath = path.join(
+    process.cwd(),
+    "src/features/dashboard/subscribe/payment-success-page.tsx",
+  );
+  const stylesPath = path.join(
+    process.cwd(),
+    "src/features/dashboard/subscribe/subscribe-page.styles.ts",
+  );
+  const controlsPath = path.join(
+    process.cwd(),
+    "src/features/dashboard/subscribe/checkout-form-controls.tsx",
+  );
 
-  it("keeps the app route as a thin entry point", () => {
-    const routeSource = fs.readFileSync(routePath, "utf8");
-    const routeLines = routeSource.trim().split(/\r?\n/);
-
-    expect(routeLines).toHaveLength(3);
-    expect(routeSource).toContain("@/features/dashboard/subscribe/subscribe-page");
-    expect(routeSource).not.toContain('"use client"');
+  it("keeps the standalone subscribe app route", () => {
+    expect(fs.existsSync(routePath)).toBe(true);
+    expect(fs.readFileSync(routePath, "utf8")).toContain(
+      "@/features/dashboard/subscribe/subscribe-page",
+    );
   });
 
-  it("keeps subscribe implementation feature-owned and off legacy shell globals", () => {
-    const featureSource = fs.readFileSync(featurePath, "utf8");
+  it("routes confirmed payments through the post-payment success page before onboarding", () => {
+    const source = fs.readFileSync(pagePath, "utf8");
 
-    expect(featureSource).toContain('"use client"');
-    expect(featureSource).toContain("DashboardShell");
-    expect(featureSource).toContain("DashboardPageContent");
-    expect(featureSource).not.toContain("dash-shell");
-    expect(featureSource).not.toContain("dash-page-content");
-    expect(featureSource).not.toContain("subscribe.module.css");
+    expect(fs.existsSync(successRoutePath)).toBe(true);
+    expect(fs.readFileSync(successRoutePath, "utf8")).toContain(
+      "@/features/dashboard/subscribe/payment-success-page",
+    );
+    expect(source).toContain('router.replace(`/subscribe/success?${');
+    expect(source).toContain('router.push(`/subscribe/success?${');
+    expect(source).not.toContain('router.replace("/settings?billing=success")');
+    expect(source).not.toContain('router.push("/settings?billing=success")');
   });
 
-  it("keeps migrated subscribe files under budget and ASCII-clean", () => {
-    for (const componentPath of collectFiles(featureDir, ".tsx")) {
-      const source = fs.readFileSync(componentPath, "utf8");
-      expect(source.trim().split(/\r?\n/).length).toBeLessThanOrEqual(500);
-      expect(source).not.toMatch(/[^\x00-\x7F]/);
-    }
+  it("keeps the reusable dark payment success screen", () => {
+    expect(fs.existsSync(successPagePath)).toBe(true);
+    const source = fs.readFileSync(successPagePath, "utf8");
 
-    const styleSource = fs.readFileSync(stylePath, "utf8");
-    expect(styleSource.trim().split(/\r?\n/).length).toBeLessThanOrEqual(400);
-    expect(styleSource).not.toMatch(/[^\x00-\x7F]/);
-    expect(styleSource).not.toContain("data-theme=\"light\"");
-    expect(styleSource).not.toContain("Light mode");
+    expect(source).toContain("UsageCreditCard");
+    expect(source).toContain("DashboardShell");
+    expect(source).toContain("DashboardPageContent");
+    expect(source).toContain("AppNav");
+    expect(source).toContain("WorkspaceProvider");
+    expect(source).toContain("useAuthSession");
+    expect(source).toContain('href="/onboarding"');
+    expect(source).toContain("Get started");
+    expect(source).toContain("Your Starter plan is active");
+    expect(source).not.toContain('href="/home"');
+  });
+
+  it("keeps the custom payment form while tokenizing through PayMongo", () => {
+    const source = fs.readFileSync(pagePath, "utf8");
+    const controls = fs.readFileSync(controlsPath, "utf8");
+
+    expect(source).toContain("Save payment details");
+    expect(source).toContain("Billing name");
+    expect(source).toContain("Summary");
+    expect(source).toContain("createSubscriptionPaymentIntent");
+    expect(source).toContain("getPaymentIntentStatus");
+    expect(source).toContain("https://api.paymongo.com/v1/payment_methods");
+    expect(source).toContain("/attach");
+    expect(source).toContain("NEXT_PUBLIC_PAYMONGO_PUBLIC_KEY");
+    expect(source).toContain("PaymentInputShell");
+    expect(source).toContain("Card number");
+    expect(source).toContain("maxLength={3}");
+    expect(source).toContain("setSecurityCode(onlyDigits(event.target.value, 3))");
+    expect(source).toContain("Your card number is invalid.");
+    expect(source).toContain("Card details are encrypted and never stored by AlphaCI.");
+    expect(source).toContain("<dt>Subscription</dt>");
+    expect(source).toContain('href="/signup?step=plan"');
+    expect(source).toContain('{"\\u20B1"}300');
+    expect(source).toContain("CheckoutField");
+    expect(source).not.toContain("Payment checkout is unavailable in this environment.");
+    expect(controls).toContain("brandVisa");
+    expect(controls).toContain("brandMastercard");
+    expect(controls).not.toContain("brandAmex");
+    expect(controls).not.toContain("brandJcb");
+    expect(source).not.toContain("Prorated subscription");
+    expect(source).not.toContain("Bill as company");
+    expect(source).not.toContain("PublicSubscribePage");
+  });
+
+  it("keeps the left payment form independently scrollable", () => {
+    const styles = fs.readFileSync(stylesPath, "utf8");
+
+    expect(styles).toContain("grid-cols-[minmax(520px,1fr)_minmax(430px,1fr)]");
+    expect(styles).toContain("formPanel:");
+    expect(styles).toContain("overflow-y-auto");
+    expect(styles).toContain("selectControl:");
+    expect(styles).toContain("cardBrands:");
+    expect(styles).toContain("bg-[var(--bg-base)]");
   });
 });

@@ -1,4 +1,4 @@
-import styles from "./settings-page.module.css";
+import styles from "./settings-page.styles";
 import { AlertTriangleIcon } from "./settings-icons";
 import { SettingsSection } from "./settings-section";
 

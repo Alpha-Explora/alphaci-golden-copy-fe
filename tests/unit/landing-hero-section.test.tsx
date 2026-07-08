@@ -85,7 +85,8 @@ describe("HeroSection migration", () => {
     const heroSource = fs.readFileSync(path.join(process.cwd(), "src/features/public-site/landing/hero-section.tsx"), "utf8");
 
     expect(pageSource).toContain("<HeroSection");
-    expect(heroSource).toContain("hero-section.module.css");
+    expect(heroSource).not.toContain("hero-section.module.css");
+    expect(heroSource).not.toContain("hero-visual.module.css");
     expect(pageSource).not.toContain("raw-hero-grid");
     expect(pageSource).not.toContain("function HeroSection");
     expect(globals).not.toContain(".raw-hero-grid");

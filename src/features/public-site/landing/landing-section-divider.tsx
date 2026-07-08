@@ -1,7 +1,5 @@
 import { motion } from "framer-motion";
 
-import styles from "./landing-section-divider.module.css";
-
 interface LandingSectionDividerProps {
   reduced?: boolean;
 }
@@ -9,7 +7,7 @@ interface LandingSectionDividerProps {
 export function LandingSectionDivider({ reduced = false }: Readonly<LandingSectionDividerProps>) {
   return (
     <motion.hr
-      className={styles.divider}
+      className="m-0 h-px w-full border-0 bg-[linear-gradient(90deg,transparent_0%,var(--border-brand)_30%,rgba(0,208,132,0.3)_60%,transparent_100%)]"
       data-landing-section-divider="true"
       aria-hidden="true"
       initial={reduced ? undefined : { scaleX: 0, opacity: 0 }}

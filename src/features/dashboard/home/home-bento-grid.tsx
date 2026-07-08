@@ -45,7 +45,7 @@ function useCountUp(target: number | null, duration = 900): number | null {
 const quickActions = [
   { cmd: "new-project",    href: "/workflows", display: "Create Project",  shortcut: "Cmd+N", accent: "var(--brand)" },
   { cmd: "view-workflows", href: "/workflows", display: "View Workflows",  shortcut: "Cmd+W", accent: "var(--accent-violet)" },
-  { cmd: "manage-plan",    href: "/subscribe", display: "Manage Plan",     shortcut: "Cmd+P", accent: "var(--accent-teal)" },
+  { cmd: "manage-plan",    href: "/settings", display: "Manage Plan",     shortcut: "Cmd+P", accent: "var(--accent-teal)" },
 ];
 
 const pipelineStages = ["Source", "Lint", "Test", "Build", "Deploy"];

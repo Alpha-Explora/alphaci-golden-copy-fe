@@ -4,8 +4,6 @@ import { FlowBackground } from "@/components/layout/flow-background";
 import { PublicSiteNav } from "@/components/layout/public-site-nav";
 import { SkipLink } from "@/components/layout/public-shell";
 
-import styles from "./landing-shell.module.css";
-
 type LandingShellActive = "features" | "guide" | "pricing";
 
 interface LandingShellProps {
@@ -15,7 +13,7 @@ interface LandingShellProps {
 
 export function LandingShell({ active = "features", children }: Readonly<LandingShellProps>) {
   return (
-    <main className={styles.shell} data-landing-shell="true">
+    <main className="min-h-dvh overflow-x-hidden bg-[var(--bg-base)] text-[var(--text-primary)]" data-landing-shell="true">
       <SkipLink href="#main-content">Skip to main content</SkipLink>
       <FlowBackground />
       <PublicSiteNav active={active} fixed />

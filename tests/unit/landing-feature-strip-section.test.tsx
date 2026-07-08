@@ -19,6 +19,7 @@ beforeAll(() => {
     value: MockIntersectionObserver,
   });
 });
+
 function render(node: React.ReactNode) {
   const container = document.createElement("div");
   document.body.appendChild(container);
@@ -58,7 +59,6 @@ describe("FeatureStripSection migration", () => {
     expect(classList(result.container).some((name) => name.startsWith("feature-strip") || name === "features-strip" || name === "feature-card-enhanced" || name === "section-mesh")).toBe(false);
   });
 
-
   it("renders animated cards for standard motion mode", () => {
     const result = render(<FeatureStripSection reduced={false} />);
     root = result.root;
@@ -67,16 +67,17 @@ describe("FeatureStripSection migration", () => {
     expect(result.container.querySelector("[data-tone='accent']")).toBeInTheDocument();
     expect(result.container).toHaveTextContent("features/automation");
   });
+
   it("keeps feature-strip selectors out of globals after migration", () => {
     const pageSource = fs.readFileSync(path.join(process.cwd(), "src/app/page.tsx"), "utf8");
     const globals = fs.readFileSync(path.join(process.cwd(), "src/app/globals.css"), "utf8");
     const sectionSource = fs.readFileSync(path.join(process.cwd(), "src/features/public-site/landing/feature-strip-section.tsx"), "utf8");
 
     expect(pageSource).toContain("FeatureStripSection");
-    expect(sectionSource).toContain("feature-strip-section.module.css");
-    expect(sectionSource).toContain("className={styles.section}");
-    expect(sectionSource).toContain("className={styles.card}");
+    expect(sectionSource).not.toContain("feature-strip-section.module.css");
     expect(sectionSource).toContain("data-feature-strip-section");
+    expect(sectionSource).toContain("max-[700px]:grid-cols-1");
+    expect(sectionSource).toContain("data-feature-card");
     expect(globals).not.toContain(".features-strip");
     expect(globals).not.toContain(".feature-strip-item");
     expect(globals).not.toContain(".feature-card-enhanced");

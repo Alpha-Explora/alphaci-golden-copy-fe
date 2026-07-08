@@ -1,6 +1,0 @@
-.shell {
-  min-height: 100dvh;
-  overflow-x: hidden;
-  background-color: var(--bg-base);
-  color: var(--text-primary);
-}

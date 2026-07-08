@@ -20,35 +20,63 @@ export interface EmailLoginInput {
   password: string;
 }
 
-export async function startEmailSignup(input: EmailSignupInput): Promise<{ ok: true; verificationRequired: true }> {
-  return request<{ ok: true; verificationRequired: true }>("/auth/email/signup", {
+export async function checkEmailSignupAvailability(
+  email: string,
+): Promise<{ ok: true; available: true }> {
+  return request<{ ok: true; available: true }>("/auth/email/check", {
     method: "POST",
-    body: JSON.stringify(input),
+    body: JSON.stringify({ email }),
   });
+}
+export async function startEmailSignup(
+  input: EmailSignupInput,
+): Promise<{ ok: true; verificationRequired: true }> {
+  return request<{ ok: true; verificationRequired: true }>(
+    "/auth/email/signup",
+    {
+      method: "POST",
+      body: JSON.stringify(input),
+    },
+  );
 }
 
 export async function verifyEmailSignupCode(input: {
   email: string;
   code: string;
 }): Promise<{ ok: true; authenticated: true; user: AuthMeResponse["user"] }> {
-  return request<{ ok: true; authenticated: true; user: AuthMeResponse["user"] }>("/auth/email/verify-code", {
+  return request<{
+    ok: true;
+    authenticated: true;
+    user: AuthMeResponse["user"];
+  }>("/auth/email/verify-code", {
     method: "POST",
     body: JSON.stringify(input),
   });
 }
 
-export async function loginWithEmail(input: EmailLoginInput): Promise<{ ok: true; authenticated: true; user: AuthMeResponse["user"] }> {
-  return request<{ ok: true; authenticated: true; user: AuthMeResponse["user"] }>("/auth/email/login", {
+export async function loginWithEmail(
+  input: EmailLoginInput,
+): Promise<{ ok: true; authenticated: true; user: AuthMeResponse["user"] }> {
+  return request<{
+    ok: true;
+    authenticated: true;
+    user: AuthMeResponse["user"];
+  }>("/auth/email/login", {
     method: "POST",
     body: JSON.stringify(input),
   });
 }
 
-export async function resendEmailSignupCode(email: string): Promise<{ ok: true; verificationRequired: true }> {
-  return request<{ ok: true; verificationRequired: true }>("/auth/email/resend-code", {
-    method: "POST",
-    body: JSON.stringify({ email }),
-  });
+export async function resendEmailSignupCode(
+  email: string,
+): Promise<{ ok: true; verificationRequired: true }> {
+  return request<{ ok: true; verificationRequired: true }>(
+    "/auth/email/resend-code",
+    {
+      method: "POST",
+      body: JSON.stringify({ email }),
+    },
+  );
 }
 
 export interface ConnectedIdentityMethod {
@@ -78,26 +106,41 @@ export async function deleteAccount(): Promise<void> {
   });
 }
 
-export async function completeOnboarding(): Promise<{ ok: boolean; onboardingCompleted: boolean }> {
-  return request<{ ok: boolean; onboardingCompleted: boolean }>("/auth/onboarding/complete", {
-    method: "POST",
-  });
+export async function completeOnboarding(): Promise<{
+  ok: boolean;
+  onboardingCompleted: boolean;
+}> {
+  return request<{ ok: boolean; onboardingCompleted: boolean }>(
+    "/auth/onboarding/complete",
+    {
+      method: "POST",
+    },
+  );
 }
 
 export async function getPendingAccount(): Promise<PendingAccountResponse> {
   return request<PendingAccountResponse>("/auth/account/pending");
 }
 
-export async function restoreAccount(): Promise<{ ok: boolean; restored: boolean }> {
+export async function restoreAccount(): Promise<{
+  ok: boolean;
+  restored: boolean;
+}> {
   return request<{ ok: boolean; restored: boolean }>("/auth/account/restore", {
     method: "POST",
   });
 }
 
-export async function startFreshAccount(): Promise<{ ok: boolean; created: boolean }> {
-  return request<{ ok: boolean; created: boolean }>("/auth/account/start-fresh", {
-    method: "POST",
-  });
+export async function startFreshAccount(): Promise<{
+  ok: boolean;
+  created: boolean;
+}> {
+  return request<{ ok: boolean; created: boolean }>(
+    "/auth/account/start-fresh",
+    {
+      method: "POST",
+    },
+  );
 }
 
 export async function warmupBackend(): Promise<void> {

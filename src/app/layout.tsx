@@ -1,6 +1,9 @@
 import type { Metadata, Viewport } from "next";
-import { Doto, Plus_Jakarta_Sans, Outfit } from "next/font/google";
+import { Doto, Plus_Jakarta_Sans, Outfit, Geist } from "next/font/google";
 import "./globals.css";
+import { cn } from "@/lib/utils";
+
+const geist = Geist({subsets:['latin'],variable:'--font-sans'});
 
 const displayFont = Doto({
   variable: "--font-display",
@@ -41,7 +44,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" data-theme="dark" suppressHydrationWarning>
+    <html lang="en" data-theme="dark" suppressHydrationWarning className={cn("dark font-sans", geist.variable)}>
       <body className={`${displayFont.variable} ${bodyFont.variable} ${dashBodyFont.variable} ${dashDisplayFont.variable} antialiased`} suppressHydrationWarning>
         {children}
       </body>

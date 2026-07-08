@@ -1,20 +1,17 @@
-"use client";
+﻿"use client";
 
-import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 
-import { NotificationCenter } from "@/components/layout/notification-center";
-import { PipelineLogo } from "@/components/layout/pipeline-logo";
-import { WorkspaceSwitcher } from "@/components/layout/workspace-switcher";
 import type { useAuthSession } from "@/hooks/use-auth-session";
-import type { NotificationsResponse, WorkspacesMeResponse } from "@/lib/api/contracts";
+import type { ProvisionedProject, WorkspacesMeResponse } from "@/lib/api/contracts";
+import { cn } from "@/lib/utils";
 
+import { AppHeader } from "./app-header";
 import {
   AdminIcon,
-  BillingIcon,
   ChevronLeftIcon,
   DashboardIcon,
   RunsIcon,
@@ -24,7 +21,6 @@ import {
   SignOutIcon,
   WorkflowsIcon,
 } from "./app-nav-parts";
-import styles from "./app-nav.module.css";
 
 interface AppNavProps {
   guest: boolean;
@@ -32,12 +28,9 @@ interface AppNavProps {
   onLogout: () => void;
   isLoggingOut: boolean;
   workspaces: WorkspacesMeResponse | null;
-  notifications: NotificationsResponse | null;
-  onMarkNotificationRead: (id: string) => Promise<void> | void;
-}
-
-function cx(...classes: Array<string | false | null | undefined>) {
-  return classes.filter(Boolean).join(" ");
+  projects: ProvisionedProject[];
+  selectedProject: ProvisionedProject | null;
+  showSidebar?: boolean;
 }
 
 export function AppNav({
@@ -46,73 +39,106 @@ export function AppNav({
   onLogout,
   isLoggingOut,
   workspaces,
-  notifications,
-  onMarkNotificationRead,
+  projects,
+  selectedProject,
+  showSidebar = true,
 }: Readonly<AppNavProps>) {
   const pathname = usePathname();
   const [collapsed, setCollapsed] = useState(false);
   const prefersReducedMotion = useReducedMotion();
   const reduced = prefersReducedMotion ?? false;
   const sidebarRef = useRef<HTMLElement>(null);
-
-  const avatarInitial = (session?.user.name ?? session?.user.login ?? "U").slice(0, 1).toUpperCase();
   const isPlatformAdmin = !guest && Boolean(session?.platformRole);
 
   useEffect(() => {
+    if (!showSidebar) return undefined;
+
     function handleResize() {
       if (window.innerWidth <= 768) setCollapsed(true);
     }
     handleResize();
     window.addEventListener("resize", handleResize);
     return () => window.removeEventListener("resize", handleResize);
-  }, []);
+  }, [showSidebar]);
 
   useEffect(() => {
-    document.documentElement.style.setProperty("--sidebar-width", collapsed ? "64px" : "220px");
-  }, [collapsed]);
+    document.documentElement.style.setProperty("--sidebar-width", showSidebar ? (collapsed ? "64px" : "220px") : "0px");
+  }, [collapsed, showSidebar]);
 
   const sidebarWidth = collapsed ? 64 : 220;
 
   return (
-    <motion.aside ref={sidebarRef} className={styles.sidebar} data-app-nav="true" data-collapsed={collapsed ? "true" : "false"} animate={{ width: sidebarWidth }} transition={reduced ? { duration: 0 } : { type: "spring", stiffness: 360, damping: 34, mass: 0.8 }} style={{ width: sidebarWidth }} aria-label="Primary navigation">
-      <div className={styles.edgeGradient} aria-hidden="true" />
-      <div className={cx(styles.brandZone, collapsed && styles.brandZoneCollapsed)}>
-        <Link href="/home" className={cx(styles.brandLink, collapsed && styles.brandLinkCollapsed)} aria-label="AlphaCI home">
-          <span className={cx(styles.brandLogo, collapsed && styles.brandLogoCollapsed)}><PipelineLogo size={22} /></span>
-          <AnimatePresence initial={false}>{!collapsed && <motion.span className={styles.brandWordmark} initial={reduced ? false : { opacity: 0, x: -10 }} animate={{ opacity: 1, x: 0 }} exit={reduced ? undefined : { opacity: 0, x: -10 }} transition={{ duration: 0.18 }}>Alpha<span className={styles.brandAccent}>CI</span></motion.span>}</AnimatePresence>
-        </Link>
-        <motion.button type="button" className={cx(styles.collapseButton, collapsed && styles.collapseButtonCollapsed)} onClick={() => setCollapsed((c) => !c)} aria-label={collapsed ? "Expand sidebar" : "Collapse sidebar"} aria-expanded={!collapsed} whileHover={reduced ? undefined : { scale: 1.12, backgroundColor: "rgba(99,102,241,0.18)" }} whileTap={reduced ? undefined : { scale: 0.88 }} transition={{ type: "spring", stiffness: 420, damping: 24 }}>
-          <motion.span animate={{ rotate: collapsed ? 180 : 0 }} transition={reduced ? { duration: 0 } : { type: "spring", stiffness: 380, damping: 28 }} style={{ display: "flex" }}><ChevronLeftIcon size={14} /></motion.span>
-        </motion.button>
-      </div>
+    <>
+      <AppHeader
+        guest={guest}
+        session={session}
+        workspaces={workspaces}
+        projects={projects}
+        selectedProject={selectedProject}
+        onLogout={onLogout}
+        isLoggingOut={isLoggingOut}
+      />
 
-      <nav className={styles.nav} aria-label="Primary">
-        <SidebarSectionLabel text="Main" collapsed={collapsed} />
-        <SidebarNavItem href="/home" label="Dashboard" icon={DashboardIcon} isActive={pathname === "/home"} collapsed={collapsed} reduced={reduced} itemIndex={0} />
-        <SidebarNavItem href="/workflows" label="Workflows" icon={WorkflowsIcon} isActive={pathname === "/workflows"} collapsed={collapsed} reduced={reduced} itemIndex={1} />
-        <SidebarNavItem href="/runs" label="Runs" icon={RunsIcon} isActive={pathname === "/runs"} collapsed={collapsed} reduced={reduced} itemIndex={2} />
-        <SidebarSectionLabel text="Account" collapsed={collapsed} />
-        <SidebarNavItem href="/subscribe" label="Billing" icon={BillingIcon} isActive={pathname === "/subscribe"} collapsed={collapsed} reduced={reduced} itemIndex={3} />
-        {!guest && <SidebarNavItem href="/settings" label="Settings" icon={SettingsIcon} isActive={pathname === "/settings"} collapsed={collapsed} reduced={reduced} itemIndex={4} />}
-        {isPlatformAdmin && <SidebarNavItem href="/admin" label="Admin" icon={AdminIcon} isActive={pathname.startsWith("/admin")} collapsed={collapsed} reduced={reduced} itemIndex={5} />}
-      </nav>
+      {showSidebar ? (
+        <motion.aside
+          ref={sidebarRef}
+          className="fixed bottom-0 left-0 z-[80] isolate flex flex-col overflow-visible border-r border-slate-400/15 bg-[rgba(7,11,22,0.98)] text-[var(--text-primary)] [height:calc(100dvh_-_var(--app-header-height,44px))] [top:var(--app-header-height,44px)]"
+          data-app-nav="true"
+          data-collapsed={collapsed ? "true" : "false"}
+          animate={{ width: sidebarWidth }}
+          transition={
+            reduced
+              ? { duration: 0 }
+              : { type: "spring", stiffness: 360, damping: 34, mass: 0.8 }
+          }
+          style={{ width: sidebarWidth }}
+          aria-label="Primary navigation"
+        >
+          <div className="relative z-[1] flex min-h-[2.65rem] items-center justify-end border-b border-slate-400/10 px-[0.55rem] py-2">
+            <motion.button
+              type="button"
+              className={cn(
+                "inline-flex size-7 flex-none cursor-pointer items-center justify-center rounded-[7px] border border-slate-400/20 bg-slate-900/40 text-[var(--text-secondary)] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--brand)]",
+                collapsed && "w-[1.7rem]",
+              )}
+              onClick={() => setCollapsed((c) => !c)}
+              aria-label={collapsed ? "Expand sidebar" : "Collapse sidebar"}
+              aria-expanded={!collapsed}
+              whileHover={reduced ? undefined : { backgroundColor: "rgba(148, 163, 184, 0.12)" }}
+              whileTap={reduced ? undefined : { scale: 0.96 }}
+              transition={{ duration: 0.16 }}
+            >
+              <motion.span
+                animate={{ rotate: collapsed ? 180 : 0 }}
+                transition={reduced ? { duration: 0 } : { duration: 0.16 }}
+                style={{ display: "flex" }}
+              >
+                <ChevronLeftIcon size={14} />
+              </motion.span>
+            </motion.button>
+          </div>
 
-      <div className={styles.bottomZone}>
-        {!guest && (
-          <>
-            <div className={styles.bottomUtilities}><WorkspaceSwitcher workspaces={workspaces} /><div className={styles.utilityActions}><NotificationCenter notifications={notifications} onMarkRead={onMarkNotificationRead} /></div></div>
-            <div className={styles.userChip} aria-label={`Signed in as ${session?.user.login ?? "user"}`}>
-              <span className={styles.userAvatarRing}>{session?.user.avatarUrl ? <Image src={session.user.avatarUrl} alt={session.user.name ?? session.user.login} width={28} height={28} className={styles.userAvatarImg} unoptimized /> : <span className={styles.userAvatarFallback} aria-hidden="true">{avatarInitial}</span>}</span>
-              <AnimatePresence initial={false}>{!collapsed && <motion.div className={styles.userInfo} initial={reduced ? false : { opacity: 0, x: -8 }} animate={{ opacity: 1, x: 0 }} exit={reduced ? undefined : { opacity: 0, x: -8 }} transition={{ duration: 0.16 }}><span className={styles.userLogin}>{session?.user.login ?? "user"}</span>{session?.subscription.plan && <span className={styles.userPlanBadge}>{session.subscription.plan}</span>}</motion.div>}</AnimatePresence>
-            </div>
-            <button type="button" onClick={onLogout} disabled={isLoggingOut} aria-label={isLoggingOut ? "Signing out..." : "Sign out"} className={styles.signoutButton}>
-              {isLoggingOut ? <span className={styles.signoutSpinner} aria-hidden="true" /> : <SignOutIcon size={15} />}
-              <AnimatePresence initial={false}>{!collapsed && <motion.span initial={reduced ? false : { opacity: 0, x: -8 }} animate={{ opacity: 1, x: 0 }} exit={reduced ? undefined : { opacity: 0, x: -8 }} transition={{ duration: 0.16 }} className={styles.signoutLabel}>{isLoggingOut ? "Signing out..." : "Sign out"}</motion.span>}</AnimatePresence>
-            </button>
-          </>
-        )}
-        {guest && <Link className={styles.signUpButton} href="/signup">{collapsed ? "Start" : "Sign up"}</Link>}
-      </div>
-    </motion.aside>
+          <nav className="relative z-[1] flex min-h-0 flex-1 flex-col gap-[0.24rem] overflow-visible px-[0.45rem] py-[0.55rem]" aria-label="Primary">
+            <SidebarSectionLabel text="Main" collapsed={collapsed} />
+            <SidebarNavItem href="/home" label="Dashboard" icon={DashboardIcon} isActive={pathname === "/home"} collapsed={collapsed} reduced={reduced} itemIndex={0} />
+            <SidebarNavItem href="/workflows" label="Workflows" icon={WorkflowsIcon} isActive={pathname === "/workflows"} collapsed={collapsed} reduced={reduced} itemIndex={1} />
+            <SidebarNavItem href="/runs" label="Runs" icon={RunsIcon} isActive={pathname === "/runs"} collapsed={collapsed} reduced={reduced} itemIndex={2} />
+            <SidebarSectionLabel text="Account" collapsed={collapsed} />
+            {!guest && <SidebarNavItem href="/settings" label="Settings" icon={SettingsIcon} isActive={pathname === "/settings"} collapsed={collapsed} reduced={reduced} itemIndex={3} />}
+            {isPlatformAdmin && <SidebarNavItem href="/admin" label="Admin" icon={AdminIcon} isActive={pathname.startsWith("/admin")} collapsed={collapsed} reduced={reduced} itemIndex={4} />}
+          </nav>
+
+          <div className="relative z-[1] grid gap-[0.55rem] border-t border-slate-400/10 px-[0.45rem] pb-3 pt-[0.65rem]">
+            {!guest && (
+              <button type="button" onClick={onLogout} disabled={isLoggingOut} aria-label={isLoggingOut ? "Signing out..." : "Sign out"} className="inline-flex min-h-[2.1rem] w-full items-center justify-center gap-[0.55rem] rounded-[7px] border border-slate-400/15 bg-transparent px-[0.7rem] py-[0.48rem] text-[0.8rem] font-semibold text-[var(--text-secondary)] no-underline not-disabled:hover:border-red-300/25 not-disabled:hover:bg-red-400/10 not-disabled:hover:text-[var(--danger)] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--brand)] disabled:cursor-not-allowed disabled:opacity-[0.58]">
+                {isLoggingOut ? <span className="size-[0.9rem] animate-spin rounded-full border-2 border-slate-400/30 border-t-[var(--brand)]" aria-hidden="true" /> : <SignOutIcon size={15} />}
+                <AnimatePresence initial={false}>{!collapsed && <motion.span initial={reduced ? false : { opacity: 0, x: -8 }} animate={{ opacity: 1, x: 0 }} exit={reduced ? undefined : { opacity: 0, x: -8 }} transition={{ duration: 0.16 }} className="whitespace-nowrap">{isLoggingOut ? "Signing out..." : "Sign out"}</motion.span>}</AnimatePresence>
+              </button>
+            )}
+            {guest && <Link className="inline-flex min-h-[2.1rem] w-full items-center justify-center rounded-[7px] border border-cyan-400/45 bg-cyan-400/10 px-[0.7rem] py-[0.48rem] text-[0.8rem] font-semibold text-[var(--text-primary)] no-underline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--brand)]" href="/signup">{collapsed ? "Start" : "Sign up"}</Link>}
+          </div>
+        </motion.aside>
+      ) : null}
+    </>
   );
 }

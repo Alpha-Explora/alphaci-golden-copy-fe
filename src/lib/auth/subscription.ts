@@ -14,6 +14,5 @@ export function getAuthenticatedRedirectPath(
   nextPath: string,
 ): string | null {
   if (!session?.authenticated) return null;
-  if (session.subscription.plan === "free") return nextPath;
   return hasActiveSubscription(session) ? nextPath : "/subscribe";
 }

@@ -25,7 +25,7 @@ describe("settings route migration", () => {
   const guideSectionPath = path.join(featureDir, "settings-guide-section.tsx");
   const dangerSectionPath = path.join(featureDir, "settings-danger-section.tsx");
   const providerSettingsPath = path.join(process.cwd(), "src/components/settings/deployment-providers-section.tsx");
-  const stylesPath = path.join(featureDir, "settings-page.module.css");
+  const stylesPath = path.join(featureDir, "settings-page.styles.ts");
 
   it("keeps the app route as a thin entry point", () => {
     const routeSource = fs.readFileSync(routePath, "utf8");
@@ -91,6 +91,7 @@ describe("settings route migration", () => {
     expect(styleSource.trim().split(/\r?\n/).length).toBeLessThanOrEqual(400);
     expect(styleSource).not.toContain("data-theme=\"light\"");
     expect(styleSource).not.toContain("Light mode");
+    expect(styleSource).not.toContain("settings-page.module.css");
     expect(fs.readFileSync(accountSectionPath, "utf8")).toContain("SettingsAccountSection");
     expect(billingSource).toContain("styles.sectionStack");
     expect(billingSource).toContain("styles.splitRow");

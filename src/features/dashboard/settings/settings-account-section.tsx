@@ -7,7 +7,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import type { AuthMeResponse, NotificationsResponse, WorkspacesMeResponse } from "@/lib/api/contracts";
 
-import styles from "./settings-page.module.css";
+import styles from "./settings-page.styles";
 import { AlertTriangleIcon, GithubIcon, UserIcon } from "./settings-icons";
 import { HoverField, SettingsSection } from "./settings-section";
 

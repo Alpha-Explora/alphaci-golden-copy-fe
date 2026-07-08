@@ -37,7 +37,11 @@ describe("PricingPage content migration", () => {
 
     expect(result.container.querySelector("main")?.getAttribute("data-pricing-page-shell")).toBe("true");
     expect(result.container.querySelector("#pricing-page-title")).toHaveTextContent("Credits for governed CI/CD automation.");
-    expect(result.container.querySelector("a[href='/subscribe']")).toHaveTextContent("Start Pro");
+    expect(
+      Array.from(result.container.querySelectorAll("a[href='/signup?next=/subscribe']")).some(
+        (link) => link.textContent === "Start Pro",
+      ),
+    ).toBe(true);
     expect(result.container).toHaveTextContent("PHP 0");
     expect(result.container).toHaveTextContent("PHP 300");
     expect(result.container).toHaveTextContent("Coming soon");
@@ -59,8 +63,9 @@ describe("PricingPage content migration", () => {
     expect(routeSource).not.toContain("CheckIcon");
     expect(routeSource).not.toContain("pricing.module.css");
     expect(fs.existsSync(appPricingCssPath)).toBe(false);
-    expect(pricingFeatureSource).toContain("pricing-page.module.css");
-    expect(pricingFeatureSource).toContain("pricing-details.module.css");
+    expect(pricingFeatureSource).not.toContain("pricing-page.module.css");
+    expect(pricingFeatureSource).not.toContain("pricing-details.module.css");
+    expect(pricingFeatureSource).not.toContain("pricing-page-shell.module.css");
   });
 
   it("does not emit legacy global pricing classes", () => {

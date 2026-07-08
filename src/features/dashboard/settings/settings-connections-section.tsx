@@ -10,7 +10,7 @@ import {
 } from "@/lib/api/auth";
 
 import { ExternalLinkIcon, GithubIcon } from "./settings-icons";
-import styles from "./settings-page.module.css";
+import styles from "./settings-page.styles";
 import { SettingsSection } from "./settings-section";
 
 interface SettingsConnectionsSectionProps {

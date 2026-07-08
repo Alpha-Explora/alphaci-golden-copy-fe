@@ -10,10 +10,11 @@ interface DashboardAppNavProps {
   session: ReturnType<typeof useAuthSession>["session"];
   onLogout: () => void;
   isLoggingOut: boolean;
+  showSidebar?: boolean;
 }
 
-export function DashboardAppNav({ guest, session, onLogout, isLoggingOut }: Readonly<DashboardAppNavProps>) {
-  const { workspaces, notifications, handleMarkNotificationRead } = useAppNavData({ guest });
+export function DashboardAppNav({ guest, session, onLogout, isLoggingOut, showSidebar = true }: Readonly<DashboardAppNavProps>) {
+  const { projects, selectedProject, workspaces } = useAppNavData({ guest });
 
   return (
     <AppNav
@@ -22,8 +23,9 @@ export function DashboardAppNav({ guest, session, onLogout, isLoggingOut }: Read
       onLogout={onLogout}
       isLoggingOut={isLoggingOut}
       workspaces={workspaces}
-      notifications={notifications}
-      onMarkNotificationRead={handleMarkNotificationRead}
+      projects={projects}
+      selectedProject={selectedProject}
+      showSidebar={showSidebar}
     />
   );
 }

@@ -25,7 +25,7 @@ import { SettingsBillingSection } from "./settings-billing-section";
 import { SettingsConnectionsSection } from "./settings-connections-section";
 import { SettingsDangerSection } from "./settings-danger-section";
 import { SettingsGuideSection } from "./settings-guide-section";
-import styles from "./settings-page.module.css";
+import styles from "./settings-page.styles";
 import {
   AlertTriangleIcon,
   BookOpenIcon,

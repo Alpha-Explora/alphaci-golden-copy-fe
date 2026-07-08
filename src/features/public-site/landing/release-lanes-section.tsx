@@ -1,8 +1,8 @@
+import type { CSSProperties } from "react";
 import { motion } from "framer-motion";
 
 import { PipelineLogo } from "@/components/layout/pipeline-logo";
-
-import styles from "./release-lanes-section.module.css";
+import { cn } from "@/lib/utils";
 
 const RELEASE_STEPS = [
   {
@@ -56,6 +56,65 @@ const RELEASE_LANES = [
   },
 ];
 
+const styles = {
+  section: "relative overflow-hidden bg-[var(--bg-base)] px-[clamp(2rem,7vw,8rem)] py-[clamp(4rem,6vw,6rem)]",
+  ambient:
+    "pointer-events-none absolute left-1/2 top-0 h-[400px] w-[700px] -translate-x-1/2 bg-[radial-gradient(ellipse,rgba(52,211,153,0.05)_0%,transparent_65%)]",
+  header: "mx-auto mb-[clamp(2.5rem,4vw,4rem)] max-w-[600px] text-center",
+  eyebrow:
+    "mb-5 inline-flex items-center gap-1.5 rounded-full border border-emerald-400/20 bg-emerald-400/[0.08] px-3 py-1 font-mono text-[0.62rem] font-bold uppercase tracking-[0.12em] text-[var(--brand-accent)]",
+  eyebrowDot: "size-[5px] shrink-0 rounded-full bg-[var(--brand-accent)]",
+  path: "m-0 inline-flex items-center gap-[0.3rem] font-mono text-[0.72rem] tracking-[0.06em] text-[var(--text-muted)]",
+  pathPrefix: "text-[var(--brand)]",
+  heading:
+    "mb-4 mt-2 text-[clamp(1.8rem,3vw,2.8rem)] font-extrabold leading-tight tracking-normal text-[var(--text-primary)]",
+  intro: "mx-auto my-0 max-w-[50ch] text-[clamp(0.9rem,1.2vw,1.05rem)] leading-[1.7] text-[var(--text-secondary)]",
+  providersRow:
+    "mx-auto mb-[clamp(2.5rem,4vw,4rem)] grid max-w-[840px] grid-cols-2 gap-[clamp(1.25rem,2.5vw,2rem)] max-[640px]:grid-cols-1",
+  providerCard:
+    "relative overflow-hidden rounded-[18px] p-[clamp(1.5rem,2.5vw,2rem)] transition-[border-color,box-shadow,transform] duration-200 ease-in-out hover:-translate-y-1",
+  providerCardProduction:
+    "border border-white/10 bg-[#08080a]/85 shadow-[0_20px_60px_rgba(0,0,0,0.6),inset_0_1px_0_rgba(255,255,255,0.08),0_0_0_1px_rgba(255,255,255,0.03)] hover:border-white/20 hover:shadow-[0_28px_80px_rgba(0,0,0,0.7),inset_0_1px_0_rgba(255,255,255,0.1),0_0_40px_rgba(255,255,255,0.04)]",
+  providerCardReview:
+    "border border-emerald-400/20 bg-[#06100e]/85 shadow-[0_20px_60px_rgba(0,0,0,0.55),inset_0_1px_0_rgba(52,211,153,0.06),0_0_0_1px_rgba(52,211,153,0.03)] hover:border-emerald-400/30 hover:shadow-[0_28px_80px_rgba(0,0,0,0.65),inset_0_1px_0_rgba(52,211,153,0.1),0_0_40px_rgba(52,211,153,0.06)]",
+  grain:
+    "pointer-events-none absolute inset-0 rounded-[inherit] bg-[length:128px_128px] opacity-[0.035]",
+  cardHeader: "relative flex items-center gap-3 mb-5",
+  providerLogo: "inline-flex size-11 shrink-0 items-center justify-center rounded-[10px]",
+  providerLogoProduction: "bg-white text-black shadow-[0_0_20px_rgba(255,255,255,0.12)]",
+  providerLogoReview: "border border-emerald-400/25 bg-emerald-400/10 text-emerald-400 shadow-[0_0_16px_rgba(52,211,153,0.15)]",
+  cardMeta: "m-0 font-mono text-[0.62rem] uppercase tracking-[0.12em] text-white/40",
+  cardMetaReview: "text-emerald-400/50",
+  cardTitle: "m-0 text-base font-bold tracking-normal text-white",
+  cardTitleReview: "text-emerald-400",
+  badge: "ml-auto inline-flex items-center rounded-md px-[0.55rem] py-[0.18rem] font-mono text-[0.62rem] font-bold tracking-[0.04em]",
+  badgeProduction: "bg-white/[0.08] text-white/70",
+  badgeReview: "border border-emerald-400/25 bg-emerald-400/10 text-emerald-400",
+  featureList: "relative m-0 flex list-none flex-col gap-[0.55rem] p-0",
+  featureItem: "flex items-center gap-2.5 text-[0.82rem] text-white/60",
+  featureItemReview: "text-white/55",
+  featureDot: "size-1 shrink-0 rounded-full bg-white opacity-50",
+  featureDotReview: "bg-emerald-400 opacity-60",
+  method: "relative mt-6 flex items-center gap-2 border-t border-white/[0.07] pt-4",
+  methodReview: "border-emerald-400/10",
+  methodLabel: "font-mono text-[0.62rem] uppercase tracking-[0.1em] text-white/30",
+  methodLabelReview: "text-emerald-400/35",
+  methodCode: "rounded bg-white/[0.05] px-2 py-0.5 font-mono text-[0.72rem] text-white/55",
+  methodCodeReview: "bg-emerald-400/[0.06] text-emerald-400/60",
+  stepsRow:
+    "relative mx-auto grid max-w-[840px] grid-cols-4 gap-[clamp(1rem,2vw,1.75rem)] max-[768px]:grid-cols-2 max-[480px]:grid-cols-1",
+  stepsLine:
+    "absolute left-[calc(12.5%+0.5rem)] right-[calc(12.5%+0.5rem)] top-[1.1rem] h-px bg-[linear-gradient(to_right,rgba(52,211,153,0.2),rgba(56,189,248,0.2),rgba(52,211,153,0.2))] max-[768px]:hidden",
+  step: "relative flex flex-col gap-2",
+  stepNum:
+    "relative z-[1] mb-1 inline-flex size-8 items-center justify-center rounded-full border border-emerald-400/20 bg-emerald-400/[0.08] font-mono text-[0.62rem] font-bold tracking-[0.1em] text-[var(--brand-accent)]",
+  stepLabel: "m-0 text-[0.88rem] font-bold tracking-normal text-[var(--text-primary)]",
+  stepDetail: "m-0 text-[0.78rem] leading-[1.65] text-[var(--text-muted)]",
+};
+const grainStyle: CSSProperties = {
+  backgroundImage:
+    "url(\"data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E\")",
+};
 type ReleaseLanesSectionProps = Readonly<{
   reduced: boolean | null;
 }>;
@@ -63,6 +122,7 @@ type ReleaseLanesSectionProps = Readonly<{
 export function ReleaseLanesSection({ reduced }: ReleaseLanesSectionProps) {
   return (
     <section id="deploy" className={styles.section} data-release-lanes-section="true" aria-label="Release lanes">
+      <div className={styles.ambient} aria-hidden="true" />
       <motion.div
         className={styles.header}
         initial={reduced ? undefined : { opacity: 0, y: 20 }}
@@ -71,12 +131,18 @@ export function ReleaseLanesSection({ reduced }: ReleaseLanesSectionProps) {
         transition={{ duration: 0.45 }}
       >
         <div className={styles.eyebrow}>
-          <span className={styles.eyebrowDot} data-paused={reduced ? "true" : undefined} aria-hidden="true" />
+          <motion.span
+            className={styles.eyebrowDot}
+            data-paused={reduced ? "true" : undefined}
+            aria-hidden="true"
+            animate={reduced ? undefined : { opacity: [1, 0.55, 1], scale: [1, 1.45, 1] }}
+            transition={reduced ? undefined : { duration: 1.8, repeat: Infinity, ease: "easeInOut" }}
+          />
           <span>Release lanes</span>
         </div>
-        <p className={styles.path}>release/lanes.yml</p>
-        <h2>Release through governed lanes</h2>
-        <p>AlphaCI keeps release targets, environment configuration, and production visibility attached to the generated workflow.</p>
+        <p className={styles.path}><span className={styles.pathPrefix} aria-hidden="true">./</span>release/lanes.yml</p>
+        <h2 className={styles.heading}>Release through governed lanes</h2>
+        <p className={styles.intro}>AlphaCI keeps release targets, environment configuration, and production visibility attached to the generated workflow.</p>
       </motion.div>
 
       <motion.div
@@ -92,33 +158,33 @@ export function ReleaseLanesSection({ reduced }: ReleaseLanesSectionProps) {
           return (
             <div
               key={lane.key}
-              className={`${styles.providerCard} ${isReview ? styles.providerCardReview : styles.providerCardProduction}`}
+              className={cn(styles.providerCard, isReview ? styles.providerCardReview : styles.providerCardProduction)}
               data-release-lane-card="true"
             >
-              <div aria-hidden="true" className={styles.grain} />
+              <div aria-hidden="true" className={styles.grain} style={grainStyle} />
               <div className={styles.cardHeader}>
-                <span className={`${styles.providerLogo} ${isReview ? styles.providerLogoReview : styles.providerLogoProduction}`} aria-hidden="true">
+                <span className={cn(styles.providerLogo, isReview ? styles.providerLogoReview : styles.providerLogoProduction)} aria-hidden="true">
                   <PipelineLogo size={18} />
                 </span>
                 <div>
-                  <p className={isReview ? styles.cardMetaReview : styles.cardMeta}>Lane</p>
-                  <p className={isReview ? styles.cardTitleReview : styles.cardTitle}>{lane.title}</p>
+                  <p className={cn(styles.cardMeta, isReview && styles.cardMetaReview)}>Lane</p>
+                  <p className={cn(styles.cardTitle, isReview && styles.cardTitleReview)}>{lane.title}</p>
                 </div>
-                <span className={`${styles.badge} ${isReview ? styles.badgeReview : styles.badgeProduction}`}>{lane.badge}</span>
+                <span className={cn(styles.badge, isReview ? styles.badgeReview : styles.badgeProduction)}>{lane.badge}</span>
               </div>
 
               <ul className={styles.featureList}>
                 {lane.features.map((item) => (
-                  <li key={item} className={isReview ? styles.featureItemReview : styles.featureItem}>
-                    <span className={isReview ? styles.featureDotReview : styles.featureDot} aria-hidden="true" />
+                  <li key={item} className={cn(styles.featureItem, isReview && styles.featureItemReview)}>
+                    <span className={cn(styles.featureDot, isReview && styles.featureDotReview)} aria-hidden="true" />
                     {item}
                   </li>
                 ))}
               </ul>
 
-              <div className={isReview ? styles.methodReview : styles.method}>
-                <span className={isReview ? styles.methodLabelReview : styles.methodLabel}>Method</span>
-                <code className={isReview ? styles.methodCodeReview : styles.methodCode}>{lane.method}</code>
+              <div className={cn(styles.method, isReview && styles.methodReview)}>
+                <span className={cn(styles.methodLabel, isReview && styles.methodLabelReview)}>Method</span>
+                <code className={cn(styles.methodCode, isReview && styles.methodCodeReview)}>{lane.method}</code>
               </div>
             </div>
           );
@@ -132,6 +198,7 @@ export function ReleaseLanesSection({ reduced }: ReleaseLanesSectionProps) {
         viewport={{ once: true, margin: "-60px" }}
         transition={{ duration: 0.5, delay: 0.2 }}
       >
+        <div className={styles.stepsLine} aria-hidden="true" />
         {RELEASE_STEPS.map((step, index) => (
           <motion.div
             key={step.num}

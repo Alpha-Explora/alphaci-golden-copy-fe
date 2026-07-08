@@ -2,6 +2,8 @@ import type {
   SubscriptionCheckoutResponse,
   SubscriptionCheckoutStatusResponse,
   SubscriptionInfo,
+  SubscriptionPaymentIntentResponse,
+  SubscriptionPaymentIntentStatusResponse,
 } from "./contracts";
 import { request } from "./request";
 
@@ -19,6 +21,26 @@ export async function getCheckoutStatus(
 ): Promise<SubscriptionCheckoutStatusResponse> {
   return request<SubscriptionCheckoutStatusResponse>(
     `/subscription/checkout/${encodeURIComponent(checkoutId)}/status`,
+  );
+}
+
+export async function createSubscriptionPaymentIntent(
+  plan: "pro",
+): Promise<SubscriptionPaymentIntentResponse> {
+  return request<SubscriptionPaymentIntentResponse>(
+    "/subscription/payment-intent",
+    {
+      method: "POST",
+      body: JSON.stringify({ plan }),
+    },
+  );
+}
+
+export async function getPaymentIntentStatus(
+  paymentIntentId: string,
+): Promise<SubscriptionPaymentIntentStatusResponse> {
+  return request<SubscriptionPaymentIntentStatusResponse>(
+    `/subscription/payment-intent/${encodeURIComponent(paymentIntentId)}/status`,
   );
 }
 

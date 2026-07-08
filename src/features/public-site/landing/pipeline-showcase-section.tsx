@@ -4,7 +4,7 @@ import { motion } from "framer-motion";
 import type { ReactNode } from "react";
 import { useEffect, useState } from "react";
 
-import styles from "./pipeline-showcase-section.module.css";
+import { cn } from "@/lib/utils";
 
 type YamlLineType = "comment" | "key" | "indent1" | "indent2" | "keyword" | "step";
 type StageStatus = "passing" | "running" | "pending";
@@ -67,6 +67,256 @@ const LOG_LINES = [
   "  All checks passed.",
 ];
 
+const styles = {
+  section:
+    "relative flex min-h-dvh w-full flex-col items-center justify-center gap-8 overflow-hidden border-t border-[var(--border)] bg-[var(--bg-soft)] px-[clamp(2rem,7vw,8rem)] py-[clamp(4rem,8vw,7rem)]",
+  ambientPrimary:
+    "pointer-events-none absolute -right-[8%] -top-[15%] h-[70%] w-[60%] rounded-full bg-[radial-gradient(ellipse,rgba(79,142,255,0.07)_0%,transparent_65%)]",
+  ambientSecondary:
+    "pointer-events-none absolute -bottom-[10%] -left-[5%] h-[55%] w-1/2 rounded-full bg-[radial-gradient(ellipse,rgba(0,208,132,0.05)_0%,transparent_65%)]",
+  layer: "relative z-[1]",
+  header: "relative z-[1] mb-4 flex max-w-[640px] flex-col items-center gap-4 text-center",
+  eyebrow:
+    "mb-1 inline-flex items-center gap-1.5 rounded-full border border-cyan-400/20 bg-cyan-400/[0.08] px-3 py-1 font-mono text-[0.62rem] font-bold uppercase tracking-[0.12em] text-[var(--brand)]",
+  eyebrowDot: "size-[5px] shrink-0 rounded-full bg-[var(--brand)]",
+  path: "m-0 inline-flex items-center gap-[0.3rem] font-mono text-[0.72rem] tracking-[0.06em] text-[var(--text-muted)]",
+  pathPrefix: "text-[var(--brand)]",
+  heading: "m-0 text-[clamp(1.8rem,3.5vw,2.8rem)] font-extrabold leading-tight tracking-normal text-[var(--text-primary)]",
+  intro: "m-0 max-w-[52ch] text-base leading-[1.6] text-[var(--text-secondary)]",
+  content: "relative z-[1] mx-auto grid w-full max-w-[1100px] grid-cols-2 items-start gap-12 max-[860px]:grid-cols-1",
+  visualColumn: "w-full max-w-[520px] self-start",
+  panelHeader: "mb-4 flex items-center justify-between gap-4",
+  statusBadge:
+    "inline-flex items-center gap-[0.35rem] rounded-full border border-emerald-400/30 bg-emerald-500/[0.08] px-[0.55rem] py-[0.18rem] font-mono text-[0.68rem] font-bold text-[var(--success)]",
+  statusDot: "size-[0.34rem] rounded-full bg-[var(--success)] shadow-[0_0_10px_rgba(52,211,153,0.62)]",
+  stagePanel: "mb-4 rounded-xl border border-[var(--border)] bg-[var(--bg-panel)] p-6 backdrop-blur-xl",
+  stageRow: "flex items-start gap-0",
+  stageWrap: "flex flex-1 items-center last:flex-none",
+  stageStack: "flex shrink-0 flex-col items-center",
+  stageNode: "relative flex size-9 shrink-0 items-center justify-center rounded-full",
+  stagePassing: "border-[1.5px] border-emerald-400/50 bg-emerald-500/15 text-[var(--success)] shadow-[0_0_14px_rgba(0,208,132,0.28)]",
+  stageRunning: "border-[1.5px] border-[#4f8eff]/50 bg-[#4f8eff]/15 text-[var(--brand)] shadow-[0_0_16px_rgba(79,142,255,0.32)]",
+  stagePending: "border-[1.5px] border-slate-500/40 bg-slate-600/20 text-[var(--text-muted)]",
+  spinner: "size-2.5 rounded-full border-2 border-[#4f8eff]/40 border-t-[#4f8eff] animate-spin",
+  stageLabel: "mt-[0.35rem] text-center font-mono text-[0.62rem] uppercase tracking-[0.1em] text-[var(--text-muted)]",
+  stageDuration: "mt-[0.15rem] font-mono text-[0.58rem] text-[var(--text-muted)]",
+  connectorLine:
+    "relative mb-[1.4rem] mx-[0.2rem] h-0.5 flex-1 overflow-hidden rounded-full bg-[linear-gradient(90deg,rgba(79,142,255,0.5),rgba(79,142,255,0.15))]",
+  connectorFlow:
+    "absolute inset-0 rounded-[inherit] bg-[linear-gradient(90deg,transparent,rgba(79,142,255,0.8),transparent)]",
+  commitRow: "mt-[0.85rem] flex flex-wrap items-center gap-2 border-t border-white/[0.05] pt-[0.65rem]",
+  branchChip:
+    "inline-flex items-center rounded-full border border-[#4f8eff]/25 bg-[#4f8eff]/10 px-[0.55rem] py-[0.15rem] font-mono text-[0.72rem] tracking-[0.02em] text-[var(--brand)]",
+  commitMeta: "font-mono text-[0.68rem] text-[var(--text-muted)]",
+  commitMessage: "min-w-0 flex-1 truncate text-[0.74rem] text-[var(--text-secondary)]",
+  terminal: "w-full max-w-[520px] overflow-hidden rounded-xl border border-[#4f8eff]/15 bg-[#0d1117] shadow-[var(--shadow-elevated),var(--glow-brand)]",
+  logTerminal: "max-h-[148px]",
+  terminalBar: "flex items-center gap-[0.45rem] border-b border-white/[0.06] bg-white/[0.03] px-[0.8rem] py-[0.65rem]",
+  dot: "size-[0.58rem] rounded-full",
+  dotRed: "bg-[#ff5f56]",
+  dotYellow: "bg-[#ffbd2e]",
+  dotGreen: "bg-[#27c93f]",
+  terminalTitle: "ml-[0.4rem] font-mono text-[0.65rem] text-white/30",
+  output: "m-0 min-h-0 px-4 py-3 font-mono text-[0.72rem] leading-[1.65] text-[#8b949e]",
+  yamlOutput: "min-h-[18rem] text-[0.75rem]",
+  outputLine: "block",
+  logCommand: "text-[#79c0ff]",
+  logSuccess: "text-[#00d084]",
+  logMuted: "text-[#8b949e]",
+  cursor: "ml-0.5 inline-block h-[0.85em] w-2 bg-[#4f8eff] align-text-bottom opacity-80",
+  terminalLabel: "mb-2",
+  yamlKeyword: "text-[#ff7b72]",
+  yamlString: "text-[#a5d6ff]",
+  yamlComment: "text-[#8b949e]",
+  yamlKey: "text-[#79c0ff]",
+  footerStatus: "flex items-center gap-2 font-mono text-[0.68rem] text-[var(--text-muted)]",
+};
+
+const stageToneClasses: Record<StageStatus, string> = {
+  passing: styles.stagePassing,
+  running: styles.stageRunning,
+  pending: styles.stagePending,
+};
+
+const yamlLineVariants = {
+  hidden: { opacity: 0, x: -10 },
+  visible: { opacity: 1, x: 0 },
+};
+
+const mockupContainerVariants = {
+  hidden: {},
+  visible: { transition: { staggerChildren: 0.06, delayChildren: 0.35 } },
+};
+
+type PipelineShowcaseSectionProps = Readonly<{ reduced: boolean | null }>;
+
+export function PipelineShowcaseSection({ reduced }: PipelineShowcaseSectionProps) {
+  return (
+    <section id="pipeline" className={styles.section} data-pipeline-showcase-section="true" aria-label="Live pipeline visualization">
+      <div className={styles.ambientPrimary} aria-hidden="true" />
+      <div className={styles.ambientSecondary} aria-hidden="true" />
+      <motion.div className={styles.header} initial={reduced ? undefined : { opacity: 0, y: 20 }} whileInView={reduced ? undefined : { opacity: 1, y: 0 }} viewport={{ once: true, margin: "-80px" }} transition={{ duration: 0.45 }}>
+        <div className={styles.eyebrow}>
+          <PulseDot className={styles.eyebrowDot} reduced={reduced} />
+          <span>Generated workflow</span>
+        </div>
+        <PathLabel>pipeline/generated-workflow.yml</PathLabel>
+        <h2 className={styles.heading}>From push to deploy in minutes</h2>
+        <p className={styles.intro}>AlphaCI generates a GitHub Actions workflow from a template tied to your source files. Every stage - checkout, lint, test, build, security scan, deploy - runs in sequence. Review the generated output.</p>
+      </motion.div>
+      <motion.div className={styles.content} initial={reduced ? undefined : { opacity: 0, y: 24 }} whileInView={reduced ? undefined : { opacity: 1, y: 0 }} viewport={{ once: true, margin: "-60px" }} transition={{ duration: 0.55, delay: 0.1 }}>
+        <PipelineVisualization reduced={reduced} />
+        <GeneratedYamlTerminal reduced={reduced} />
+      </motion.div>
+    </section>
+  );
+}
+
+function PipelineVisualization({ reduced }: PipelineShowcaseSectionProps) {
+  const [visibleLogs, setVisibleLogs] = useState(3);
+  useEffect(() => {
+    if (reduced) return;
+    const id = setInterval(() => setVisibleLogs((value) => (value >= LOG_LINES.length ? 3 : value + 1)), 900);
+    return () => clearInterval(id);
+  }, [reduced]);
+
+  return (
+    <div className={styles.visualColumn}>
+      <div className={styles.panelHeader}>
+        <PathLabel>pipeline/payments-service.yml</PathLabel>
+        <StatusBadge reduced={reduced}>running</StatusBadge>
+      </div>
+      <motion.div className={styles.stagePanel} initial={reduced ? undefined : { opacity: 0, y: 12 }} animate={reduced ? undefined : { opacity: 1, y: 0 }} transition={{ duration: 0.45, ease: "easeOut" }}>
+        <div className={styles.stageRow}>
+          {PIPELINE_STAGES.map((stage, index) => (
+            <div key={stage.label} className={styles.stageWrap} data-pipeline-stage="true">
+              <div className={styles.stageStack}>
+                <motion.div className={cn(styles.stageNode, stageToneClasses[stage.status])} initial={reduced ? undefined : { scale: 0.5, opacity: 0 }} animate={reduced ? undefined : { scale: 1, opacity: 1 }} whileHover={reduced ? undefined : { scale: 1.15, filter: "brightness(1.3)", cursor: "pointer" }} transition={{ delay: index * 0.1, duration: 0.3, ease: "easeOut" }}>
+                  {stage.status === "passing" ? <CheckMark /> : stage.status === "running" ? <span className={styles.spinner} aria-hidden="true" /> : stage.icon}
+                </motion.div>
+                <span className={styles.stageLabel}>{stage.label}</span>
+                <span className={styles.stageDuration}>{stage.duration}</span>
+              </div>
+              {index < PIPELINE_STAGES.length - 1 && <ConnectorLine reduced={reduced} />}
+            </div>
+          ))}
+        </div>
+        <div className={styles.commitRow}>
+          <span className={styles.branchChip}>main</span>
+          <span className={styles.commitMeta}>a3f91bc</span>
+          <span className={cn(styles.commitMeta, styles.commitMessage)}>feat: add payments API module</span>
+        </div>
+      </motion.div>
+      <TerminalWindow title="deploy / run" ariaLabel="Live deployment log" reduced={reduced} delay={0.3} className={styles.logTerminal}>
+        <pre className={styles.output}>
+          {LOG_LINES.slice(0, visibleLogs).map((line) => (
+            <span key={line} className={cn(styles.outputLine, line.startsWith(">") ? styles.logCommand : line.includes("DONE") || line.includes("passed") || line.includes("OK") || line.includes("0 critical") ? styles.logSuccess : styles.logMuted)}>{line}</span>
+          ))}
+          <Cursor reduced={reduced} />
+        </pre>
+      </TerminalWindow>
+      <motion.div className={styles.footerStatus} initial={reduced ? undefined : { opacity: 0 }} animate={reduced ? undefined : { opacity: 1 }} transition={{ delay: 0.55, duration: 0.35 }}>
+        <StatusBadge reduced={reduced}>passing</StatusBadge>
+        <span>All checks passed - 2m 14s - triggered by push to main</span>
+      </motion.div>
+    </div>
+  );
+}
+
+function GeneratedYamlTerminal({ reduced }: PipelineShowcaseSectionProps) {
+  return (
+    <div className={styles.visualColumn}>
+      <div className={styles.terminalLabel}><PathLabel>workflow/generated-output.yml</PathLabel></div>
+      <TerminalWindow title="payments-service.yml" ariaLabel="Example generated YAML workflow" reduced={reduced} delay={0.55}>
+        <motion.pre className={cn(styles.output, styles.yamlOutput)} variants={reduced ? undefined : mockupContainerVariants} initial={reduced ? undefined : "hidden"} animate={reduced ? undefined : "visible"}>
+          {YAML_LINES.map((line) => (
+            <motion.span key={line.id} variants={reduced ? undefined : yamlLineVariants} transition={{ duration: 0.28, ease: "easeOut" }} className={styles.outputLine}>
+              <YamlLineContent line={line} />
+            </motion.span>
+          ))}
+        </motion.pre>
+      </TerminalWindow>
+    </div>
+  );
+}
+
+function TerminalWindow({ title, ariaLabel, reduced, delay, className, children }: Readonly<{ title: string; ariaLabel: string; reduced: boolean | null; delay: number; className?: string; children: ReactNode }>) {
+  return (
+    <motion.div className={cn(styles.terminal, className)} data-terminal-window="true" initial={reduced ? undefined : { opacity: 0, y: 16, scale: 0.97 }} animate={reduced ? undefined : { opacity: 1, y: 0, scale: 1 }} transition={{ duration: 0.5, delay, ease: "easeOut" }}>
+      <div className={styles.terminalBar}>
+        <span className={cn(styles.dot, styles.dotRed)} aria-hidden="true" />
+        <span className={cn(styles.dot, styles.dotYellow)} aria-hidden="true" />
+        <span className={cn(styles.dot, styles.dotGreen)} aria-hidden="true" />
+        <span className={styles.terminalTitle}>{title}</span>
+      </div>
+      <div aria-label={ariaLabel}>{children}</div>
+    </motion.div>
+  );
+}
+
+function PathLabel({ children }: Readonly<{ children: ReactNode }>) {
+  return <p className={styles.path}><span className={styles.pathPrefix} aria-hidden="true">./</span>{children}</p>;
+}
+
+function PulseDot({ className, reduced }: Readonly<{ className: string; reduced: boolean | null }>) {
+  return (
+    <motion.span
+      className={className}
+      data-paused={reduced ? "true" : undefined}
+      aria-hidden="true"
+      animate={reduced ? undefined : { opacity: [1, 0.55, 1], scale: [1, 1.45, 1] }}
+      transition={reduced ? undefined : { duration: 1.8, repeat: Infinity, ease: "easeInOut" }}
+    />
+  );
+}
+
+function StatusBadge({ children, reduced }: Readonly<{ children: ReactNode; reduced: boolean | null }>) {
+  return (
+    <span className={styles.statusBadge}>
+      <PulseDot className={styles.statusDot} reduced={reduced} />
+      <span>{children}</span>
+    </span>
+  );
+}
+
+function ConnectorLine({ reduced }: Readonly<{ reduced: boolean | null }>) {
+  return (
+    <div className={styles.connectorLine}>
+      <motion.span
+        className={styles.connectorFlow}
+        aria-hidden="true"
+        initial={reduced ? undefined : { x: "-100%" }}
+        animate={reduced ? undefined : { x: "100%" }}
+        transition={reduced ? undefined : { duration: 2.5, repeat: Infinity, ease: "easeInOut" }}
+      />
+    </div>
+  );
+}
+
+function Cursor({ reduced }: Readonly<{ reduced: boolean | null }>) {
+  return (
+    <motion.span
+      className={styles.cursor}
+      aria-hidden="true"
+      animate={reduced ? undefined : { opacity: [0.8, 0.25, 0.8] }}
+      transition={reduced ? undefined : { duration: 0.9, repeat: Infinity, ease: "easeInOut" }}
+    />
+  );
+}
+
+function YamlLineContent({ line }: Readonly<{ line: YamlLine }>) {
+  const indent = YAML_INDENT[line.type];
+  if (line.type === "comment") return <span className={styles.yamlComment}>{line.text}</span>;
+  if (line.type === "keyword") return <>{indent}<span className={styles.yamlKeyword}>{line.text}</span>:</>;
+  return <>{indent}<span className={styles.yamlKey}>{line.text}</span><YamlLineValue value={line.value} valueType={line.valueType} /></>;
+}
+
+function YamlLineValue({ value, valueType }: Readonly<{ value: string | null; valueType: "string" | "raw" | null }>) {
+  if (value === null) return <>:</>;
+  if (valueType === "string") return <>{": "}<span className={styles.yamlString}>{value}</span></>;
+  return <>{": "}{value}</>;
+}
+
 function SourceIcon() {
   return <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22" /></svg>;
 }
@@ -94,133 +344,6 @@ const PIPELINE_STAGES: PipelineStage[] = [
   { label: "Security", status: "passing", duration: "22s", icon: <SecurityIcon /> },
   { label: "Deploy", status: "running", duration: "...", icon: <DeployIcon /> },
 ];
-
-const yamlLineVariants = {
-  hidden: { opacity: 0, x: -10 },
-  visible: { opacity: 1, x: 0 },
-};
-
-const mockupContainerVariants = {
-  hidden: {},
-  visible: { transition: { staggerChildren: 0.06, delayChildren: 0.35 } },
-};
-
-type PipelineShowcaseSectionProps = Readonly<{ reduced: boolean | null }>;
-
-export function PipelineShowcaseSection({ reduced }: PipelineShowcaseSectionProps) {
-  return (
-    <section id="pipeline" className={styles.section} data-pipeline-showcase-section="true" aria-label="Live pipeline visualization">
-      <motion.div className={styles.header} initial={reduced ? undefined : { opacity: 0, y: 20 }} whileInView={reduced ? undefined : { opacity: 1, y: 0 }} viewport={{ once: true, margin: "-80px" }} transition={{ duration: 0.45 }}>
-        <div className={styles.eyebrow}>
-          <span className={styles.eyebrowDot} data-paused={reduced ? "true" : undefined} aria-hidden="true" />
-          <span>Generated workflow</span>
-        </div>
-        <p className={styles.path}>pipeline/generated-workflow.yml</p>
-        <h2>From push to deploy in minutes</h2>
-        <p>AlphaCI generates a GitHub Actions workflow from a template tied to your source files. Every stage - checkout, lint, test, build, security scan, deploy - runs in sequence. Review the generated output.</p>
-      </motion.div>
-      <motion.div className={styles.content} initial={reduced ? undefined : { opacity: 0, y: 24 }} whileInView={reduced ? undefined : { opacity: 1, y: 0 }} viewport={{ once: true, margin: "-60px" }} transition={{ duration: 0.55, delay: 0.1 }}>
-        <PipelineVisualization reduced={reduced} />
-        <GeneratedYamlTerminal reduced={reduced} />
-      </motion.div>
-    </section>
-  );
-}
-
-function PipelineVisualization({ reduced }: PipelineShowcaseSectionProps) {
-  const [visibleLogs, setVisibleLogs] = useState(3);
-  useEffect(() => {
-    if (reduced) return;
-    const id = setInterval(() => setVisibleLogs((value) => (value >= LOG_LINES.length ? 3 : value + 1)), 900);
-    return () => clearInterval(id);
-  }, [reduced]);
-
-  return (
-    <div className={styles.visualColumn}>
-      <div className={styles.panelHeader}>
-        <p className={styles.path}>pipeline/payments-service.yml</p>
-        <span className={styles.statusPassing}>running</span>
-      </div>
-      <motion.div className={styles.stagePanel} initial={reduced ? undefined : { opacity: 0, y: 12 }} animate={reduced ? undefined : { opacity: 1, y: 0 }} transition={{ duration: 0.45, ease: "easeOut" }}>
-        <div className={styles.stageRow}>
-          {PIPELINE_STAGES.map((stage, index) => (
-            <div key={stage.label} className={styles.stageWrap} data-pipeline-stage="true">
-              <div className={styles.stageStack}>
-                <motion.div className={`${styles.stageNode} ${styles[stage.status]}`} initial={reduced ? undefined : { scale: 0.5, opacity: 0 }} animate={reduced ? undefined : { scale: 1, opacity: 1 }} whileHover={reduced ? undefined : { scale: 1.15, filter: "brightness(1.3)", cursor: "pointer" }} transition={{ delay: index * 0.1, duration: 0.3, ease: "easeOut" }}>
-                  {stage.status === "passing" ? <CheckMark /> : stage.status === "running" ? <span className={styles.spinner} aria-hidden="true" /> : stage.icon}
-                </motion.div>
-                <span className={styles.stageLabel}>{stage.label}</span>
-                <span className={styles.stageDuration}>{stage.duration}</span>
-              </div>
-              {index < PIPELINE_STAGES.length - 1 && <div className={styles.connectorLine} />}
-            </div>
-          ))}
-        </div>
-        <div className={styles.commitRow}>
-          <span className={styles.branchChip}>main</span>
-          <span className={styles.commitSha}>a3f91bc</span>
-          <span className={styles.commitMessage}>feat: add payments API module</span>
-        </div>
-      </motion.div>
-      <TerminalWindow title="deploy / run" ariaLabel="Live deployment log" reduced={reduced} delay={0.3} className={styles.logTerminal}>
-        <pre className={styles.logOutput}>
-          {LOG_LINES.slice(0, visibleLogs).map((line) => (
-            <span key={line} className={line.startsWith(">") ? styles.logCommand : line.includes("DONE") || line.includes("passed") || line.includes("OK") || line.includes("0 critical") ? styles.logSuccess : styles.logMuted}>{line}</span>
-          ))}
-          <span className={styles.cursor} aria-hidden="true" />
-        </pre>
-      </TerminalWindow>
-      <motion.div className={styles.footerStatus} initial={reduced ? undefined : { opacity: 0 }} animate={reduced ? undefined : { opacity: 1 }} transition={{ delay: 0.55, duration: 0.35 }}>
-        <span className={styles.statusPassing}>passing</span>
-        <span>All checks passed - 2m 14s - triggered by push to main</span>
-      </motion.div>
-    </div>
-  );
-}
-
-function GeneratedYamlTerminal({ reduced }: PipelineShowcaseSectionProps) {
-  return (
-    <div className={styles.visualColumn}>
-      <div className={styles.terminalLabel}><p className={styles.path}>workflow/generated-output.yml</p></div>
-      <TerminalWindow title="payments-service.yml" ariaLabel="Example generated YAML workflow" reduced={reduced} delay={0.55}>
-        <motion.pre className={styles.yamlOutput} variants={reduced ? undefined : mockupContainerVariants} initial={reduced ? undefined : "hidden"} animate={reduced ? undefined : "visible"}>
-          {YAML_LINES.map((line) => (
-            <motion.span key={line.id} variants={reduced ? undefined : yamlLineVariants} transition={{ duration: 0.28, ease: "easeOut" }} className={styles.yamlLine}>
-              <YamlLineContent line={line} />
-            </motion.span>
-          ))}
-        </motion.pre>
-      </TerminalWindow>
-    </div>
-  );
-}
-
-function TerminalWindow({ title, ariaLabel, reduced, delay, className, children }: Readonly<{ title: string; ariaLabel: string; reduced: boolean | null; delay: number; className?: string; children: ReactNode }>) {
-  return (
-    <motion.div className={`${styles.terminal} ${className ?? ""}`} data-terminal-window="true" initial={reduced ? undefined : { opacity: 0, y: 16, scale: 0.97 }} animate={reduced ? undefined : { opacity: 1, y: 0, scale: 1 }} transition={{ duration: 0.5, delay, ease: "easeOut" }}>
-      <div className={styles.terminalBar}>
-        <span className={`${styles.dot} ${styles.dotRed}`} aria-hidden="true" />
-        <span className={`${styles.dot} ${styles.dotYellow}`} aria-hidden="true" />
-        <span className={`${styles.dot} ${styles.dotGreen}`} aria-hidden="true" />
-        <span className={styles.terminalTitle}>{title}</span>
-      </div>
-      <div aria-label={ariaLabel}>{children}</div>
-    </motion.div>
-  );
-}
-
-function YamlLineContent({ line }: Readonly<{ line: YamlLine }>) {
-  const indent = YAML_INDENT[line.type];
-  if (line.type === "comment") return <span className={styles.yamlComment}>{line.text}</span>;
-  if (line.type === "keyword") return <>{indent}<span className={styles.yamlKeyword}>{line.text}</span>:</>;
-  return <>{indent}<span className={styles.yamlKey}>{line.text}</span><YamlLineValue value={line.value} valueType={line.valueType} /></>;
-}
-
-function YamlLineValue({ value, valueType }: Readonly<{ value: string | null; valueType: "string" | "raw" | null }>) {
-  if (value === null) return <>:</>;
-  if (valueType === "string") return <>{": "}<span className={styles.yamlString}>{value}</span></>;
-  return <>{": "}{value}</>;
-}
 
 function CheckMark() {
   return <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><polyline points="20 6 9 17 4 12" /></svg>;

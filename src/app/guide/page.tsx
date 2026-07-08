@@ -139,7 +139,7 @@ function PublicGuidePage({ error }: Readonly<{ error: string | null }>) {
           </div>
           <div className="public-guide-actions">
             <Link className="public-site-cta" href="/signup">Start free</Link>
-            <Link className="public-guide-link" href="/subscribe">View plans</Link>
+            <Link className="public-guide-link" href="/pricing">View plans</Link>
           </div>
         </motion.section>
 
@@ -231,7 +231,7 @@ release:
           <h2>Ready to build your first workflow?</h2>
           <div>
             <Link className="public-site-cta" href="/signup">Start free</Link>
-            <Link className="public-guide-link" href="/subscribe">Compare limits</Link>
+            <Link className="public-guide-link" href="/pricing">Compare limits</Link>
           </div>
         </section>
       </div>

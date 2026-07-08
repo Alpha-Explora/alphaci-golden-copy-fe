@@ -123,7 +123,7 @@ describe("isGuest", () => {
 });
 
 describe("getAuthenticatedRedirectPath", () => {
-  it("sends authenticated free users to the requested app path", () => {
+  it("sends authenticated free users to subscribe", () => {
     expect(
       getAuthenticatedRedirectPath(
         buildSession({
@@ -136,10 +136,10 @@ describe("getAuthenticatedRedirectPath", () => {
         }),
         "/home",
       ),
-    ).toBe("/home");
+    ).toBe("/subscribe");
   });
 
-  it("sends inactive paid users to subscription management", () => {
+  it("sends inactive paid users to subscribe", () => {
     expect(
       getAuthenticatedRedirectPath(
         buildSession({

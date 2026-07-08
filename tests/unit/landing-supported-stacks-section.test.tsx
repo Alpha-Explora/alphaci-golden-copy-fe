@@ -50,10 +50,10 @@ describe("SupportedStacksSection migration", () => {
     const sectionSource = fs.readFileSync(path.join(process.cwd(), "src/features/public-site/landing/supported-stacks-section.tsx"), "utf8");
 
     expect(pageSource).toContain("SupportedStacksSection");
-    expect(sectionSource).toContain("supported-stacks-section.module.css");
-    expect(sectionSource).toContain("className={styles.section}");
-    expect(sectionSource).toContain("className={styles.track}");
-    expect(sectionSource).toContain("className={styles.badge}");
+    expect(sectionSource).not.toContain("supported-stacks-section.module.css");
+    expect(sectionSource).toContain("useReducedMotion");
+    expect(sectionSource).toContain("animate={prefersReducedMotion ? undefined");
+    expect(sectionSource).toContain("data-stack-badge");
     expect(globals).not.toContain('section[aria-label="Supported Ecosystems"]');
     expect(globals).not.toContain(".marquee-");
     expect(globals).not.toContain("@keyframes marquee-scroll");

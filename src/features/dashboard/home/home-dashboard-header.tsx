@@ -110,7 +110,7 @@ export function HomeDashboardHeader({
           ) : (
             <>
               <ButtonLink href="/workflows" size="sm">Create project</ButtonLink>
-              <ButtonLink href="/subscribe" size="sm" variant="ghost">Subscription</ButtonLink>
+              <ButtonLink href="/settings" size="sm" variant="ghost">Subscription</ButtonLink>
             </>
           )}
         </div>

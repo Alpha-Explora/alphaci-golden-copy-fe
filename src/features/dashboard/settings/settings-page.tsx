@@ -234,7 +234,7 @@ function SettingsPageContent() {
   /* Error */
   if (status === "error") {
     return (
-      <main className="flow-shell page-shell">
+      <main className="page-shell bg-[var(--bg-base)] max-[900px]:w-full max-[900px]:pt-[0.65rem] max-[640px]:overflow-x-hidden">
         <FlowBackground />
         <div className="state-body">
           <div className="state-card">

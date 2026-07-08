@@ -11,9 +11,6 @@
 @import "shadcn/tailwind.css";
 
 @custom-variant dark (&:is(.dark *));
-.flow-shell {
-  background: var(--bg-base);
-}
 .glass-panel {
   background: rgba(15, 23, 42, 0.4);
   border: 1px solid rgba(255, 255, 255, 0.1);
@@ -152,7 +149,6 @@ select option {
   color: var(--text-primary);
 }
 @media (max-width: 900px) {
-  .flow-shell,
   .product-shell {
     width: 100%;
     padding-top: 0.65rem;
@@ -168,8 +164,7 @@ select option {
   }
 }
 @media (max-width: 640px) {
-  .dash-shell,
-  .flow-shell {
+  .dash-shell {
     overflow-x: hidden;
   }
 }

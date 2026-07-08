@@ -1,3 +1,6 @@
+import { Button } from "@/components/ui/button";
+
+import { workflowSetupGithubPanelStyles as styles } from "./workflow-setup-github-panel.styles";
 import { setupLabelAccentStyle } from "./workflow-setup-utils";
 
 interface WorkflowSetupGithubPanelProps {
@@ -117,7 +120,7 @@ export function WorkflowSetupGithubPanel({ github }: Readonly<WorkflowSetupGithu
           Already installed? Link by ID
         </summary>
         <div style={{ marginTop: "0.65rem" }}>
-          <label className="input-label compact-label" htmlFor="installation-id" style={setupLabelAccentStyle}>
+          <label className={`input-label ${styles.compactLabel}`} htmlFor="installation-id" style={setupLabelAccentStyle}>
             Installation ID
           </label>
           <input
@@ -127,15 +130,15 @@ export function WorkflowSetupGithubPanel({ github }: Readonly<WorkflowSetupGithu
             placeholder="12345678"
             className="premium-input"
           />
-          <button
+          <Button
             type="button"
-            className="github-repo-load-btn"
+            variant="ghost"
+            className={styles.linkButton}
             onClick={() => void github.handleLinkInstallation()}
             disabled={github.linkingInstallation}
-            style={{ marginTop: "0.45rem" }}
           >
             {github.linkingInstallation ? "Linking…" : "Link installation"}
-          </button>
+          </Button>
         </div>
       </details>
     </div>

@@ -66,6 +66,7 @@ describe("workflow setup tab migration", () => {
     expect(githubPanelSource).not.toContain("compact-label");
     expect(componentSource).not.toContain("result-branches");
     expect(componentSource).not.toContain("generate-workflow-hint");
+    expect(componentSource).not.toContain("btn-spinner");
     expect(componentSource).toContain("@/components/ui/separator");
     expect(componentSource).not.toContain("controls-panel-rule");
     expect(componentSource).not.toContain("form-pair-row");
@@ -108,6 +109,18 @@ describe("workflow setup tab migration", () => {
     expect(globalsSource).not.toContain(".enhancement-chips");
     expect(globalsSource).not.toContain(".enhancement-chip-label");
     expect(globalsSource).not.toContain(".enhancement-chip-dot");
+    expect(globalsSource).not.toContain(".btn-spinner");
+    expect(globalsSource).not.toMatch(/^@keyframes spin\s*\{/m);
+    expect(globalsSource).not.toContain(".scan-lines");
+    expect(globalsSource).not.toContain(".grid-overlay");
+    expect(globalsSource).not.toContain(".section-dark");
+    expect(globalsSource).not.toContain(".section-raised");
+    expect(globalsSource).not.toContain(".section-panel");
+    expect(globalsSource).not.toContain(".nav-separator");
+    expect(globalsSource).not.toContain(".user-pill");
+    expect(globalsSource).not.toContain(".sign-out-icon-btn");
+    expect(globalsSource).not.toContain(".nav-right");
+    expect(globalsSource).not.toContain(".grid-pattern");
     expect(hookSource).not.toMatch(mojibakePattern);
     expect(setupUtilsSource).not.toMatch(mojibakePattern);
     expect(githubPanelSource).not.toMatch(mojibakePattern);

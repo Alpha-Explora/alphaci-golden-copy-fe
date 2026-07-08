@@ -1438,21 +1438,6 @@ select option {
   margin-inline: auto;
 }
 
-.btn-spinner {
-  display: inline-block;
-  width: 0.95rem;
-  height: 0.95rem;
-  border: 2px solid rgba(255, 255, 255, 0.3);
-  border-top-color: #fff;
-  border-radius: 50%;
-  animation: spin 0.75s linear infinite;
-  flex-shrink: 0;
-}
-@keyframes spin {
-  to {
-    transform: rotate(360deg);
-  }
-}
 @keyframes glowSweep {
   0% {
     background-position: 200% 0;
@@ -1461,16 +1446,6 @@ select option {
     background-position: -200% 0;
   }
 }
-.scan-lines {
-  position: relative;
-}
-.scan-lines::after {
-  display: none;
-}
-.grid-overlay {
-  background-image: none;
-}
-
 @keyframes ribbonSweepA {
   from {
     transform: translate3d(-5%, -2%, 0) rotate(-2deg);
@@ -1622,138 +1597,6 @@ select option {
   100% {
     transform: translateY(-60%);
   }
-}
-.section-dark {
-  background: var(--bg-base);
-}
-.section-raised {
-  background: var(--bg-soft);
-  border-top: 1px solid var(--border);
-  border-bottom: 1px solid var(--border);
-}
-.section-panel {
-  background: var(--bg-surface);
-  border-top: 1px solid var(--border);
-  border-bottom: 1px solid var(--border);
-}
-/* Grid mesh background pattern for feature sections */
-.nav-separator {
-  width: 1px;
-  height: 1.25rem;
-  background: var(--border-strong);
-  flex-shrink: 0;
-  margin: 0 0.25rem;
-}
-.nav-links a.nav-active {
-  color: var(--text-primary);
-  position: relative;
-}
-.nav-links a.nav-active::after {
-  content: "";
-  position: absolute;
-  bottom: -2px;
-  left: 0.4rem;
-  right: 0.4rem;
-  height: 2px;
-  border-radius: 999px;
-  background: var(--brand);
-}
-.user-pill {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.5rem;
-  padding: 0.28rem 0.6rem 0.28rem 0.28rem;
-  border-radius: var(--radius-pill);
-  border: 1px solid var(--border-strong);
-  background: var(--bg-surface);
-  cursor: default;
-  flex-shrink: 0;
-}
-.user-pill-avatar {
-  width: 1.6rem;
-  height: 1.6rem;
-  border-radius: 50%;
-  flex-shrink: 0;
-  object-fit: cover;
-}
-.user-pill-placeholder {
-  width: 1.6rem;
-  height: 1.6rem;
-  border-radius: 50%;
-  flex-shrink: 0;
-  background: linear-gradient(135deg, var(--brand), var(--brand-accent));
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  color: white;
-  font-size: 0.62rem;
-  font-weight: 700;
-}
-.user-pill-login {
-  font-size: 0.82rem;
-  font-weight: 600;
-  color: var(--text-secondary);
-  white-space: nowrap;
-  max-width: 12ch;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-.user-pill-plan {
-  font-size: 0.64rem;
-  font-weight: 700;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
-  color: var(--brand);
-  background: var(--brand-light);
-  border: 1px solid rgba(79, 142, 255, 0.2);
-  border-radius: var(--radius-pill);
-  padding: 0.12rem 0.44rem;
-  white-space: nowrap;
-  flex-shrink: 0;
-}
-.sign-out-icon-btn {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 2rem;
-  height: 2rem;
-  border-radius: 0.4rem;
-  border: 1px solid transparent;
-  background: transparent;
-  color: var(--text-muted);
-  cursor: pointer;
-  transition:
-    color 0.15s,
-    background 0.15s,
-    border-color 0.15s;
-  flex-shrink: 0;
-}
-.sign-out-icon-btn:hover {
-  color: var(--text-primary);
-  background: rgba(255, 255, 255, 0.06);
-  border-color: var(--border);
-}
-.sign-out-icon-btn:focus-visible {
-  outline: 2px solid var(--brand);
-  outline-offset: 2px;
-}
-.sign-out-icon-btn:disabled {
-  opacity: 0.45;
-  cursor: not-allowed;
-}
-.nav-right {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  margin-left: auto;
-  flex-shrink: 0;
-}
-.grid-pattern {
-  background-image:
-    linear-gradient(to right, rgba(255, 255, 255, 0.05) 1px, transparent 1px),
-    linear-gradient(to bottom, rgba(255, 255, 255, 0.05) 1px, transparent 1px);
-  background-size: 24px 24px;
-  background-position: center center;
 }
 @media (max-width: 640px) {
   .state-body {

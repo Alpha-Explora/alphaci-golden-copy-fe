@@ -106,7 +106,7 @@ describe("WorkflowHistoryPanel", () => {
     );
     root = loading.root;
 
-    expect(loading.container.querySelectorAll(".skeleton-card")).toHaveLength(3);
+    expect(loading.container.querySelectorAll('[data-slot="skeleton-card"]')).toHaveLength(3);
 
     act(() => root?.unmount());
     loading.container.remove();

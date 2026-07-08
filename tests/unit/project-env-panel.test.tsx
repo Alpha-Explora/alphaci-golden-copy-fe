@@ -2289,11 +2289,11 @@ describe("Project env provisioning UI", () => {
     );
     root = loadingRendered.root;
 
-    expect(loadingRendered.container.querySelectorAll(".skeleton-card")).toHaveLength(3);
+    expect(loadingRendered.container.querySelectorAll('[data-slot="skeleton-card"]')).toHaveLength(3);
     act(() => {
       loadingRendered.container.querySelector<HTMLButtonElement>("#subtab-history")!.click();
     });
-    expect(loadingRendered.container.querySelectorAll(".skeleton-card")).toHaveLength(3);
+    expect(loadingRendered.container.querySelectorAll('[data-slot="skeleton-card"]')).toHaveLength(3);
   });
 
   it("creates deployment targets as AlphaCI-managed without BYO provider controls", async () => {

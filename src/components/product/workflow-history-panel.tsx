@@ -1,4 +1,6 @@
 "use client";
+import { feedbackStyles } from "@/components/ui/feedback-styles";
+import { cn } from "@/lib/utils";
 
 import { motion } from "framer-motion";
 
@@ -41,8 +43,7 @@ export function WorkflowHistoryPanel({
         {[0, 1, 2].map((i) => (
           <div
             key={i}
-            className="skeleton-card glass-panel"
-            style={{ minHeight: "10rem", background: "rgba(15, 23, 42, 0.3)", animation: "state-pulse 1.5s infinite" }}
+            data-slot="skeleton-card" className={cn(feedbackStyles.skeletonCard, "min-h-40")}
           />
         ))}
       </div>

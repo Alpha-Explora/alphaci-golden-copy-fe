@@ -1,4 +1,6 @@
 "use client";
+import { feedbackStyles } from "@/components/ui/feedback-styles";
+import { cn } from "@/lib/utils";
 
 import { useCallback, useEffect, useMemo, useState } from "react";
 
@@ -136,9 +138,9 @@ export default function AdminGcpRuntimePage() {
       {loading ? (
         <p style={mutedStyle}>Loading runtime targets...</p>
       ) : error ? (
-        <div className="error-inline glass-panel" role="alert" style={{ background: "rgba(248, 113, 113, 0.05)" }}>
-          <span className="error-inline-icon" aria-hidden="true">!</span>
-          <p className="error-inline-msg">{error}</p>
+        <div className={cn("glass-panel", feedbackStyles.inlineError, feedbackStyles.inlineErrorGlass)} role="alert">
+          <span className={feedbackStyles.inlineErrorIcon} aria-hidden="true">!</span>
+          <p className={feedbackStyles.inlineErrorMessage}>{error}</p>
           <Button variant="danger" size="sm" className="min-h-0 shrink-0 rounded-[0.55rem] px-[0.65rem] py-1 text-[0.78rem]" onClick={() => void load()}>Retry</Button>
         </div>
       ) : !data || data.items.length === 0 ? (

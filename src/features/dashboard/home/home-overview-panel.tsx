@@ -1,4 +1,6 @@
 "use client";
+import { feedbackStyles } from "@/components/ui/feedback-styles";
+import { cn } from "@/lib/utils";
 
 import { motion } from "framer-motion";
 
@@ -60,16 +62,16 @@ export function HomeOverviewPanel({
       </section>
 
       {!guest && projectsError ? (
-        <div className="error-inline glass-panel" role="alert" style={{ background: "rgba(248, 113, 113, 0.05)", border: "1px solid rgba(248, 113, 113, 0.2)", borderRadius: "10px" }}>
-          <span className="error-inline-icon" aria-hidden="true" style={{ color: "var(--danger)" }}>!</span>
-          <p className="error-inline-msg" style={{ margin: 0, fontSize: "0.82rem" }}>{projectsError}</p>
+        <div className={cn("glass-panel", feedbackStyles.inlineError, feedbackStyles.inlineErrorGlass, "!rounded-[10px]")} role="alert">
+          <span className={cn(feedbackStyles.inlineErrorIcon, "text-[var(--danger)]")} aria-hidden="true">!</span>
+          <p className={cn(feedbackStyles.inlineErrorMessage, "text-[0.82rem]")}>{projectsError}</p>
           <Button variant="danger" size="sm" className="min-h-0 shrink-0 rounded-[0.55rem] px-[0.65rem] py-1 text-[0.78rem]" onClick={loadProjects}>Retry</Button>
         </div>
       ) : null}
       {!guest && historyError ? (
-        <div className="error-inline glass-panel" role="alert" style={{ background: "rgba(248, 113, 113, 0.05)", border: "1px solid rgba(248, 113, 113, 0.2)", borderRadius: "10px" }}>
-          <span className="error-inline-icon" aria-hidden="true" style={{ color: "var(--danger)" }}>!</span>
-          <p className="error-inline-msg" style={{ margin: 0, fontSize: "0.82rem" }}>{historyError}</p>
+        <div className={cn("glass-panel", feedbackStyles.inlineError, feedbackStyles.inlineErrorGlass, "!rounded-[10px]")} role="alert">
+          <span className={cn(feedbackStyles.inlineErrorIcon, "text-[var(--danger)]")} aria-hidden="true">!</span>
+          <p className={cn(feedbackStyles.inlineErrorMessage, "text-[0.82rem]")}>{historyError}</p>
           <Button variant="danger" size="sm" className="min-h-0 shrink-0 rounded-[0.55rem] px-[0.65rem] py-1 text-[0.78rem]" onClick={loadHistory}>Retry</Button>
         </div>
       ) : null}

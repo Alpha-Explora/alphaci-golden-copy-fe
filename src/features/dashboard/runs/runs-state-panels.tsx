@@ -1,4 +1,6 @@
 "use client";
+import { feedbackStyles } from "@/components/ui/feedback-styles";
+import { cn } from "@/lib/utils";
 
 import { DashboardShell } from "@/components/layout/app-shell/dashboard-shell";
 import { FlowBackground } from "@/components/layout/flow-background";
@@ -52,26 +54,16 @@ export function RunsEmptyState() {
 export function RunsErrorState({ message, onRetry }: { message: string; onRetry: () => void }) {
   return (
     <div
-      className="error-inline glass-panel"
+      className={cn("glass-panel", feedbackStyles.inlineError, feedbackStyles.inlineErrorGlass, "!mt-0 flex-wrap !gap-4 !rounded-[var(--radius-card)] !p-6")}
       role="alert"
-      style={{
-        background: "rgba(248,113,113,0.05)",
-        border: "1px solid rgba(248,113,113,0.2)",
-        borderRadius: "var(--radius-card)",
-        padding: "1.5rem",
-        display: "flex",
-        alignItems: "center",
-        gap: "1rem",
-        flexWrap: "wrap",
-      }}
     >
-      <div style={{ display: "flex", alignItems: "center", gap: "0.6rem", flex: 1 }}>
+      <div className="flex flex-1 items-center gap-2.5">
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--danger)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
           <circle cx="12" cy="12" r="10" />
           <line x1="15" y1="9" x2="9" y2="15" />
           <line x1="9" y1="9" x2="15" y2="15" />
         </svg>
-        <p style={{ margin: 0, fontSize: "0.85rem", color: "var(--text-secondary)" }}>{message}</p>
+        <p className="m-0 text-[0.85rem] text-[var(--text-secondary)]">{message}</p>
       </div>
       <Button type="button" onClick={onRetry} size="sm" variant="ghost">
         Retry

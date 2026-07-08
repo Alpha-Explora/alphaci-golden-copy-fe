@@ -1,4 +1,6 @@
 "use client";
+import { feedbackStyles } from "@/components/ui/feedback-styles";
+import { cn } from "@/lib/utils";
 
 import Link from "next/link";
 import { useParams } from "next/navigation";
@@ -69,9 +71,9 @@ export default function AdminUserDetailPage() {
   if (loading) return <p style={{ color: "var(--text-secondary)" }}>Loading user…</p>;
   if (error || !detail) {
     return (
-      <div className="error-inline glass-panel" role="alert" style={{ background: "rgba(248, 113, 113, 0.05)" }}>
-        <span className="error-inline-icon" aria-hidden="true">!</span>
-        <p className="error-inline-msg">{error ?? "User not found."}</p>
+      <div className={cn("glass-panel", feedbackStyles.inlineError, feedbackStyles.inlineErrorGlass)} role="alert">
+        <span className={feedbackStyles.inlineErrorIcon} aria-hidden="true">!</span>
+        <p className={feedbackStyles.inlineErrorMessage}>{error ?? "User not found."}</p>
         <ButtonLink href="/admin" variant="danger" size="sm" className="min-h-0 rounded-[0.55rem] px-[0.65rem] py-1 text-[0.78rem]">Back to users</ButtonLink>
       </div>
     );

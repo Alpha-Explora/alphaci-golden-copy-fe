@@ -1,4 +1,6 @@
 "use client";
+import { feedbackStyles } from "@/components/ui/feedback-styles";
+import { cn } from "@/lib/utils";
 
 import Link from "next/link";
 import { motion } from "framer-motion";
@@ -49,13 +51,13 @@ export function HomeActivityPanel({
         {historyLoading ? (
           <div className="repo-grid">
             {[0, 1, 2].map((i) => (
-              <div key={i} className="skeleton-card glass-panel" style={{ minHeight: "8rem", background: "rgba(15, 23, 42, 0.3)", animation: "state-pulse 1.5s infinite" }} />
+              <div key={i} data-slot="skeleton-card" className={cn(feedbackStyles.skeletonCard, "min-h-32")} />
             ))}
           </div>
         ) : historyError ? (
-          <div className="error-inline glass-panel" role="alert" style={{ background: "rgba(248, 113, 113, 0.05)" }}>
-            <span className="error-inline-icon" aria-hidden="true">!</span>
-            <p className="error-inline-msg">{historyError}</p>
+          <div className={cn("glass-panel", feedbackStyles.inlineError, feedbackStyles.inlineErrorGlass)} role="alert">
+            <span className={feedbackStyles.inlineErrorIcon} aria-hidden="true">!</span>
+            <p className={feedbackStyles.inlineErrorMessage}>{historyError}</p>
             <Button variant="danger" size="sm" className="min-h-0 shrink-0 rounded-[0.55rem] px-[0.65rem] py-1 text-[0.78rem]" onClick={loadHistory}>Retry</Button>
           </div>
         ) : history.length === 0 ? (

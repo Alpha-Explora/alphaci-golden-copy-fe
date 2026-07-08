@@ -1,4 +1,6 @@
 "use client";
+import { feedbackStyles } from "@/components/ui/feedback-styles";
+import { cn } from "@/lib/utils";
 
 import { useState, useEffect, type KeyboardEvent } from "react";
 import { MotionConfig, motion, useReducedMotion } from "framer-motion";
@@ -340,7 +342,7 @@ export function WorkflowBuilder({ guest = false, session, onboardingCompleted }:
           <div style={{ padding: "0.5rem var(--layout-gutter) 0" }}>
             {statusMessage && (
               <motion.p
-                className={`status-banner ${statusBannerVariant(statusMessage)}`}
+                className={cn(feedbackStyles.statusBanner, feedbackStyles.statusBannerTone[statusBannerVariant(statusMessage)])}
                 role="status"
                 aria-live="polite"
                 initial={{ opacity: 0, y: -6 }}
@@ -351,15 +353,15 @@ export function WorkflowBuilder({ guest = false, session, onboardingCompleted }:
               </motion.p>
             )}
             {catalog.catalogError && (
-              <div className="error-inline" role="alert">
-                <span className="error-inline-icon" aria-hidden="true">⚠</span>
-                <p className="error-inline-msg">{catalog.catalogError}</p>
+              <div className={feedbackStyles.inlineError} role="alert">
+                <span className={feedbackStyles.inlineErrorIcon} aria-hidden="true">⚠</span>
+                <p className={feedbackStyles.inlineErrorMessage}>{catalog.catalogError}</p>
               </div>
             )}
             {projectCatalog.projectOptionsError && (
-              <div className="error-inline" role="alert">
-                <span className="error-inline-icon" aria-hidden="true">⚠</span>
-                <p className="error-inline-msg">{projectCatalog.projectOptionsError}</p>
+              <div className={feedbackStyles.inlineError} role="alert">
+                <span className={feedbackStyles.inlineErrorIcon} aria-hidden="true">⚠</span>
+                <p className={feedbackStyles.inlineErrorMessage}>{projectCatalog.projectOptionsError}</p>
               </div>
             )}
           </div>

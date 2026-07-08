@@ -1,4 +1,6 @@
 "use client";
+import { feedbackStyles } from "@/components/ui/feedback-styles";
+import { cn } from "@/lib/utils";
 
 import { motion } from "framer-motion";
 
@@ -102,13 +104,13 @@ export function HomeRepositoriesPanel({
             {projectsLoading ? (
               <div className="repo-grid">
                 {[0, 1, 2].map((i) => (
-                  <div key={i} className="skeleton-card glass-panel" style={{ minHeight: "6.5rem", background: "rgba(15, 23, 42, 0.3)", animation: "state-pulse 1.5s infinite" }} />
+                  <div key={i} data-slot="skeleton-card" className={cn(feedbackStyles.skeletonCard, "min-h-[6.5rem]")} />
                 ))}
               </div>
             ) : projectsError ? (
-              <div className="error-inline glass-panel" role="alert" style={{ background: "rgba(248, 113, 113, 0.05)" }}>
-                <span className="error-inline-icon" aria-hidden="true">!</span>
-                <p className="error-inline-msg">{projectsError}</p>
+              <div className={cn("glass-panel", feedbackStyles.inlineError, feedbackStyles.inlineErrorGlass)} role="alert">
+                <span className={feedbackStyles.inlineErrorIcon} aria-hidden="true">!</span>
+                <p className={feedbackStyles.inlineErrorMessage}>{projectsError}</p>
                 <Button variant="danger" size="sm" className="min-h-0 shrink-0 rounded-[0.55rem] px-[0.65rem] py-1 text-[0.78rem]" onClick={loadProjects}>Retry</Button>
               </div>
             ) : projects.length === 0 ? (
@@ -286,9 +288,9 @@ export function HomeRepositoriesPanel({
             </section>
           )}
           {reposError && !reposLoading && (
-            <div className="error-inline glass-panel" role="alert" style={{ background: "rgba(248, 113, 113, 0.05)" }}>
-              <span className="error-inline-icon" aria-hidden="true">!</span>
-              <p className="error-inline-msg">{reposError}</p>
+            <div className={cn("glass-panel", feedbackStyles.inlineError, feedbackStyles.inlineErrorGlass)} role="alert">
+              <span className={feedbackStyles.inlineErrorIcon} aria-hidden="true">!</span>
+              <p className={feedbackStyles.inlineErrorMessage}>{reposError}</p>
               <Button variant="danger" size="sm" className="min-h-0 shrink-0 rounded-[0.55rem] px-[0.65rem] py-1 text-[0.78rem]" onClick={loadRepos}>Retry</Button>
             </div>
           )}

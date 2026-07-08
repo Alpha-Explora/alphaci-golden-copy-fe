@@ -4,6 +4,8 @@ import { useEffect, useRef } from "react";
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import { useRouter } from "next/navigation";
 
+import { subscriptionCongratsModalStyles as styles } from "./subscription-congrats-modal.styles";
+
 export interface SubscriptionCongratsModalProps {
   planName: string;
   onClose: () => void;
@@ -233,10 +235,7 @@ export function SubscriptionCongratsModal({
           {/* Header */}
           <header style={{ display: "grid", gap: "0.5rem", paddingRight: "2rem" }}>
             {/* Kicker badge */}
-            <span
-              className="hero-chip"
-              style={{ width: "fit-content", fontSize: "0.73rem" }}
-            >
+            <span className={styles.badge}>
               Subscription active
             </span>
 
@@ -285,13 +284,10 @@ export function SubscriptionCongratsModal({
               Get started in 4 steps
             </p>
 
-            <ol
-              className="subscription-checklist"
-              style={{ counterReset: "steps" }}
-            >
+            <ol className={styles.checklist}>
               {STEPS.map((step, index) => (
-                <li key={step.label}>
-                  <span className="checklist-step" aria-hidden="true">
+                <li key={step.label} className={styles.checklistItem}>
+                  <span className={styles.checklistStep} aria-hidden="true">
                     {index + 1}
                   </span>
                   <span

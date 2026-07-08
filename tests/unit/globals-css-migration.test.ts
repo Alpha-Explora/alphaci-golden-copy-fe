@@ -62,6 +62,16 @@ describe("globals css migration", () => {
     expect(productWorkflowsSource).toContain(".project-workspace");
     expect(providerSettingsSource).toContain(".provider-settings-panel");
     expect(providerSettingsSource).toContain(".provider-connections-table");
-    expect(globalsSource.trim().split(/\r?\n/).length).toBeLessThanOrEqual(3150);
+    expect(globalsSource).not.toContain(".cta-gradient-button");
+    expect(globalsSource).not.toContain(".cta-shimmer");
+    expect(globalsSource).not.toContain(".marketing-nav-enhanced");
+    expect(globalsSource).not.toContain(".brand-mark-enhanced");
+    expect(globalsSource).not.toContain(".app-nav-premium");
+    expect(globalsSource).not.toContain(".hero-mesh-bg");
+    expect(globalsSource).not.toContain(".hero-br-desktop");
+    expect(globalsSource).not.toContain(".stats-row-enhanced");
+    expect(globalsSource).not.toContain(".stat-block-enhanced");
+    expect(globalsSource).not.toContain("@keyframes orb-drift-3");
+    expect(globalsSource.trim().split(/\r?\n/).length).toBeLessThanOrEqual(1900);
   });
 });

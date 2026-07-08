@@ -56,6 +56,8 @@ describe("home route migration", () => {
     expect(globalsSource).not.toMatch(/^\\.stats-row[\\s.{:]/m);
     expect(globalsSource).not.toContain(".section-divider");
     expect(globalsSource).not.toContain(".repo-list");
+    expect(globalsSource).not.toContain(".welcome-editorial");
+    expect(globalsSource).not.toContain(".repo-full-list");
     expect(bentoSource).not.toMatch(/[^\x00-\x7F]/);
     for (const componentPath of homeFeaturePaths) {
       const componentSource = fs.readFileSync(componentPath, "utf8");
@@ -70,6 +72,7 @@ describe("home route migration", () => {
       }
       if (componentPath.endsWith("home-dashboard-header.tsx")) {
         expect(componentSource).not.toContain("dash-badge");
+        expect(componentSource).not.toContain("welcome-editorial-avatar");
       }
     }
     for (const sharedComponentPath of sharedComponentPaths) {

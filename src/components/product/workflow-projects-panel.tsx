@@ -1,7 +1,6 @@
 "use client";
 
-import Link from "next/link";
-
+import { InlineLink } from "@/components/ui/inline-link";
 import type { ProvisionedProject } from "@/lib/api/contracts";
 import { FlowExplainer } from "./flow-explainer";
 import { statusVariant } from "./workflow-current-formatters";
@@ -41,9 +40,9 @@ export function WorkflowProjectsEmptyState({ onOpenSetup }: Readonly<{ onOpenSet
         <p style={{ color: "var(--text-secondary)", margin: 0, fontSize: "0.85rem", maxWidth: "32rem" }}>
           When you create one, AlphaCI provisions the repository and commits a workflow that runs through the gated
           stages below on every change. A read-only demo project normally appears here too — open the{" "}
-          <Link href="/guide" className="inline-link">
+          <InlineLink href="/guide">
             guide
-          </Link>{" "}
+          </InlineLink>{" "}
           to see how it all fits together.
         </p>
       </div>

@@ -1,7 +1,6 @@
 "use client";
 
-import Link from "next/link";
-
+import { InlineLink } from "@/components/ui/inline-link";
 import type { ProvisionedProject } from "@/lib/api/contracts";
 import { statusVariant } from "./workflow-current-formatters";
 
@@ -44,9 +43,9 @@ export function WorkflowProjectDetailHeader({ project }: Readonly<{ project: Pro
         <p className="project-demo-note">
           This is a read-only demo project AlphaCI seeds for every account. It shows how a provisioned project looks
           end to end — the gated stages, promotion flow, and deploys explained in the{" "}
-          <Link href="/guide#branch-strategy" className="inline-link">
+          <InlineLink href="/guide#branch-strategy">
             guide
-          </Link>{" "}
+          </InlineLink>{" "}
           — but it is not connected to a real GitHub repository. Create your own project to run a live pipeline.
         </p>
       ) : null}

@@ -16,6 +16,8 @@ describe("workflow current tab migration", () => {
   const projectDetailShellPath = path.join(process.cwd(), "src/components/product/workflow-project-detail-shell.tsx");
   const projectOverviewPanelPath = path.join(process.cwd(), "src/components/product/workflow-project-overview-panel.tsx");
   const projectWorkflowPanelPath = path.join(process.cwd(), "src/components/product/workflow-project-workflow-panel.tsx");
+  const inlineLinkPath = path.join(process.cwd(), "src/components/ui/inline-link.tsx");
+  const globalsPath = path.join(process.cwd(), "src/app/globals.css");
 
   it("keeps project overview state owned by a dedicated hook", () => {
     const componentSource = fs.readFileSync(componentPath, "utf8");
@@ -101,6 +103,8 @@ describe("workflow current tab migration", () => {
     const projectDetailShellSource = fs.existsSync(projectDetailShellPath) ? fs.readFileSync(projectDetailShellPath, "utf8") : "";
     const projectOverviewPanelSource = fs.existsSync(projectOverviewPanelPath) ? fs.readFileSync(projectOverviewPanelPath, "utf8") : "";
     const projectWorkflowPanelSource = fs.existsSync(projectWorkflowPanelPath) ? fs.readFileSync(projectWorkflowPanelPath, "utf8") : "";
+    const inlineLinkSource = fs.existsSync(inlineLinkPath) ? fs.readFileSync(inlineLinkPath, "utf8") : "";
+    const globalsSource = fs.readFileSync(globalsPath, "utf8");
     const mojibakePattern = /[\u00c2\u00e2]/;
 
     expect(componentSource.trim().split(/\r?\n/).length).toBeLessThanOrEqual(500);
@@ -119,6 +123,15 @@ describe("workflow current tab migration", () => {
     expect(projectDetailShellSource.trim().split(/\r?\n/).length).toBeLessThanOrEqual(220);
     expect(projectOverviewPanelSource.trim().split(/\r?\n/).length).toBeLessThanOrEqual(220);
     expect(projectWorkflowPanelSource.trim().split(/\r?\n/).length).toBeLessThanOrEqual(350);
+    expect(inlineLinkSource).toContain("InlineLink");
+    expect(projectsPanelSource).toContain("InlineLink");
+    expect(projectDetailShellSource).toContain("InlineLink");
+    expect(projectsPanelSource).not.toMatch(/className=["\\'{][^"\\'}]*inline-link/);
+    expect(projectDetailShellSource).not.toMatch(/className=["\\'{][^"\\'}]*inline-link/);
+    expect(globalsSource).not.toContain(".inline-link");
+    expect(globalsSource).not.toContain(".subtab-bar");
+    expect(globalsSource).not.toContain(".subtab-btn");
+    expect(globalsSource).not.toContain(".history-entry-card");
     expect(hookSource).not.toMatch(mojibakePattern);
     expect(settingsHookSource).not.toMatch(mojibakePattern);
     expect(telemetryHookSource).not.toMatch(mojibakePattern);

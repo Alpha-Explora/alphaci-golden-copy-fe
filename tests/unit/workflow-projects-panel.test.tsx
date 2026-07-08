@@ -91,7 +91,7 @@ describe("workflow projects panel pieces", () => {
 
     expect(empty.container.textContent).toContain("No provisioned projects yet.");
     expect(empty.container.textContent).toContain("Create your first project");
-    expect(empty.container.querySelector(".inline-link")?.getAttribute("href")).toBe("/guide");
+    expect(empty.container.querySelector('a[href="/guide"]')).not.toBeNull();
 
     act(() => {
       Array.from(empty.container.querySelectorAll("button"))

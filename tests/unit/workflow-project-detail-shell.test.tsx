@@ -62,7 +62,7 @@ describe("workflow project detail shell", () => {
     expect(rendered.container.textContent).toContain("orders-api");
     expect(rendered.container.textContent).toContain("Demo · read-only");
     expect(rendered.container.textContent).toContain("read-only demo project");
-    expect(rendered.container.querySelector(".inline-link")?.getAttribute("href")).toBe("/guide#branch-strategy");
+    expect(rendered.container.querySelector('a[href="/guide#branch-strategy"]')).not.toBeNull();
   });
 
   it("preserves project actions and environment shortcut visibility", () => {

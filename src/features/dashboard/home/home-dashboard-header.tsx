@@ -43,10 +43,9 @@ export function HomeDashboardHeader({
             <Image
               src={session.user.avatarUrl}
               alt={session.user.name ?? session.user.login}
-              className="welcome-editorial-avatar"
+              className="size-11 shrink-0 rounded-full border-2 border-[var(--border-brand)] object-cover shadow-[0_0_12px_var(--brand-glow)]"
               width={44}
               height={44}
-              style={{ borderRadius: "50%", border: "2px solid var(--border-brand)", boxShadow: "0 0 12px var(--brand-glow)" }}
               unoptimized
             />
           ) : (

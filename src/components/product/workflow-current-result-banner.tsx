@@ -1,7 +1,9 @@
+import { productSharedStyles } from "@/components/product/product-shared-styles";
 import { FilePathLabel } from "@/components/ui/file-path-label";
 import type { CreateProjectResult } from "@/lib/api/contracts";
 import { DeploymentProvisioningSummary } from "./setup-result-panel";
 import { WorkflowStageList } from "./workflow-current-panels";
+import { cn } from "@/lib/utils";
 
 export function WorkflowLatestResultBanner({ result }: Readonly<{ result: CreateProjectResult }>) {
   return (
@@ -14,11 +16,11 @@ export function WorkflowLatestResultBanner({ result }: Readonly<{ result: Create
       </div>
 
       <div className="flex flex-wrap gap-[0.35rem] latest-result-banner__chips">
-        <span className="branch-chip">{result.status}</span>
-        <span className="branch-chip">{result.projectTypeId}</span>
-        <span className="branch-chip">{result.workflowRecipeId}</span>
+        <span className={productSharedStyles.branchChip}>{result.status}</span>
+        <span className={productSharedStyles.branchChip}>{result.projectTypeId}</span>
+        <span className={productSharedStyles.branchChip}>{result.workflowRecipeId}</span>
         {result.branchesCreated.map((branch) => (
-          <span key={branch} className="branch-chip branch-chip--mono">{branch}</span>
+          <span key={branch} className={cn(productSharedStyles.branchChip, productSharedStyles.branchChipMono)}>{branch}</span>
         ))}
       </div>
 

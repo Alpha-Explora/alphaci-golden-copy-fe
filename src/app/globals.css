@@ -1087,172 +1087,6 @@ select option {
   }
 }
 
-.hero-full {
-  min-height: calc(100dvh - 72px);
-  width: 100%;
-  display: flex;
-  flex-direction: column;
-  justify-content: flex-start;
-  align-items: center;
-  text-align: center;
-  padding: 0 clamp(2rem, 6vw, 6rem);
-  position: relative;
-  background: var(--bg-base);
-  overflow: hidden;
-}
-/* Subtle ambient glow behind the hero */
-.hero-full::before {
-  content: "";
-  position: absolute;
-  top: -10%;
-  right: -5%;
-  width: 55%;
-  height: 65%;
-  background: radial-gradient(
-    ellipse,
-    rgba(79, 142, 255, 0.06) 0%,
-    transparent 65%
-  );
-  border-radius: 50%;
-  pointer-events: none;
-  z-index: 0;
-}
-.hero-full::after {
-  content: "";
-  position: absolute;
-  bottom: -10%;
-  left: -5%;
-  width: 40%;
-  height: 50%;
-  background: radial-gradient(
-    ellipse,
-    rgba(0, 208, 132, 0.04) 0%,
-    transparent 65%
-  );
-  border-radius: 50%;
-  pointer-events: none;
-  z-index: 0;
-}
-.hero-full > * {
-  position: relative;
-  z-index: 1;
-}
-/* The main content block inside the hero */
-.hero-full-content {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  text-align: center;
-  gap: 1.5rem;
-  width: 100%;
-  max-width: 100%;
-  padding-top: clamp(4rem, 8vh, 6rem);
-  padding-bottom: clamp(3rem, 6vh, 5rem);
-  padding-left: clamp(1rem, 4vw, 3rem);
-  padding-right: clamp(1rem, 4vw, 3rem);
-}
-/* H1 sizing inside full-screen hero */
-.hero-full h1 {
-  font-size: clamp(2.8rem, 5.5vw, 5.8rem);
-  font-weight: 800;
-  letter-spacing: -0.04em;
-  line-height: 0.95;
-  color: var(--text-primary);
-  margin: 0;
-  max-width: 18ch;
-  width: 100%;
-}
-/* Description */
-.hero-full .hero-description {
-  font-size: clamp(1rem, 1.2vw, 1.15rem);
-  line-height: 1.65;
-  color: var(--text-secondary);
-  max-width: 52ch;
-  text-align: center;
-}
-.branch-chip {
-  display: inline-flex;
-  align-items: center;
-  padding: 0.15rem 0.55rem;
-  border-radius: 999px;
-  background: rgba(79, 142, 255, 0.1);
-  border: 1px solid rgba(79, 142, 255, 0.25);
-  font-size: 0.72rem;
-  font-family: ui-monospace, monospace;
-  color: var(--brand);
-  letter-spacing: 0.02em;
-}
-.guest-banner {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 1rem;
-  flex-wrap: wrap;
-  padding: 0.65rem clamp(1.5rem, 4vw, 3rem);
-  background: rgba(79, 142, 255, 0.08);
-  border-bottom: 1px solid rgba(79, 142, 255, 0.15);
-  width: 100%;
-}
-.guest-banner-text {
-  font-size: 0.85rem;
-  color: var(--brand);
-  font-weight: 500;
-  margin: 0;
-  display: flex;
-  align-items: center;
-  gap: 0.4rem;
-}
-.guest-banner-text::before {
-  content: "";
-  font-size: 0.9em;
-}
-.guest-banner-actions {
-  display: flex;
-  gap: 0.5rem;
-  flex-shrink: 0;
-}
-.guest-locked {
-  position: relative;
-  pointer-events: none;
-  user-select: none;
-  opacity: 0.45;
-  filter: blur(0.5px);
-}
-.guest-lock-overlay {
-  position: absolute;
-  inset: 0;
-  z-index: 10;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 0.6rem;
-  background: rgba(6, 10, 20, 0.7);
-  border-radius: inherit;
-  pointer-events: all;
-  text-align: center;
-  padding: 1.5rem;
-}
-.guest-lock-overlay p {
-  font-size: 0.85rem;
-  color: var(--text-secondary);
-  margin: 0;
-  max-width: 24ch;
-  line-height: 1.4;
-}
-.guest-lock-badge {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.3rem;
-  background: var(--brand);
-  color: #fff;
-  border-radius: 999px;
-  font-size: 0.72rem;
-  font-weight: 600;
-  padding: 0.25rem 0.65rem;
-  letter-spacing: 0.04em;
-  text-transform: uppercase;
-}
 @keyframes glowSweep {
   0% {
     background-position: 200% 0;
@@ -1431,13 +1265,11 @@ select option {
     grid-template-columns: minmax(0, 1fr) !important;
   }
   .result-actions,
-  .hero-actions,
-  .guest-banner-actions {
+  .hero-actions {
     align-items: stretch;
   }
   .result-actions > *,
-  .hero-actions > *,
-  .guest-banner-actions > * {
+  .hero-actions > * {
     min-width: 0;
     white-space: normal;
   }

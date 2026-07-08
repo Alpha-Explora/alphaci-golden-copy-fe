@@ -1,4 +1,5 @@
 "use client";
+import { productSharedStyles } from "@/components/product/product-shared-styles";
 
 import { AnimatePresence, motion } from "framer-motion";
 
@@ -290,9 +291,9 @@ export function SetupResultPanel({
             </div>
 
             <div className="flex flex-wrap gap-[0.35rem]">
-              <span className="branch-chip">pull request</span>
-              <span className="branch-chip">#{existingRepoResult.pullRequestNumber}</span>
-              <span className="branch-chip">{existingRepoResult.branchName}</span>
+              <span className={productSharedStyles.branchChip}>pull request</span>
+              <span className={productSharedStyles.branchChip}>#{existingRepoResult.pullRequestNumber}</span>
+              <span className={productSharedStyles.branchChip}>{existingRepoResult.branchName}</span>
             </div>
 
             <p className="helper-text" style={{ margin: 0 }}>
@@ -343,9 +344,9 @@ export function SetupResultPanel({
             </div>
 
             <div className="flex flex-wrap gap-[0.35rem]">
-              <span className="branch-chip">{setupResult.status}</span>
-              <span className="branch-chip">{setupResult.projectTypeId}</span>
-              <span className="branch-chip">{setupResult.workflowRecipeId}</span>
+              <span className={productSharedStyles.branchChip}>{setupResult.status}</span>
+              <span className={productSharedStyles.branchChip}>{setupResult.projectTypeId}</span>
+              <span className={productSharedStyles.branchChip}>{setupResult.workflowRecipeId}</span>
             </div>
 
             <div>

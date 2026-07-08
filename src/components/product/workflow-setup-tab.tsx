@@ -1,4 +1,5 @@
 "use client";
+import { productSharedStyles } from "@/components/product/product-shared-styles";
 
 import { motion, AnimatePresence } from "framer-motion";
 
@@ -525,11 +526,11 @@ export function WorkflowSetupTab({
 
               {existingRepoDiscovery ? (
                 <div className="flex flex-wrap gap-[0.35rem]">
-                  <span className="branch-chip">{existingRepoDiscovery.baseBranch}</span>
-                  <span className="branch-chip">
+                  <span className={productSharedStyles.branchChip}>{existingRepoDiscovery.baseBranch}</span>
+                  <span className={productSharedStyles.branchChip}>
                     {existingRepoDiscovery.detectedProjectTypeId ?? "manual"}
                   </span>
-                  <span className="branch-chip">{existingRepoDiscovery.recommendedWorkflowRecipeId}</span>
+                  <span className={productSharedStyles.branchChip}>{existingRepoDiscovery.recommendedWorkflowRecipeId}</span>
                 </div>
               ) : null}
             </motion.div>

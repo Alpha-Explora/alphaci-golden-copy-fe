@@ -1,4 +1,6 @@
 "use client";
+import { productSharedStyles } from "@/components/product/product-shared-styles";
+import { cn } from "@/lib/utils";
 
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
@@ -162,21 +164,11 @@ function HomeDashboardContent() {
       )}
 
       {guest && (
-        <div className="guest-banner glass-panel" role="alert" style={{
-          background: "linear-gradient(135deg, rgba(56, 189, 248, 0.08) 0%, rgba(15, 23, 42, 0.7) 100%)",
-          border: "1px solid var(--border-brand)",
-          padding: "1rem var(--layout-gutter)",
-          borderRadius: "0",
-          display: "flex",
-          justifyContent: "space-between",
-          alignItems: "center",
-          flexWrap: "wrap",
-          gap: "1rem",
-        }}>
-          <p style={{ margin: 0, color: "var(--text-primary)", fontWeight: 500, fontSize: "0.88rem" }}>
+        <div className={cn("glass-panel", productSharedStyles.guestBanner, productSharedStyles.guestBannerGlass)} role="alert">
+          <p className={productSharedStyles.guestBannerTextStrong}>
             Sign up to unlock AlphaCI.
           </p>
-          <div style={{ display: "flex", gap: "0.5rem" }}>
+          <div className={productSharedStyles.guestBannerActions}>
             <ButtonLink href="/signup" size="sm">
               Sign up free
             </ButtonLink>

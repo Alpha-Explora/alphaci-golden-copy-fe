@@ -1,4 +1,5 @@
 "use client";
+import { productSharedStyles } from "@/components/product/product-shared-styles";
 
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -97,11 +98,11 @@ export default function WorkflowsPage() {
       />
 
       {guest && (
-        <div className="guest-banner" role="alert">
-          <p className="guest-banner-text">
+        <div className={productSharedStyles.guestBanner} role="alert">
+          <p className={productSharedStyles.guestBannerText}>
             Sign up to unlock AlphaCI.
           </p>
-          <div className="guest-banner-actions">
+          <div className={productSharedStyles.guestBannerActions}>
             <Link className="primary-button" href="/signup" style={{ padding: "0.4rem 1rem", fontSize: "0.82rem" }}>
               Sign up free
             </Link>

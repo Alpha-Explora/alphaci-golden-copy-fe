@@ -1,4 +1,5 @@
 "use client";
+import { productSharedStyles } from "@/components/product/product-shared-styles";
 
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
@@ -120,11 +121,11 @@ function RunsContent({ guest, session, onLogout, isLoggingOut, prefersReducedMot
       />
 
       {guest && (
-        <div className="guest-banner" role="alert">
-          <p className="guest-banner-text">
+        <div className={productSharedStyles.guestBanner} role="alert">
+          <p className={productSharedStyles.guestBannerText}>
             Sign up to see your pipeline runs.
           </p>
-          <div className="guest-banner-actions">
+          <div className={productSharedStyles.guestBannerActions}>
             <ButtonLink href="/signup" size="sm">
               Sign up free
             </ButtonLink>

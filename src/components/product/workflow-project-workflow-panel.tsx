@@ -1,4 +1,5 @@
 "use client";
+import { productSharedStyles } from "@/components/product/product-shared-styles";
 
 import type { Dispatch, SetStateAction } from "react";
 
@@ -262,7 +263,7 @@ export function WorkflowProjectWorkflowPanel({
                 {workflowPreview.diffSummary.map((item) => (
                   <div key={item.path} className="env-metadata-row provisioned">
                     <span>{item.path}</span>
-                    <span className={item.status === "changed" ? "dash-badge-violet" : "branch-chip"}>
+                    <span className={item.status === "changed" ? "dash-badge-violet" : productSharedStyles.branchChip}>
                       {item.status}
                     </span>
                   </div>

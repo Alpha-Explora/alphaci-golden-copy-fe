@@ -531,13 +531,6 @@
 .latest-result-banner__action-btn--primary:hover {
   filter: brightness(1.1);
 }
-.branch-chip--mono {
-  font-family: ui-monospace, monospace;
-  font-size: 0.7rem;
-  background: rgba(255, 255, 255, 0.04);
-  color: var(--text-secondary);
-  border-color: var(--border-soft);
-}
 .current-subtab-bar {
   position: relative;
   display: flex;

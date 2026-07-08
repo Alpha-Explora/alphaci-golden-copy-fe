@@ -113,6 +113,18 @@ describe("globals css migration", () => {
       "@keyframes pipelineFlow",
       "@keyframes pipelineDash",
       "@keyframes gradientShift",
+      ".studio-grid",
+      ".flow-ambient",
+      ".flow-ribbon",
+      ".flow-blob",
+      ".flow-particle",
+      ".grid-haze",
+      "@keyframes ribbonSweepA",
+      "@keyframes blobFloatA",
+      "@keyframes particleRise",
+      "@keyframes flowTravel",
+      "@keyframes orb-drift-1",
+      "@keyframes orb-drift-2",
     ]) {
       expect(globalsSource).not.toContain(selector);
     }

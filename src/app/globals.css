@@ -59,34 +59,6 @@
   box-shadow: none;
   border-radius: 0;
 }
-.flow-ambient,
-.ambient-layer {
-  pointer-events: none;
-  position: absolute;
-  inset: 0;
-  overflow: hidden;
-  z-index: 0;
-}
-.flow-ribbon,
-.flow-blob,
-.flow-particle {
-  position: absolute;
-}
-.flow-ribbon {
-  width: 136%;
-  height: 40%;
-  left: -18%;
-  border-radius: 999px;
-  filter: blur(54px);
-}
-.flow-ribbon-a {
-  top: -14%;
-  background: radial-gradient(
-    ellipse,
-    rgba(79, 142, 255, 0.06) 0%,
-    transparent 70%
-  );
-}
 .marketing-nav {
   background: transparent;
   padding: 0 clamp(2rem, 5vw, 4rem);
@@ -109,64 +81,7 @@
   -webkit-backdrop-filter: blur(24px) saturate(150%);
   /* NO BORDER */
 }
-.flow-ribbon-b {
-  top: 58%;
-  background: radial-gradient(
-    ellipse,
-    rgba(0, 208, 132, 0.04) 0%,
-    transparent 70%
-  );
-}
-.flow-blob {
-  border-radius: 999px;
-  filter: blur(28px);
-}
-.flow-blob-a {
-  width: 18rem;
-  height: 18rem;
-  top: 9%;
-  right: -4rem;
-  background: radial-gradient(
-    circle,
-    rgba(79, 142, 255, 0.08) 0%,
-    transparent 70%
-  );
-}
-.flow-blob-b {
-  width: 20rem;
-  height: 20rem;
-  bottom: -6rem;
-  left: -5rem;
-  background: radial-gradient(
-    circle,
-    rgba(0, 208, 132, 0.06) 0%,
-    transparent 70%
-  );
-}
-.flow-blob-c {
-  width: 12rem;
-  height: 12rem;
-  top: 52%;
-  right: 22%;
-  background: radial-gradient(
-    circle,
-    rgba(79, 142, 255, 0.05) 0%,
-    transparent 70%
-  );
-}
-.flow-particle {
-  width: 0.44rem;
-  height: 0.44rem;
-  border-radius: 999px;
-  background: rgba(79, 142, 255, 0.3);
-}
 @media (prefers-reduced-motion: reduce) {
-  .flow-ribbon,
-  .flow-blob,
-  .flow-particle {
-    animation: none !important;
-  }
-
   *,
   *::before,
   *::after {
@@ -175,12 +90,6 @@
     transition-duration: 0.01ms !important;
     scroll-behavior: auto !important;
   }
-}
-.grid-haze {
-  position: absolute;
-  inset: 0;
-  pointer-events: none;
-  background: none;
 }
 .marketing-nav,
 .hero-block,
@@ -392,18 +301,6 @@
   opacity: 0.45;
   transform: none;
 }
-.studio-grid {
-  display: grid;
-  gap: 1rem;
-  padding: 1rem var(--layout-gutter) 1.5rem;
-  grid-template-columns: minmax(220px, 280px) minmax(0, 1fr) minmax(
-      280px,
-      360px
-    );
-}
-.studio-grid > * {
-  min-width: 0;
-}
 input,
 select,
 textarea {
@@ -447,18 +344,7 @@ select option {
   color: #ff8b8b;
   background: rgba(255, 79, 79, 0.08);
 }
-@media (max-width: 1440px) {
-  .studio-grid {
-    grid-template-columns: minmax(210px, 265px) minmax(0, 1fr) minmax(
-        255px,
-        330px
-      );
-  }
-}
 @media (max-width: 1180px) {
-  .studio-grid {
-    grid-template-columns: minmax(230px, 280px) minmax(0, 1fr);
-  }
   .landing-stage {
     min-height: auto;
     padding-block: clamp(0.85rem, 3vh, 1.3rem);
@@ -480,125 +366,6 @@ select option {
     background-position: -200% 0;
   }
 }
-@keyframes ribbonSweepA {
-  from {
-    transform: translate3d(-5%, -2%, 0) rotate(-2deg);
-  }
-  to {
-    transform: translate3d(5%, 3%, 0) rotate(2deg);
-  }
-}
-@keyframes ribbonSweepB {
-  from {
-    transform: translate3d(5%, 2%, 0) rotate(2deg);
-  }
-  to {
-    transform: translate3d(-5%, -2%, 0) rotate(-2deg);
-  }
-}
-@keyframes blobFloatA {
-  0% {
-    transform: translate3d(0, 0, 0) scale(1);
-  }
-  50% {
-    transform: translate3d(-15px, 9px, 0) scale(1.07);
-  }
-  100% {
-    transform: translate3d(7px, -8px, 0) scale(0.98);
-  }
-}
-@keyframes blobFloatB {
-  0% {
-    transform: translate3d(0, 0, 0) scale(1);
-  }
-  50% {
-    transform: translate3d(14px, -9px, 0) scale(1.06);
-  }
-  100% {
-    transform: translate3d(-10px, 8px, 0) scale(0.97);
-  }
-}
-@keyframes blobFloatC {
-  0% {
-    transform: translate3d(0, 0, 0) scale(1);
-  }
-  50% {
-    transform: translate3d(10px, 9px, 0) scale(1.06);
-  }
-  100% {
-    transform: translate3d(-11px, -8px, 0) scale(0.96);
-  }
-}
-@keyframes particleRise {
-  0% {
-    transform: translate3d(0, 0, 0) scale(0.75);
-    opacity: 0;
-  }
-  24% {
-    opacity: 0.35;
-  }
-  100% {
-    transform: translate3d(0, -42px, 0) scale(1.05);
-    opacity: 0;
-  }
-}
-@keyframes flowPulse {
-  0%,
-  100% {
-    opacity: 0.4;
-    transform: scale(1);
-  }
-  50% {
-    opacity: 1;
-    transform: scale(1.15);
-  }
-}
-@keyframes flowTravel {
-  0% {
-    transform: translateX(-100%);
-    opacity: 0;
-  }
-  20% {
-    opacity: 1;
-  }
-  80% {
-    opacity: 1;
-  }
-  100% {
-    transform: translateX(300%);
-    opacity: 0;
-  }
-}
-@keyframes glowPulse {
-  0%,
-  100% {
-    box-shadow:
-      0 0 8px rgba(79, 142, 255, 0.3),
-      0 0 20px rgba(79, 142, 255, 0.1);
-  }
-  50% {
-    box-shadow:
-      0 0 16px rgba(79, 142, 255, 0.5),
-      0 0 40px rgba(79, 142, 255, 0.2);
-  }
-}
-@keyframes successGlow {
-  0%,
-  100% {
-    box-shadow: 0 0 8px rgba(0, 208, 132, 0.3);
-  }
-  50% {
-    box-shadow: 0 0 20px rgba(0, 208, 132, 0.5);
-  }
-}
-@keyframes logScroll {
-  0% {
-    transform: translateY(0);
-  }
-  100% {
-    transform: translateY(-60%);
-  }
-}
 @media (max-width: 640px) {
   .dash-shell,
   .flow-shell {
@@ -613,30 +380,6 @@ select option {
   }
   .workflow-surface {
     overflow-x: hidden;
-  }
-}
-@keyframes orb-drift-1 {
-  0%,
-  100% {
-    transform: translate(0, 0) scale(1);
-  }
-  33% {
-    transform: translate(-3%, 4%) scale(1.06);
-  }
-  66% {
-    transform: translate(4%, -3%) scale(0.95);
-  }
-}
-@keyframes orb-drift-2 {
-  0%,
-  100% {
-    transform: translate(0, 0) scale(1);
-  }
-  40% {
-    transform: translate(5%, -6%) scale(1.08);
-  }
-  70% {
-    transform: translate(-4%, 3%) scale(0.93);
   }
 }
 @theme inline {

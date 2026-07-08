@@ -12,12 +12,15 @@ import { FlowExplainer } from "@/components/product/flow-explainer";
 import { useAuthSession } from "@/hooks/use-auth-session";
 import { logout } from "@/lib/api/client";
 import { isGuest } from "@/lib/auth/subscription";
+import { cn } from "@/lib/utils";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 
 /* ── Motion ────────────────────────────────────────────────────────────────── */
 
 const EASE_OUT: [number, number, number, number] = [0.25, 0, 0, 1];
+
+const guideSectionCardClasses = "relative z-[1] grid gap-[0.88rem] rounded-none border-0 bg-transparent p-[var(--panel-pad)] shadow-none [&_h1]:text-[clamp(2rem,3.8vw,3.45rem)] [&_h1]:leading-[1.06] [&_h2]:text-[clamp(1.36rem,2.4vw,2rem)] [&_p]:m-0 [&_p]:text-[var(--text-secondary)]";
 
 const sectionVariants = {
   hidden: { opacity: 0, y: 16 },
@@ -63,7 +66,7 @@ function GuideCard({
   return (
     <motion.section
       id={id}
-      className="section-card glass-panel"
+      className={cn(guideSectionCardClasses, "glass-panel")}
       style={{ scrollMarginTop: "6rem", padding: "1.6rem 1.7rem", marginBottom: "1.1rem" }}
       custom={index}
       variants={sectionVariants}
@@ -449,12 +452,12 @@ docs: update the guide page`}</code></pre>
             </GuideCard>
 
             {guest ? (
-              <div className="section-card glass-panel" style={{ padding: "1.4rem 1.6rem", textAlign: "center" }}>
+              <div className={cn(guideSectionCardClasses, "glass-panel")} style={{ padding: "1.4rem 1.6rem", textAlign: "center" }}>
                 <p style={{ marginBottom: "0.9rem" }}>Ready to create your first repository?</p>
                 <Link className="primary-button" href="/signup">Sign up free</Link>
               </div>
             ) : (
-              <div className="section-card glass-panel" style={{ padding: "1.4rem 1.6rem", textAlign: "center" }}>
+              <div className={cn(guideSectionCardClasses, "glass-panel")} style={{ padding: "1.4rem 1.6rem", textAlign: "center" }}>
                 <p style={{ marginBottom: "0.9rem" }}>Ready to build?</p>
                 <Link className="primary-button" href="/workflows">Go to Workflows</Link>
               </div>

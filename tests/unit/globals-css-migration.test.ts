@@ -138,6 +138,7 @@ describe("globals css migration", () => {
       ".error-text",
       ".hero-actions",
       ".section-card",
+      ".workflow-surface",
     ]) {
       expect(globalsSource).not.toContain(selector);
     }

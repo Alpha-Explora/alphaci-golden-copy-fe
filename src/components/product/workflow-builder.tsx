@@ -336,7 +336,7 @@ export function WorkflowBuilder({ guest = false, session, onboardingCompleted }:
   return (
     <MotionConfig reducedMotion={reducedMotion ? "always" : "never"}>
       <GeneratingOverlay isVisible={isCreatingProject} />
-      <section className="workflow-surface">
+      <section className="relative z-[1] flex flex-col gap-4 max-[640px]:overflow-x-hidden">
         {/* Status bar — compact, only shows when needed */}
         {(statusMessage || catalog.catalogError || projectCatalog.projectOptionsError) && (
           <div style={{ padding: "0.5rem var(--layout-gutter) 0" }}>

@@ -1053,65 +1053,6 @@ select option {
   color: #ff8b8b;
   background: rgba(255, 79, 79, 0.08);
 }
-.user-avatar {
-  width: 2.5rem;
-  height: 2.5rem;
-  border-radius: 999px;
-  border: 2px solid var(--border-strong);
-  object-fit: cover;
-}
-.user-avatar-placeholder {
-  width: 2.5rem;
-  height: 2.5rem;
-  border-radius: 999px;
-  border: 2px solid var(--border-strong);
-  background: linear-gradient(135deg, var(--brand), var(--brand-accent));
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  color: white;
-  font-size: 0.9rem;
-  font-weight: 700;
-}
-.welcome-header {
-  display: flex;
-  align-items: center;
-  gap: 0.85rem;
-}
-.pipeline-track {
-  display: flex;
-  align-items: center;
-  gap: 0;
-  margin-top: 0.6rem;
-  overflow-x: auto;
-  scrollbar-width: none;
-}
-.pipeline-track::-webkit-scrollbar {
-  display: none;
-}
-.pipeline-dot {
-  width: 0.7rem;
-  height: 0.7rem;
-  border-radius: 50%;
-  background: rgba(79, 142, 255, 0.15);
-  border: 1px solid rgba(79, 142, 255, 0.3);
-  flex-shrink: 0;
-}
-.pipeline-dot.active {
-  background: var(--brand-accent);
-  border-color: var(--brand-accent);
-  box-shadow: 0 0 6px rgba(0, 208, 132, 0.4);
-}
-.pipeline-connector {
-  height: 1px;
-  width: 2rem;
-  flex-shrink: 0;
-  background: linear-gradient(
-    90deg,
-    rgba(79, 142, 255, 0.25) 0%,
-    rgba(79, 142, 255, 0.08) 100%
-  );
-}
 .status-banner {
   padding: 0.6rem 0.9rem;
   border-radius: 8px;

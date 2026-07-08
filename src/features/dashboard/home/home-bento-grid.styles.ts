@@ -27,4 +27,9 @@ export const bentoGridStyles = {
   cmdDisplay: "sr-only",
   cmdShortcut: "rounded border border-white/10 px-1.5 py-0.5 font-mono text-[0.68rem] text-[var(--text-muted)]",
   cmdArrow: "text-[var(--cmd-accent)] opacity-70 transition-transform group-hover/cmd:translate-x-0.5",
+  pipelineTrack: "mt-2.5 flex items-center overflow-x-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden",
+  pipelineStep: "inline-flex items-center",
+  pipelineDot: "size-[0.7rem] shrink-0 cursor-default rounded-full border border-[rgba(79,142,255,0.3)] bg-[rgba(79,142,255,0.15)]",
+  pipelineDotActive: "border-[var(--brand-accent)] bg-[var(--brand-accent)] shadow-[0_0_6px_rgba(0,208,132,0.4)]",
+  pipelineConnector: "h-px w-8 shrink-0 bg-[linear-gradient(90deg,rgba(79,142,255,0.25)_0%,rgba(79,142,255,0.08)_100%)]",
 } as const;

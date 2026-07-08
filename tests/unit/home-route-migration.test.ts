@@ -58,6 +58,15 @@ describe("home route migration", () => {
     expect(globalsSource).not.toContain(".repo-list");
     expect(globalsSource).not.toContain(".welcome-editorial");
     expect(globalsSource).not.toContain(".repo-full-list");
+    expect(globalsSource).not.toContain(".user-avatar");
+    expect(globalsSource).not.toContain(".user-avatar-placeholder");
+    expect(globalsSource).not.toContain(".welcome-header");
+    expect(globalsSource).not.toContain(".pipeline-track");
+    expect(globalsSource).not.toContain(".pipeline-dot");
+    expect(globalsSource).not.toContain(".pipeline-connector");
+    expect(bentoSource).not.toContain('className="pipeline-track"');
+    expect(bentoSource).not.toContain('className="pipeline-connector"');
+    expect(bentoSource).not.toContain("pipeline-dot");
     expect(bentoSource).not.toMatch(/[^\x00-\x7F]/);
     for (const componentPath of homeFeaturePaths) {
       const componentSource = fs.readFileSync(componentPath, "utf8");

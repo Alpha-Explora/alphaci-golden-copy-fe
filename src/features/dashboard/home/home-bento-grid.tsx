@@ -85,23 +85,22 @@ export function PipelineTrack({ reduced }: Readonly<{ reduced: boolean | null }>
     <div>
       <FilePathLabel as="p" className="mb-3">pipeline/stages.yml</FilePathLabel>
       <motion.div
-        className="pipeline-track"
+        className={styles.pipelineTrack}
         aria-label="Pipeline stages"
         variants={reduced ? undefined : pipelineContainerVariants}
         initial={reduced ? undefined : "hidden"}
         animate={reduced ? undefined : "visible"}
       >
         {pipelineStages.map((stage, index) => (
-          <span key={stage} style={{ display: "inline-flex", alignItems: "center" }}>
+          <span key={stage} className={styles.pipelineStep}>
             <motion.span
-              className={`pipeline-dot ${index === pipelineStages.length - 1 ? "active" : ""}`}
+              className={cn(styles.pipelineDot, index === pipelineStages.length - 1 && styles.pipelineDotActive)}
               variants={reduced ? undefined : pipelineDotVariants}
               title={stage}
-              style={{ cursor: "default" }}
             />
             {index < pipelineStages.length - 1 && (
               <motion.span
-                className="pipeline-connector"
+                className={styles.pipelineConnector}
                 variants={reduced ? undefined : pipelineDotVariants}
                 aria-hidden="true"
               />

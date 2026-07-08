@@ -18,16 +18,11 @@ export function HomeDashboardTabs({ activeTab, onTabChange, prefersReducedMotion
       initial={prefersReducedMotion ? false : "hidden"}
       animate="visible"
     >
-      <div className="dash-tab-bar" role="tablist" aria-label="Dashboard sections" style={{
-        position: "relative",
-        display: "flex",
-        gap: "0.25rem",
-        padding: "0.25rem",
-        background: "rgba(15, 23, 42, 0.4)",
-        border: "1px solid var(--border-soft)",
-        borderRadius: "0.6rem",
-        width: "fit-content",
-      }}>
+      <div
+        className="relative flex w-fit gap-1 rounded-[0.6rem] border border-[var(--border-soft)] bg-slate-900/40 p-1"
+        role="tablist"
+        aria-label="Dashboard sections"
+      >
         {(["overview", "repositories", "activity"] as DashTab[]).map((tab) => (
           <button
             key={tab}
@@ -37,19 +32,7 @@ export function HomeDashboardTabs({ activeTab, onTabChange, prefersReducedMotion
             aria-controls={`dash-panel-${tab}`}
             aria-selected={activeTab === tab}
             onClick={() => onTabChange(tab)}
-            style={{
-              position: "relative",
-              padding: "0.45rem 1.2rem",
-              border: "none",
-              background: "transparent",
-              cursor: "pointer",
-              transition: "color 0.2s ease",
-              color: activeTab === tab ? "var(--text-primary)" : "var(--text-secondary)",
-              zIndex: 1,
-              fontWeight: 600,
-              fontSize: "0.85rem",
-              fontFamily: "inherit",
-            }}
+            className="relative z-[1] cursor-pointer border-0 bg-transparent px-5 py-2 text-sm font-semibold text-[var(--text-secondary)] transition-colors aria-selected:text-[var(--text-primary)]"
           >
             {activeTab === tab && (
               <motion.span

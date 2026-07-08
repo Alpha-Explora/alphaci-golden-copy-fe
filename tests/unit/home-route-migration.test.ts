@@ -14,7 +14,7 @@ describe("home route migration", () => {
     path.join(process.cwd(), "src/components/layout/app-shell/dashboard-shell.tsx"),
   ];
   const stylePaths = [
-    path.join(process.cwd(), "src/components/layout/app-shell/dashboard-shell.module.css"),
+    path.join(process.cwd(), "src/features/dashboard/home/home-bento-grid.styles.ts"),
   ];
 
   it("keeps the app route as a thin entry point", () => {
@@ -41,6 +41,9 @@ describe("home route migration", () => {
     expect(featureSource).not.toContain("ghost-button");
     expect(featureSource).not.toMatch(/[^\x00-\x7F]/);
     expect(bentoSource).toContain("export function BentoGrid");
+    expect(bentoSource).toContain("home-bento-grid.styles");
+    expect(bentoSource).not.toContain("kpi-bento-grid");
+    expect(bentoSource).not.toContain("bento-card");
     expect(bentoSource).not.toMatch(/[^\x00-\x7F]/);
     for (const componentPath of homeFeaturePaths) {
       const componentSource = fs.readFileSync(componentPath, "utf8");

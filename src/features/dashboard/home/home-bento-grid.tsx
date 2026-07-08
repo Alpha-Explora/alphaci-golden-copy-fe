@@ -5,6 +5,10 @@ import { motion } from "framer-motion";
 import { useEffect, useRef, useState } from "react";
 import type { CSSProperties } from "react";
 
+import { cn } from "@/lib/utils";
+
+import { bentoGridStyles as styles } from "./home-bento-grid.styles";
+
 /* Animated counter hook */
 
 function useCountUp(target: number | null, duration = 900): number | null {
@@ -158,20 +162,20 @@ export function BentoGrid({
   const displayServices = prefersReducedMotion ? uniqueServices : (animatedServices ?? uniqueServices);
 
   return (
-    <div className="kpi-bento-grid">
+    <div className={styles.grid}>
 
       {/* Cell 1: Workflows Generated - dominant brand, asymmetric wide */}
-      <div className="bento-card bento-card-dominant bento-card-brand">
-        <div className="bento-card-eyebrow">
-          <span className="bento-pulse-dot bento-pulse-dot--brand" aria-hidden="true" />
+      <div className={cn(styles.card, styles.dominant)}>
+        <div className={styles.eyebrow}>
+          <span className={cn(styles.pulseDot, styles.pulseDotBrand)} aria-hidden="true" />
           Workflows Generated
         </div>
-        <div className="bento-value-row">
-          <div className="bento-card-value counter-number bento-num-brand">
+        <div className={styles.valueRow}>
+          <div className={styles.value}>
             {historyLoading ? <SkeletonValue wide /> : displayHistory}
           </div>
           {!historyLoading && historyLength > 0 && (
-            <span className="bento-trend-up">
+            <span className={styles.trendUp}>
               <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
                 <polyline points="23 6 13.5 15.5 8.5 10.5 1 18" />
                 <polyline points="17 6 23 6 23 12" />
@@ -180,28 +184,28 @@ export function BentoGrid({
             </span>
           )}
         </div>
-        <p className="bento-card-desc">GitHub Actions build &amp; test recipes</p>
-        <div className="bento-sparkbar" aria-hidden="true">
+        <p className={styles.desc}>GitHub Actions build &amp; test recipes</p>
+        <div className={styles.sparkbar} aria-hidden="true">
           {[3,6,4,7,5,8,6,9,7,10,8,11].map((h, i) => (
-            <span key={i} className="bento-sparkbar-bar" style={{ height: `${h * 8}%`, animationDelay: `${i * 0.05}s` }} />
+            <span key={i} className={styles.sparkbarBar} style={{ height: `${h * 8}%`, animationDelay: `${i * 0.05}s` }} />
           ))}
         </div>
-        <svg className="bento-card-icon" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+        <svg className={styles.icon} width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
           <polyline points="22 12 18 12 15 21 9 3 6 12 2 12" />
         </svg>
       </div>
 
       {/* Cell 2: Projects Created - violet tint */}
-      <div className="bento-card bento-card-accent bento-card-violet">
-        <div className="bento-card-eyebrow">
-          <span className="bento-pulse-dot bento-pulse-dot--violet" aria-hidden="true" />
+      <div className={styles.card}>
+        <div className={styles.eyebrow}>
+          <span className={cn(styles.pulseDot, styles.pulseDotViolet)} aria-hidden="true" />
           Projects
         </div>
-        <div className="bento-card-value counter-number bento-num-violet">
+        <div className={styles.value}>
           {projectsLoading ? <SkeletonValue /> : displayProjects}
         </div>
-        <p className="bento-card-desc">Active repositories</p>
-        <svg className="bento-card-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+        <p className={styles.desc}>Active repositories</p>
+        <svg className={styles.icon} width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
           <rect x="2" y="2" width="20" height="8" rx="2" ry="2" />
           <rect x="2" y="14" width="20" height="8" rx="2" ry="2" />
           <line x1="6" y1="6" x2="6.01" y2="6" />
@@ -210,16 +214,16 @@ export function BentoGrid({
       </div>
 
       {/* Cell 3: Services - teal accent */}
-      <div className="bento-card bento-card-teal">
-        <div className="bento-card-eyebrow">
-          <span className="bento-pulse-dot bento-pulse-dot--teal" aria-hidden="true" />
+      <div className={styles.card}>
+        <div className={styles.eyebrow}>
+          <span className={cn(styles.pulseDot, styles.pulseDotTeal)} aria-hidden="true" />
           Services
         </div>
-        <div className="bento-card-value counter-number bento-num-teal">
+        <div className={styles.value}>
           {historyLoading ? <SkeletonValue /> : displayServices}
         </div>
-        <p className="bento-card-desc">Unique services</p>
-        <svg className="bento-card-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+        <p className={styles.desc}>Unique services</p>
+        <svg className={styles.icon} width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
           <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z" />
           <polyline points="3.27 6.96 12 12.01 20.73 6.96" />
           <line x1="12" y1="22.08" x2="12" y2="12" />
@@ -227,8 +231,8 @@ export function BentoGrid({
       </div>
 
       {/* Cell 4: Last Activity - vertical timeline treatment */}
-      <div className="bento-card bento-card-activity">
-        <div className="bento-card-eyebrow">
+      <div className={styles.card}>
+        <div className={styles.eyebrow}>
           <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
             <rect x="3" y="4" width="18" height="18" rx="2" ry="2" />
             <line x1="16" y1="2" x2="16" y2="6" />
@@ -237,41 +241,41 @@ export function BentoGrid({
           </svg>
           Last Activity
         </div>
-        <div className="bento-timeline">
-          <span className="bento-timeline-dot" aria-hidden="true" />
-          <div className="bento-timeline-content">
+        <div className={styles.timeline}>
+          <span className={styles.timelineDot} aria-hidden="true" />
+          <div className={styles.timelineContent}>
             {historyLoading ? (
               <SkeletonValue wide />
             ) : (
-              <span className="bento-timeline-date">{lastActivityValue}</span>
+              <span className={styles.timelineDate}>{lastActivityValue}</span>
             )}
-            <span className="bento-timeline-label">Latest run</span>
+            <span className={styles.timelineLabel}>Latest run</span>
           </div>
         </div>
       </div>
 
       {/* Cell 5: Quick Actions - terminal command rows */}
-      <div className="bento-card bento-card-quick-actions">
-        <div className="bento-card-eyebrow" style={{ marginBottom: "0.9rem" }}>
+      <div className={styles.card}>
+        <div className={styles.eyebrowSpaced}>
           <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
             <polyline points="4 17 10 11 4 5" />
             <line x1="12" y1="19" x2="20" y2="19" />
           </svg>
           Quick actions
         </div>
-        <div className="bento-cmd-list">
+        <div className={styles.cmdList}>
           {quickActions.map((action) => (
             <Link
               key={action.cmd}
               href={action.href}
-              className="bento-cmd-row"
+              className={styles.cmdRow}
               style={{ "--cmd-accent": action.accent } as CSSProperties}
             >
-              <span className="bento-cmd-prompt" aria-hidden="true">$</span>
-              <span className="bento-cmd-name">{action.cmd}</span>
-              <span className="bento-cmd-display">{action.display}</span>
-              <span className="bento-cmd-shortcut">{action.shortcut}</span>
-              <svg className="bento-cmd-arrow" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+              <span className={styles.cmdPrompt} aria-hidden="true">$</span>
+              <span className={styles.cmdName}>{action.cmd}</span>
+              <span className={styles.cmdDisplay}>{action.display}</span>
+              <span className={styles.cmdShortcut}>{action.shortcut}</span>
+              <svg className={styles.cmdArrow} width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
                 <line x1="5" y1="12" x2="19" y2="12" />
                 <polyline points="12 5 19 12 12 19" />
               </svg>

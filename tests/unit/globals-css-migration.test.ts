@@ -7,6 +7,7 @@ describe("globals css migration", () => {
   const productWorkflowsPath = path.join(process.cwd(), "src/styles/product-workflows.css");
   const providerSettingsPath = path.join(process.cwd(), "src/styles/provider-settings.css");
   const publicSitePath = path.join(process.cwd(), "src/styles/public-site.css");
+  const utilitiesPath = path.join(process.cwd(), "src/styles/utilities.css");
   const workflowSetupUtilsPath = path.join(process.cwd(), "src/components/product/workflow-setup-utils.ts");
   const productSharedStylesPath = path.join(process.cwd(), "src/components/product/product-shared-styles.ts");
 
@@ -61,9 +62,13 @@ describe("globals css migration", () => {
     const productSharedStylesSource = fs.existsSync(productSharedStylesPath)
       ? fs.readFileSync(productSharedStylesPath, "utf8")
       : "";
+    const utilitiesSource = fs.existsSync(utilitiesPath)
+      ? fs.readFileSync(utilitiesPath, "utf8")
+      : "";
 
     expect(fs.existsSync(productWorkflowsPath)).toBe(true);
     expect(fs.existsSync(providerSettingsPath)).toBe(true);
+    expect(fs.existsSync(utilitiesPath)).toBe(true);
     expect(globalsSource).toContain('@import "../styles/product-workflows.css";');
     expect(globalsSource).toContain('@import "../styles/provider-settings.css";');
     expect(globalsSource).not.toContain(".deployment-provisioning-setup");
@@ -84,6 +89,10 @@ describe("globals css migration", () => {
     expect(productSharedStylesSource).toContain("helperText");
     expect(providerSettingsSource).toContain(".provider-settings-panel");
     expect(providerSettingsSource).toContain(".provider-connections-table");
+    expect(utilitiesSource).toContain(".glass-panel");
+    expect(utilitiesSource).toContain(".primary-button");
+    expect(utilitiesSource).toContain(".ghost-button");
+    expect(utilitiesSource).toContain("@keyframes glowSweep");
     expect(globalsSource).not.toContain(".cta-gradient-button");
     expect(globalsSource).not.toContain(".cta-shimmer");
     expect(globalsSource).not.toContain(".marketing-nav-enhanced");
@@ -140,6 +149,11 @@ describe("globals css migration", () => {
       ".section-card",
       ".workflow-surface",
       ".flow-shell",
+      "@keyframes glowSweep",
+      ".ghost-button",
+      ".primary-button",
+      ".page-shell .glass-panel",
+      ".glass-panel",
     ]) {
       expect(globalsSource).not.toContain(selector);
     }

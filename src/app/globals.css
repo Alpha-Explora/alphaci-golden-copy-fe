@@ -12,16 +12,6 @@
 @import "../styles/form-controls.css";
 
 @custom-variant dark (&:is(.dark *));
-@media (prefers-reduced-motion: reduce) {
-  *,
-  *::before,
-  *::after {
-    animation-duration: 0.01ms !important;
-    animation-iteration-count: 1 !important;
-    transition-duration: 0.01ms !important;
-    scroll-behavior: auto !important;
-  }
-}
 @theme inline {
   --font-heading: var(--font-sans);
   --font-sans: var(--font-sans);
@@ -63,50 +53,4 @@
   --radius-2xl: calc(var(--radius) * 1.8);
   --radius-3xl: calc(var(--radius) * 2.2);
   --radius-4xl: calc(var(--radius) * 2.6);
-}
-
-:root,
-.dark {
-  --background: var(--bg-base);
-  --foreground: var(--text-primary);
-  --card: var(--bg-panel);
-  --card-foreground: var(--text-primary);
-  --popover: var(--bg-panel);
-  --popover-foreground: var(--text-primary);
-  --primary: var(--brand);
-  --primary-foreground: var(--bg-base);
-  --secondary: var(--bg-soft);
-  --secondary-foreground: var(--text-secondary);
-  --muted: rgba(148, 163, 184, 0.12);
-  --muted-foreground: var(--text-secondary);
-  --accent: var(--bg-elevated);
-  --accent-foreground: var(--text-primary);
-  --destructive: var(--danger);
-  --input: var(--border);
-  --ring: var(--brand);
-  --chart-1: var(--brand);
-  --chart-2: var(--brand-accent);
-  --chart-3: var(--accent-violet);
-  --chart-4: var(--accent-amber);
-  --chart-5: var(--accent-coral);
-  --radius: 0.5rem;
-  --sidebar: var(--bg-base);
-  --sidebar-foreground: var(--text-primary);
-  --sidebar-primary: var(--brand);
-  --sidebar-primary-foreground: var(--bg-base);
-  --sidebar-accent: var(--bg-soft);
-  --sidebar-accent-foreground: var(--text-primary);
-  --sidebar-border: var(--border);
-  --sidebar-ring: var(--brand);
-}
-@layer base {
-  * {
-    @apply border-border outline-ring/50;
-  }
-  body {
-    @apply bg-background text-foreground;
-  }
-  html {
-    @apply font-sans;
-  }
 }

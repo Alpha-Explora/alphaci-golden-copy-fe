@@ -9,6 +9,8 @@ describe("globals css migration", () => {
   const publicSitePath = path.join(process.cwd(), "src/styles/public-site.css");
   const utilitiesPath = path.join(process.cwd(), "src/styles/utilities.css");
   const formControlsPath = path.join(process.cwd(), "src/styles/form-controls.css");
+  const basePath = path.join(process.cwd(), "src/styles/base.css");
+  const tokensPath = path.join(process.cwd(), "src/styles/tokens.css");
   const workflowSetupUtilsPath = path.join(process.cwd(), "src/components/product/workflow-setup-utils.ts");
   const productSharedStylesPath = path.join(process.cwd(), "src/components/product/product-shared-styles.ts");
 
@@ -69,11 +71,19 @@ describe("globals css migration", () => {
     const formControlsSource = fs.existsSync(formControlsPath)
       ? fs.readFileSync(formControlsPath, "utf8")
       : "";
+    const baseSource = fs.existsSync(basePath)
+      ? fs.readFileSync(basePath, "utf8")
+      : "";
+    const tokensSource = fs.existsSync(tokensPath)
+      ? fs.readFileSync(tokensPath, "utf8")
+      : "";
 
     expect(fs.existsSync(productWorkflowsPath)).toBe(true);
     expect(fs.existsSync(providerSettingsPath)).toBe(true);
     expect(fs.existsSync(utilitiesPath)).toBe(true);
     expect(fs.existsSync(formControlsPath)).toBe(true);
+    expect(fs.existsSync(basePath)).toBe(true);
+    expect(fs.existsSync(tokensPath)).toBe(true);
     expect(globalsSource).toContain('@import "../styles/product-workflows.css";');
     expect(globalsSource).toContain('@import "../styles/provider-settings.css";');
     expect(globalsSource).toContain('@import "../styles/form-controls.css";');
@@ -103,6 +113,10 @@ describe("globals css migration", () => {
     expect(formControlsSource).toContain("select,");
     expect(formControlsSource).toContain("textarea");
     expect(formControlsSource).toContain("button:focus-visible");
+    expect(baseSource).toContain("@media (prefers-reduced-motion: reduce)");
+    expect(baseSource).toContain("@layer base");
+    expect(tokensSource).toContain("--background: var(--bg-base);");
+    expect(tokensSource).toContain("--sidebar-ring: var(--brand);");
     expect(globalsSource).not.toContain(".cta-gradient-button");
     expect(globalsSource).not.toContain(".cta-shimmer");
     expect(globalsSource).not.toContain(".marketing-nav-enhanced");
@@ -170,6 +184,10 @@ describe("globals css migration", () => {
       "button:focus-visible",
       "textarea {",
       "select,",
+      "@layer base",
+      "@media (prefers-reduced-motion: reduce)",
+      "--background: var(--bg-base);",
+      "--sidebar-ring: var(--brand);",
       "input,",
     ]) {
       expect(globalsSource).not.toContain(selector);

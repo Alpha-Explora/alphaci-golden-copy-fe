@@ -6,4 +6,13 @@ export const productSharedStyles = {
   guestBannerText: "m-0 flex items-center gap-1.5 text-[0.85rem] font-medium text-[var(--brand)]",
   guestBannerTextStrong: "m-0 text-[0.88rem] font-medium text-[var(--text-primary)]",
   guestBannerActions: "flex shrink-0 gap-2 max-[640px]:items-stretch max-[640px]:[&>*]:min-w-0 max-[640px]:[&>*]:whitespace-normal",
+  allTemplateGrid: "mt-3 grid auto-rows-fr grid-cols-[repeat(auto-fill,minmax(320px,1fr))] gap-4 max-[640px]:grid-cols-1",
+  allTemplateCard: "flex h-full min-w-0 flex-col gap-[0.85rem] rounded-[1.25rem] border border-[var(--border-soft)] bg-[rgba(15,23,42,0.45)] p-5 text-left shadow-[var(--shadow-soft)] transition-all duration-200",
+  allTemplateHead: "flex min-w-0 flex-wrap items-start justify-between gap-2",
+  templateTitle: "m-0 max-w-full text-[1.05rem] font-bold text-[var(--text-primary)] [overflow-wrap:anywhere] [word-break:break-word]",
+  templateStackBadge: "m-0 inline-flex rounded px-2 py-[0.15rem] text-[0.68rem] font-bold uppercase tracking-[0.08em] text-[var(--brand)] border border-[rgba(56,189,248,0.15)] bg-[rgba(56,189,248,0.1)]",
+  templateCardDescription: "m-0 flex-1 text-[0.84rem] leading-[1.45] text-[var(--text-secondary)] [overflow-wrap:anywhere] [word-break:break-word]",
+  templateTagRow: "mt-1 flex flex-wrap gap-[0.35rem]",
+  templateTag: "inline-flex rounded-full border border-[var(--border-soft)] bg-white/[0.04] px-[0.45rem] py-[0.15rem] text-[0.7rem] text-[var(--text-secondary)] [overflow-wrap:anywhere] [word-break:break-word]",
+  templateActionRow: "mt-2 flex flex-wrap gap-[0.45rem] border-t border-[var(--border-soft)] pt-3",
 } as const;

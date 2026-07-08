@@ -772,92 +772,6 @@ select option {
   background: var(--bg-panel);
   color: var(--text-primary);
 }
-.template-grid,
-.all-template-grid,
-.history-grid {
-  display: grid;
-  gap: 0.74rem;
-  margin-top: 0.75rem;
-  grid-auto-rows: 1fr;
-}
-.template-grid,
-.all-template-grid {
-  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-}
-.history-grid {
-  grid-template-columns: repeat(auto-fill, minmax(290px, 1fr));
-}
-.template-card,
-.all-template-card,
-.history-card {
-  text-align: left;
-  border: 1px solid var(--border);
-  border-radius: var(--radius-card);
-  background: var(--bg-surface);
-  padding: 0.92rem;
-  display: grid;
-  gap: 0.58rem;
-  height: 100%;
-  align-content: start;
-  box-shadow: var(--shadow-soft);
-  min-width: 0;
-  transition:
-    border-color 0.2s ease,
-    box-shadow 0.2s ease;
-}
-.template-card {
-  cursor: pointer;
-}
-.template-card:hover,
-.all-template-card:hover {
-  border-color: var(--border-brand);
-  box-shadow: var(--shadow-card);
-}
-.template-card-active {
-  border-color: var(--brand) !important;
-  box-shadow:
-    0 0 0 3px rgba(79, 142, 255, 0.15),
-    var(--shadow-card) !important;
-}
-.template-card-headline h3,
-.all-template-head h3,
-.history-head h3 {
-  margin: 0.15rem 0 0;
-  font-size: 1.03rem;
-  color: var(--text-primary);
-}
-.template-stack-badge {
-  margin: 0;
-  display: inline-flex;
-  border-radius: var(--radius-pill);
-  font-size: 0.67rem;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  color: var(--brand);
-  border: 1px solid rgba(79, 142, 255, 0.25);
-  padding: 0.2rem 0.48rem;
-  background: var(--brand-light);
-}
-.template-card-description {
-  margin: 0;
-  color: var(--text-secondary);
-  font-size: 0.9rem;
-  line-height: 1.37;
-}
-.template-tag-row {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.34rem;
-}
-.template-tag {
-  display: inline-flex;
-  font-size: 0.74rem;
-  color: var(--text-muted);
-  border: 1px solid var(--border);
-  border-radius: var(--radius-pill);
-  padding: 0.16rem 0.5rem;
-  background: var(--bg-panel);
-}
 .generate-form {
   margin-top: 0.9rem;
   border-top: 1px solid var(--border);
@@ -978,8 +892,7 @@ select option {
   margin-bottom: 0.35rem;
 }
 /* Terminal dark code block */
-.result-panel pre,
-.history-card pre {
+.result-panel pre {
   margin: 0;
   border-radius: 0.8rem;
   border: 1px solid rgba(79, 142, 255, 0.2);
@@ -993,32 +906,6 @@ select option {
   overflow: auto;
   line-height: 1.6;
 }
-.history-head,
-.all-template-head {
-  display: flex;
-  justify-content: space-between;
-  gap: 0.6rem;
-  align-items: flex-start;
-  flex-wrap: wrap;
-}
-.history-head > *,
-.all-template-head > * {
-  min-width: 0;
-}
-.history-head p {
-  margin: 0;
-  font-size: 0.8rem;
-  color: var(--text-muted);
-}
-.history-card details {
-  border-top: 1px solid var(--border);
-  padding-top: 0.44rem;
-}
-.history-card summary {
-  cursor: pointer;
-  color: var(--brand);
-  font-weight: 700;
-}
 .helper-text {
   margin: 0;
   color: var(--text-secondary);
@@ -1026,24 +913,9 @@ select option {
   overflow-wrap: anywhere;
   word-break: break-word;
 }
-.templates-header p,
-.template-card-description,
-.template-tag,
-.history-head h3,
-.all-template-head h3,
-.history-card p,
-.all-template-card p,
 .status-pill {
   overflow-wrap: anywhere;
   word-break: break-word;
-}
-.history-head p,
-.all-template-head p {
-  text-align: right;
-}
-.history-head h3,
-.all-template-head h3 {
-  max-width: 100%;
 }
 .error-text {
   margin: 0;
@@ -1260,8 +1132,7 @@ select option {
   .flow-shell {
     overflow-x: hidden;
   }
-  .repo-grid,
-  .all-template-grid {
+  .repo-grid {
     grid-template-columns: minmax(0, 1fr) !important;
   }
   .result-actions,

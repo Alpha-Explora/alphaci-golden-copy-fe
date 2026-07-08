@@ -5,6 +5,7 @@ import { motion } from "framer-motion";
 import { useEffect, useRef, useState } from "react";
 import type { CSSProperties } from "react";
 
+import { productSharedStyles } from "@/components/product/product-shared-styles";
 import { FilePathLabel } from "@/components/ui/file-path-label";
 import { cn } from "@/lib/utils";
 
@@ -110,7 +111,7 @@ export function PipelineTrack({ reduced }: Readonly<{ reduced: boolean | null }>
       </motion.div>
       <div style={{ display: "flex", gap: "0.5rem", marginTop: "0.45rem", flexWrap: "wrap" }}>
         {pipelineStages.map((stage) => (
-          <span key={stage} className="template-tag">{stage}</span>
+          <span key={stage} className={productSharedStyles.templateTag}>{stage}</span>
         ))}
       </div>
     </div>

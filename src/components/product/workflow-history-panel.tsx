@@ -1,4 +1,5 @@
 "use client";
+import { productSharedStyles } from "@/components/product/product-shared-styles";
 import { feedbackStyles } from "@/components/ui/feedback-styles";
 import { cn } from "@/lib/utils";
 
@@ -130,18 +131,7 @@ function WorkflowHistoryCard({
 
       <div style={{ display: "flex", flexWrap: "wrap", gap: "0.35rem" }}>
         {entry.stack ? (
-          <span
-            className="template-stack-badge"
-            style={{
-              fontSize: "0.68rem",
-              fontWeight: 700,
-              textTransform: "uppercase",
-              padding: "0.15rem 0.5rem",
-              borderRadius: "4px",
-              background: "rgba(56, 189, 248, 0.1)",
-              color: "var(--brand)",
-              border: "1px solid rgba(56, 189, 248, 0.15)",
-            }}
+          <span className={productSharedStyles.templateStackBadge}
           >
             {entry.stack}
           </span>

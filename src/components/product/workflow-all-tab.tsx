@@ -2,6 +2,9 @@
 
 import { motion } from "framer-motion";
 
+import { productSharedStyles } from "@/components/product/product-shared-styles";
+import { cn } from "@/lib/utils";
+
 import type { CatalogTemplate } from "@/lib/api/contracts";
 
 import { toSourcePath } from "./workflow-builder-utils";
@@ -84,27 +87,16 @@ export function WorkflowAllTab({ allTemplates, onUseTemplate }: Readonly<Workflo
       ) : null}
 
       <motion.div
-        className="all-template-grid"
+        className={productSharedStyles.allTemplateGrid}
         variants={containerVariants}
         initial="hidden"
         animate="show"
-        style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(320px, 1fr))", gap: "1rem" }}
       >
         {allTemplates.map((template) => (
           <motion.article
             key={template.id}
             variants={cardVariants}
-            className="all-template-card glass-panel hud-glow-card"
-            style={{
-              background: "rgba(15, 23, 42, 0.45)",
-              border: "1px solid var(--border-soft)",
-              borderRadius: "1.25rem",
-              padding: "1.25rem",
-              display: "flex",
-              flexDirection: "column",
-              gap: "0.85rem",
-              transition: "all 0.25s ease",
-            }}
+            className={cn(productSharedStyles.allTemplateCard, "glass-panel hud-glow-card")}
             whileHover={{
               y: -3,
               borderColor: "rgba(56, 189, 248, 0.3)",
@@ -120,21 +112,12 @@ export function WorkflowAllTab({ allTemplates, onUseTemplate }: Readonly<Workflo
               e.currentTarget.style.removeProperty('--gy');
             }}
           >
-            <div className="all-template-head" style={{ display: "flex", justifyContent: "space-between", alignItems: "start", gap: "0.5rem" }}>
-              <h3 style={{ fontSize: "1.05rem", fontWeight: 700, margin: 0, color: "var(--text-primary)" }}>{template.name}</h3>
-              <span className="template-stack-badge" style={{
-                fontSize: "0.68rem",
-                fontWeight: 700,
-                textTransform: "uppercase",
-                padding: "0.15rem 0.5rem",
-                borderRadius: "4px",
-                background: "rgba(56, 189, 248, 0.1)",
-                color: "var(--brand)",
-                border: "1px solid rgba(56, 189, 248, 0.15)"
-              }}>{template.stack}</span>
+            <div className={productSharedStyles.allTemplateHead}>
+              <h3 className={productSharedStyles.templateTitle}>{template.name}</h3>
+              <span className={productSharedStyles.templateStackBadge}>{template.stack}</span>
             </div>
             
-            <p className="template-card-description" style={{ fontSize: "0.84rem", color: "var(--text-secondary)", margin: 0, flex: 1, lineHeight: 1.45 }}>
+            <p className={productSharedStyles.templateCardDescription}>
               {template.description}
             </p>
 
@@ -153,22 +136,15 @@ export function WorkflowAllTab({ allTemplates, onUseTemplate }: Readonly<Workflo
               </div>
             </div>
 
-            <div className="template-tag-row" style={{ display: "flex", flexWrap: "wrap", gap: "0.35rem", margin: "0.25rem 0 0" }}>
+            <div className={productSharedStyles.templateTagRow}>
               {template.categories.slice(0, 4).map((category) => (
-                <span key={`${template.id}-${category}`} className="template-tag" style={{
-                  fontSize: "0.7rem",
-                  padding: "0.15rem 0.45rem",
-                  borderRadius: "999px",
-                  background: "rgba(255, 255, 255, 0.04)",
-                  color: "var(--text-secondary)",
-                  border: "1px solid var(--border-soft)"
-                }}>
+                <span key={`${template.id}-${category}`} className={productSharedStyles.templateTag}>
                   {category}
                 </span>
               ))}
             </div>
 
-            <div className="result-actions" style={{ marginTop: "0.5rem", borderTop: "1px solid var(--border-soft)", paddingTop: "0.75rem" }}>
+            <div className={productSharedStyles.templateActionRow}>
               <button
                 className="ghost-button"
                 type="button"

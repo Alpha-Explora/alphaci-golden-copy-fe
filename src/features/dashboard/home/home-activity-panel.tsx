@@ -5,6 +5,7 @@ import { motion } from "framer-motion";
 
 import { Badge } from "@/components/ui/badge";
 import { Button, ButtonLink } from "@/components/ui/button";
+import { FilePathLabel } from "@/components/ui/file-path-label";
 import type { WorkflowHistoryItem } from "@/lib/api/contracts";
 
 import { EASE_OUT } from "./home-bento-grid";
@@ -38,7 +39,7 @@ export function HomeActivityPanel({
       <section aria-label="Recent workflows">
         <div className="dash-section-label">
           <div className="dash-section-label-left">
-            <p className="file-path-label" style={{ marginBottom: 0, color: "var(--brand)" }}>workflows/recent.yml</p>
+            <FilePathLabel as="p" className="text-[var(--brand)]">workflows/recent.yml</FilePathLabel>
             {!historyLoading && history.length > 0 && (
               <span className="dash-count-chip">{history.length} generated workflows</span>
             )}

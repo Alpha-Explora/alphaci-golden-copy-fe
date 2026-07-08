@@ -6,6 +6,8 @@ describe("home route migration", () => {
   const homeFeatureDir = path.join(process.cwd(), "src/features/dashboard/home");
   const featurePath = path.join(process.cwd(), "src/features/dashboard/home/home-dashboard-page.tsx");
   const bentoPath = path.join(process.cwd(), "src/features/dashboard/home/home-bento-grid.tsx");
+  const globalsPath = path.join(process.cwd(), "src/app/globals.css");
+  const filePathLabelPath = path.join(process.cwd(), "src/components/ui/file-path-label.tsx");
   const homeFeaturePaths = fs
     .readdirSync(homeFeatureDir)
     .filter((fileName) => fileName.endsWith(".tsx"))
@@ -29,6 +31,8 @@ describe("home route migration", () => {
   it("keeps dashboard implementation in the feature module without mojibake", () => {
     const featureSource = fs.readFileSync(featurePath, "utf8");
     const bentoSource = fs.readFileSync(bentoPath, "utf8");
+    const globalsSource = fs.readFileSync(globalsPath, "utf8");
+    const filePathLabelSource = fs.readFileSync(filePathLabelPath, "utf8");
 
     expect(featureSource).toContain('"use client"');
     expect(featureSource).toContain("function HomeDashboardContent");
@@ -44,6 +48,14 @@ describe("home route migration", () => {
     expect(bentoSource).toContain("home-bento-grid.styles");
     expect(bentoSource).not.toContain("kpi-bento-grid");
     expect(bentoSource).not.toContain("bento-card");
+    expect(bentoSource).not.toMatch(/className=["\'{][^"\'}]*file-path-label/);
+    expect(filePathLabelSource).toContain("FilePathLabel");
+    expect(globalsSource).not.toContain(".file-path-label");
+    expect(globalsSource).not.toContain(".feature-card-dark");
+    expect(globalsSource).not.toMatch(/^\\.stat-block[\\s.{:]/m);
+    expect(globalsSource).not.toMatch(/^\\.stats-row[\\s.{:]/m);
+    expect(globalsSource).not.toContain(".section-divider");
+    expect(globalsSource).not.toContain(".repo-list");
     expect(bentoSource).not.toMatch(/[^\x00-\x7F]/);
     for (const componentPath of homeFeaturePaths) {
       const componentSource = fs.readFileSync(componentPath, "utf8");
@@ -52,6 +64,7 @@ describe("home route migration", () => {
       expect(componentSource.trim().split(/\r?\n/).length).toBeLessThanOrEqual(lineBudget);
       expect(componentSource).not.toContain("primary-button");
       expect(componentSource).not.toContain("ghost-button");
+      expect(componentSource).not.toMatch(/className=["\'{][^"\'}]*file-path-label/);
       if (componentPath.endsWith("home-activity-panel.tsx")) {
         expect(componentSource).not.toContain("status-chip");
       }

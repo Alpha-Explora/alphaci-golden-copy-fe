@@ -4,6 +4,7 @@ import { motion } from "framer-motion";
 
 import { Badge, type BadgeProps } from "@/components/ui/badge";
 import { Button, ButtonLink } from "@/components/ui/button";
+import { FilePathLabel } from "@/components/ui/file-path-label";
 import type { GitHubRepo, ProvisionedProject } from "@/lib/api/contracts";
 
 import { EASE_OUT } from "./home-bento-grid";
@@ -91,7 +92,7 @@ export function HomeRepositoriesPanel({
           <section aria-label="Provisioned projects">
             <div className="dash-section-label">
               <div className="dash-section-label-left">
-                <p className="file-path-label" style={{ marginBottom: 0, color: "var(--brand)" }}>projects/provisioned.yml</p>
+                <FilePathLabel as="p" className="text-[var(--brand)]">projects/provisioned.yml</FilePathLabel>
                 {!projectsLoading && projects.length > 0 && (
                   <span className="dash-count-chip">{projects.length} project{projects.length !== 1 ? "s" : ""}</span>
                 )}
@@ -221,7 +222,7 @@ export function HomeRepositoriesPanel({
             <section aria-label="GitHub repositories">
               <div className="dash-section-label">
                 <div className="dash-section-label-left">
-                  <p className="file-path-label" style={{ marginBottom: 0, color: "var(--brand)" }}>repos/github.yml</p>
+                  <FilePathLabel as="p" className="text-[var(--brand)]">repos/github.yml</FilePathLabel>
                   <span className="dash-count-chip">
                     {normalizedRepoQuery
                       ? `${filteredRepos.length} of ${repos.length} repos`

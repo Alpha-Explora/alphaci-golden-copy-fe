@@ -1,3 +1,4 @@
+import { FilePathLabel } from "@/components/ui/file-path-label";
 import type { CreateProjectResult } from "@/lib/api/contracts";
 import { DeploymentProvisioningSummary } from "./setup-result-panel";
 import { WorkflowStageList } from "./workflow-current-panels";
@@ -60,9 +61,9 @@ export function WorkflowLatestResultBanner({ result }: Readonly<{ result: Create
 
       <p className="latest-result-banner__footer">
         Workflow committed to{" "}
-        <code className="file-path-label">{result.workflowPath}</code>{" "}
-        on <code className="file-path-label">main</code>.
-        Push to <code className="file-path-label">test</code> to trigger your first CI run.
+        <FilePathLabel as="code" surface>{result.workflowPath}</FilePathLabel>{" "}
+        on <FilePathLabel as="code" surface>main</FilePathLabel>.
+        Push to <FilePathLabel as="code" surface>test</FilePathLabel> to trigger your first CI run.
       </p>
     </div>
   );

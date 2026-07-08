@@ -5,6 +5,7 @@ import { motion } from "framer-motion";
 import { useEffect, useRef, useState } from "react";
 import type { CSSProperties } from "react";
 
+import { FilePathLabel } from "@/components/ui/file-path-label";
 import { cn } from "@/lib/utils";
 
 import { bentoGridStyles as styles } from "./home-bento-grid.styles";
@@ -82,7 +83,7 @@ export type DashTab = "overview" | "repositories" | "activity";
 export function PipelineTrack({ reduced }: Readonly<{ reduced: boolean | null }>) {
   return (
     <div>
-      <p className="file-path-label" style={{ marginBottom: "0.75rem" }}>pipeline/stages.yml</p>
+      <FilePathLabel as="p" className="mb-3">pipeline/stages.yml</FilePathLabel>
       <motion.div
         className="pipeline-track"
         aria-label="Pipeline stages"

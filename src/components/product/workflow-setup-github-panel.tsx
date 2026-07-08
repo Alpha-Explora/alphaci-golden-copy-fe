@@ -1,7 +1,7 @@
 import { Button } from "@/components/ui/button";
 
 import { workflowSetupGithubPanelStyles as styles } from "./workflow-setup-github-panel.styles";
-import { setupLabelAccentStyle } from "./workflow-setup-utils";
+import { setupInputLabelClasses, setupLabelAccentStyle } from "./workflow-setup-utils";
 
 interface WorkflowSetupGithubPanelProps {
   github: {
@@ -120,7 +120,7 @@ export function WorkflowSetupGithubPanel({ github }: Readonly<WorkflowSetupGithu
           Already installed? Link by ID
         </summary>
         <div style={{ marginTop: "0.65rem" }}>
-          <label className={`input-label ${styles.compactLabel}`} htmlFor="installation-id" style={setupLabelAccentStyle}>
+          <label className={`${setupInputLabelClasses} ${styles.compactLabel}`} htmlFor="installation-id" style={setupLabelAccentStyle}>
             Installation ID
           </label>
           <input

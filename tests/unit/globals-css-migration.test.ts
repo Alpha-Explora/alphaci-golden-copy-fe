@@ -7,6 +7,7 @@ describe("globals css migration", () => {
   const productWorkflowsPath = path.join(process.cwd(), "src/styles/product-workflows.css");
   const providerSettingsPath = path.join(process.cwd(), "src/styles/provider-settings.css");
   const publicSitePath = path.join(process.cwd(), "src/styles/public-site.css");
+  const workflowSetupUtilsPath = path.join(process.cwd(), "src/components/product/workflow-setup-utils.ts");
 
   it("moves public site selector families out of globals css", () => {
     const globalsSource = fs.readFileSync(globalsPath, "utf8");
@@ -53,6 +54,9 @@ describe("globals css migration", () => {
     const publicSiteSource = fs.existsSync(publicSitePath)
       ? fs.readFileSync(publicSitePath, "utf8")
       : "";
+    const setupUtilsSource = fs.existsSync(workflowSetupUtilsPath)
+      ? fs.readFileSync(workflowSetupUtilsPath, "utf8")
+      : "";
 
     expect(fs.existsSync(productWorkflowsPath)).toBe(true);
     expect(fs.existsSync(providerSettingsPath)).toBe(true);
@@ -63,12 +67,15 @@ describe("globals css migration", () => {
     expect(globalsSource).not.toContain(".repo-grid");
     expect(globalsSource).not.toContain(".state-body");
     expect(globalsSource).not.toContain(".state-card");
+    expect(globalsSource).not.toContain(".input-label");
+    expect(globalsSource).not.toContain(".status-pill");
     expect(globalsSource).not.toContain(".provider-settings-panel");
     expect(productWorkflowsSource).toContain(".deployment-provisioning-setup");
     expect(productWorkflowsSource).toContain(".project-workspace");
     expect(productWorkflowsSource).toContain(".repo-grid");
     expect(publicSiteSource).toContain(".state-body");
     expect(publicSiteSource).toContain(".state-card");
+    expect(setupUtilsSource).toContain("setupInputLabelClasses");
     expect(providerSettingsSource).toContain(".provider-settings-panel");
     expect(providerSettingsSource).toContain(".provider-connections-table");
     expect(globalsSource).not.toContain(".cta-gradient-button");

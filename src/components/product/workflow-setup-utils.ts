@@ -1,6 +1,8 @@
 import type { CSSProperties } from "react";
 import type { ProjectTypeOption } from "@/lib/api/contracts";
 
+export const setupInputLabelClasses = "block mt-[0.72rem] mb-[0.3rem] font-mono text-[0.72rem] uppercase tracking-[0.06em] text-[var(--text-muted)]";
+
 export const setupLabelAccentStyle: CSSProperties = {
   borderLeft: "2px solid var(--brand)",
   paddingLeft: "0.5rem",

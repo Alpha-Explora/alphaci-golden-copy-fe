@@ -322,16 +322,6 @@
   align-items: center;
   justify-content: center;
 }
-.status-pill {
-  display: inline-flex;
-  align-items: center;
-  border-radius: var(--radius-pill);
-  border: 1px solid var(--border-strong);
-  background: var(--bg-surface);
-  color: var(--text-secondary);
-  font-size: 0.78rem;
-  padding: 0.3rem 0.66rem;
-}
 .primary-button,
 .ghost-button {
   display: inline-flex;
@@ -414,16 +404,6 @@
 .studio-grid > * {
   min-width: 0;
 }
-.input-label {
-  display: block;
-  margin-top: 0.72rem;
-  margin-bottom: 0.3rem;
-  font-size: 0.72rem;
-  color: var(--text-muted);
-  font-family: ui-monospace, monospace;
-  text-transform: uppercase;
-  letter-spacing: 0.06em;
-}
 input,
 select,
 textarea {
@@ -463,10 +443,6 @@ select option {
   margin: 0;
   color: var(--text-secondary);
   font-size: 0.86rem;
-  overflow-wrap: anywhere;
-  word-break: break-word;
-}
-.status-pill {
   overflow-wrap: anywhere;
   word-break: break-word;
 }

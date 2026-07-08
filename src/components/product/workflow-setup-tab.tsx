@@ -27,7 +27,7 @@ import { useWorkflowSetupState } from "./use-workflow-setup-state";
 import { formatQuotaStatus } from "./workflow-builder-utils";
 import { HelpTip } from "./help-tip";
 import { WorkflowSetupGithubPanel } from "./workflow-setup-github-panel";
-import { inferProjectKind, setupLabelAccentStyle, withTestSuffix } from "./workflow-setup-utils";
+import { inferProjectKind, setupInputLabelClasses, setupLabelAccentStyle, withTestSuffix } from "./workflow-setup-utils";
 
 interface WorkflowSetupTabProps {
   createResult: CreateProjectResult | null;
@@ -154,7 +154,7 @@ export function WorkflowSetupTab({
           <span className="cp-section-heading">Catalog</span>
 
           <fieldset data-tour="repo-shape" style={{ border: "none", margin: 0, padding: 0, minInlineSize: "auto" }}>
-            <legend className="input-label" style={{ ...setupLabelAccentStyle, padding: 0 }}>
+            <legend className={setupInputLabelClasses} style={{ ...setupLabelAccentStyle, padding: 0 }}>
               Repository shape
             </legend>
             <div style={{ display: "grid", gap: "0.5rem", marginTop: "0.35rem" }}>
@@ -235,7 +235,7 @@ export function WorkflowSetupTab({
 
           {!projectCatalog.isMicroservicesShape && !projectCatalog.isMultiRepoShape ? (
             <>
-              <label className="input-label" htmlFor="project-type-select" style={{ ...setupLabelAccentStyle, marginTop: "1rem", display: "block" }}>
+              <label className={setupInputLabelClasses} htmlFor="project-type-select" style={{ ...setupLabelAccentStyle, marginTop: "1rem", display: "block" }}>
                 Language / framework
               </label>
               <select
@@ -255,7 +255,7 @@ export function WorkflowSetupTab({
                 TypeScript • JavaScript
               </p>
 
-              <label className="input-label" htmlFor="workflow-recipe-select" style={{ ...setupLabelAccentStyle, marginTop: "1rem", display: "block" }}>
+              <label className={setupInputLabelClasses} htmlFor="workflow-recipe-select" style={{ ...setupLabelAccentStyle, marginTop: "1rem", display: "block" }}>
                 Workflow recipe
               </label>
               <select
@@ -288,7 +288,7 @@ export function WorkflowSetupTab({
               {/* Backend service — no container box */}
               <div style={{ marginTop: "1rem" }}>
                 <span className="cp-section-heading" style={{ fontSize: "0.6rem" }}>Backend service</span>
-                <label className="input-label" htmlFor="backend-project-type-select" style={{ ...setupLabelAccentStyle, display: "block" }}>
+                <label className={setupInputLabelClasses} htmlFor="backend-project-type-select" style={{ ...setupLabelAccentStyle, display: "block" }}>
                   Language
                 </label>
                 <select
@@ -305,7 +305,7 @@ export function WorkflowSetupTab({
                     <option value="nestjs">NestJS</option>
                   ) : null}
                 </select>
-                <label className="input-label" htmlFor="backend-service-name" style={{ ...setupLabelAccentStyle, marginTop: "0.55rem", display: "block" }}>
+                <label className={setupInputLabelClasses} htmlFor="backend-service-name" style={{ ...setupLabelAccentStyle, marginTop: "0.55rem", display: "block" }}>
                   Service name
                 </label>
                 <input
@@ -317,7 +317,7 @@ export function WorkflowSetupTab({
                 />
                 {projectCatalog.isMicroservicesShape ? (
                   <>
-                    <label className="input-label" htmlFor="backend-service-path" style={{ ...setupLabelAccentStyle, marginTop: "0.55rem", display: "block" }}>
+                    <label className={setupInputLabelClasses} htmlFor="backend-service-path" style={{ ...setupLabelAccentStyle, marginTop: "0.55rem", display: "block" }}>
                       Service path
                       <HelpTip text="The folder inside the repository where the backend service's code lives. Build commands run from this path, and only changes under it trigger this service's pipeline." />
                     </label>
@@ -335,7 +335,7 @@ export function WorkflowSetupTab({
               {/* Frontend service — no container box */}
               <div style={{ marginTop: "1.25rem" }}>
                 <span className="cp-section-heading" style={{ fontSize: "0.6rem" }}>Frontend service</span>
-                <label className="input-label" htmlFor="frontend-project-type-select" style={{ ...setupLabelAccentStyle, display: "block" }}>
+                <label className={setupInputLabelClasses} htmlFor="frontend-project-type-select" style={{ ...setupLabelAccentStyle, display: "block" }}>
                   Language
                 </label>
                 <select
@@ -352,7 +352,7 @@ export function WorkflowSetupTab({
                     <option value="nextjs">Next.js</option>
                   ) : null}
                 </select>
-                <label className="input-label" htmlFor="frontend-service-name" style={{ ...setupLabelAccentStyle, marginTop: "0.55rem", display: "block" }}>
+                <label className={setupInputLabelClasses} htmlFor="frontend-service-name" style={{ ...setupLabelAccentStyle, marginTop: "0.55rem", display: "block" }}>
                   Service name
                 </label>
                 <input
@@ -364,7 +364,7 @@ export function WorkflowSetupTab({
                 />
                 {projectCatalog.isMicroservicesShape ? (
                   <>
-                    <label className="input-label" htmlFor="frontend-service-path" style={{ ...setupLabelAccentStyle, marginTop: "0.55rem", display: "block" }}>
+                    <label className={setupInputLabelClasses} htmlFor="frontend-service-path" style={{ ...setupLabelAccentStyle, marginTop: "0.55rem", display: "block" }}>
                       Service path
                       <HelpTip text="The folder inside the repository where the frontend service's code lives. Build commands run from this path, and only changes under it trigger this service's pipeline." />
                     </label>
@@ -462,7 +462,7 @@ export function WorkflowSetupTab({
 
               <div className={formPairRowClasses}>
                 <div>
-                  <label className="input-label" htmlFor="existing-repo-select" style={setupLabelAccentStyle}>
+                  <label className={setupInputLabelClasses} htmlFor="existing-repo-select" style={setupLabelAccentStyle}>
                     Linked repository
                   </label>
                   <select
@@ -483,7 +483,7 @@ export function WorkflowSetupTab({
                   </select>
                 </div>
                 <div>
-                  <label className="input-label" htmlFor="existing-base-branch" style={setupLabelAccentStyle}>
+                  <label className={setupInputLabelClasses} htmlFor="existing-base-branch" style={setupLabelAccentStyle}>
                     Base branch
                   </label>
                   <input
@@ -551,7 +551,7 @@ export function WorkflowSetupTab({
               {/* Repository name + Visibility */}
               <div className={formPairRowClasses}>
                 <div>
-                  <label className="input-label" htmlFor="repo-name" style={setupLabelAccentStyle}>
+                  <label className={setupInputLabelClasses} htmlFor="repo-name" style={setupLabelAccentStyle}>
                     Repository name
                   </label>
                   <input
@@ -563,7 +563,7 @@ export function WorkflowSetupTab({
                   />
                 </div>
                 <div>
-                  <label className="input-label" htmlFor="repo-visibility" style={setupLabelAccentStyle}>
+                  <label className={setupInputLabelClasses} htmlFor="repo-visibility" style={setupLabelAccentStyle}>
                     Visibility
                   </label>
                   <select
@@ -582,7 +582,7 @@ export function WorkflowSetupTab({
               {!projectCatalog.isMicroservicesShape && !projectCatalog.isMultiRepoShape ? (
                 <div className={formPairRowSpacedClasses}>
                   <div>
-                    <label className="input-label" htmlFor="service-name" style={setupLabelAccentStyle}>
+                    <label className={setupInputLabelClasses} htmlFor="service-name" style={setupLabelAccentStyle}>
                       Service name
                     </label>
                     <input
@@ -594,7 +594,7 @@ export function WorkflowSetupTab({
                     />
                   </div>
                   <div>
-                    <label className="input-label" htmlFor="service-path" style={setupLabelAccentStyle}>
+                    <label className={setupInputLabelClasses} htmlFor="service-path" style={setupLabelAccentStyle}>
                       Service path
                       <HelpTip text="The folder inside the repository where this service's code lives. Use '.' if the app sits at the repository root. Build commands run from this path." />
                     </label>
@@ -611,7 +611,7 @@ export function WorkflowSetupTab({
 
               {/* Workflow file name */}
               <div style={{ marginTop: "1.5rem" }}>
-                <label className="input-label" htmlFor="output-file-name" style={setupLabelAccentStyle}>
+                <label className={setupInputLabelClasses} htmlFor="output-file-name" style={setupLabelAccentStyle}>
                   Workflow file name
                 </label>
                 <input
@@ -626,7 +626,7 @@ export function WorkflowSetupTab({
               {/* Node version + Coverage */}
               <div className={formPairRowSpacedClasses}>
                 <div>
-                  <label className="input-label" htmlFor="node-version" style={setupLabelAccentStyle}>
+                  <label className={setupInputLabelClasses} htmlFor="node-version" style={setupLabelAccentStyle}>
                     Node version
                   </label>
                   <select
@@ -650,7 +650,7 @@ export function WorkflowSetupTab({
                   </select>
                 </div>
                 <div>
-                  <label className="input-label" htmlFor="coverage-threshold" style={setupLabelAccentStyle}>
+                  <label className={setupInputLabelClasses} htmlFor="coverage-threshold" style={setupLabelAccentStyle}>
                     Coverage
                     <HelpTip text="The minimum percentage of code that unit tests must exercise. Pipeline runs fail the Quality stage if coverage drops below this number." />
                   </label>
@@ -672,7 +672,7 @@ export function WorkflowSetupTab({
               {/* Workflow checks — chips without container box */}
               <div style={{ marginTop: "1.5rem" }}>
                 <span
-                  className="input-label"
+                  className={setupInputLabelClasses}
                   style={{ ...setupLabelAccentStyle, marginTop: 0, marginBottom: "0.6rem", display: "block" }}
                 >
                   Workflow checks

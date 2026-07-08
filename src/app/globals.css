@@ -776,58 +776,6 @@
   display: grid;
   gap: 0.66rem;
 }
-.studio-tab-bar {
-  display: flex;
-  gap: 0;
-  padding: 0 var(--layout-gutter);
-  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
-  overflow-x: auto;
-  scrollbar-width: none;
-}
-.studio-tab-bar::-webkit-scrollbar {
-  display: none;
-}
-/* Right-aligned cluster after the tabs (GitHub App status, etc.) */
-.studio-tab-trailing {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.75rem;
-  margin-left: auto;
-  padding-left: 1rem;
-  flex-shrink: 0;
-}
-.studio-tab-button {
-  padding: 0.85rem 1.25rem;
-  border: none;
-  border-bottom: 2px solid transparent;
-  background: transparent;
-  color: var(--text-secondary);
-  font-size: 0.85rem;
-  font-weight: 600;
-  cursor: pointer;
-  display: inline-flex;
-  align-items: center;
-  gap: 0.45rem;
-  transition:
-    color 0.2s ease,
-    border-color 0.2s ease;
-  white-space: nowrap;
-  border-radius: 0;
-  flex-shrink: 0;
-  position: relative;
-  z-index: 1;
-}
-.studio-tab-button:hover {
-  color: var(--text-primary);
-}
-.studio-tab-button:focus-visible {
-  outline: 2px solid var(--brand);
-  outline-offset: 2px;
-}
-.studio-tab-button.active {
-  color: var(--brand);
-  border-bottom-color: var(--brand);
-}
 .studio-grid {
   display: grid;
   gap: 1rem;
@@ -1295,14 +1243,6 @@ select option {
   display: flex;
   align-items: center;
   gap: 0.85rem;
-}
-.studio-tab-icon {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 14px;
-  height: 14px;
-  flex-shrink: 0;
 }
 .pipeline-track {
   display: flex;

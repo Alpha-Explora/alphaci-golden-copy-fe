@@ -60,6 +60,11 @@ describe("workflow setup tab migration", () => {
     expect(globalsSource).not.toContain(".github-install-link");
     expect(globalsSource).not.toContain(".compact-label");
     expect(globalsSource).not.toContain(".category-chip");
+    expect(globalsSource).not.toContain(".product-topbar");
+    expect(globalsSource).not.toContain(".topbar-breadcrumb");
+    expect(globalsSource).not.toContain(".github-status-dot");
+    expect(globalsSource).not.toContain(".topbar-controls");
+    expect(globalsSource).not.toContain("dotPulse");
     expect(hookSource).not.toMatch(mojibakePattern);
     expect(setupUtilsSource).not.toMatch(mojibakePattern);
     expect(githubPanelSource).not.toMatch(mojibakePattern);

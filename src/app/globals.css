@@ -185,7 +185,6 @@
 .marketing-nav,
 .hero-block,
 .section-card,
-.product-topbar,
 .intro-panel,
 .controls-panel,
 .templates-panel,
@@ -670,96 +669,6 @@
   cursor: not-allowed;
   opacity: 0.45;
   transform: none;
-}
-.product-topbar {
-  display: flex;
-  align-items: flex-start;
-  justify-content: space-between;
-  gap: 0.88rem;
-  padding: 0;
-}
-.product-topbar h1 {
-  font-size: clamp(1.58rem, 3vw, 2.3rem);
-  color: var(--text-primary);
-}
-.eyebrow {
-  margin: 0;
-  text-transform: uppercase;
-  letter-spacing: 0.12em;
-  color: var(--text-muted);
-  font-size: 0.73rem;
-}
-.topbar-breadcrumb {
-  display: flex;
-  align-items: center;
-  gap: 0.4rem;
-  font-size: 0.82rem;
-  color: var(--text-muted);
-  margin-bottom: 0.2rem;
-}
-.topbar-breadcrumb a {
-  color: var(--text-muted);
-  text-decoration: none;
-  transition: color 0.15s;
-}
-.topbar-breadcrumb a:hover {
-  color: var(--brand);
-}
-.topbar-breadcrumb span {
-  color: var(--text-secondary);
-}
-.github-status-dot {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.35rem;
-  font-size: 0.78rem;
-  color: var(--text-muted);
-}
-.github-status-dot::before {
-  content: "";
-  display: inline-block;
-  width: 0.5rem;
-  height: 0.5rem;
-  border-radius: 50%;
-  background: var(--brand-accent);
-  box-shadow: 0 0 6px var(--brand-accent);
-  animation: dotPulse 2.4s ease-in-out infinite;
-}
-.github-status-dot.disconnected {
-  color: var(--warning);
-  background: rgba(240, 165, 0, 0.1);
-  border: 1px solid rgba(240, 165, 0, 0.3);
-  border-radius: var(--radius-pill);
-  padding: 0.2rem 0.55rem 0.2rem 0.4rem;
-  font-weight: 600;
-}
-.github-status-dot.disconnected::before {
-  background: var(--warning);
-  box-shadow: none;
-  animation: none;
-}
-.github-status-dot.disconnected::after {
-  content: "";
-  font-size: 0.72rem;
-  opacity: 0.65;
-}
-@keyframes dotPulse {
-  0%,
-  100% {
-    opacity: 1;
-    transform: scale(1);
-  }
-  50% {
-    opacity: 0.6;
-    transform: scale(0.85);
-  }
-}
-.topbar-controls {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.42rem;
-  justify-content: flex-start;
-  align-items: center;
 }
 .intro-panel,
 .controls-panel,

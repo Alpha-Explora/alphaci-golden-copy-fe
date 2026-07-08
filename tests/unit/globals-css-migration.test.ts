@@ -72,6 +72,28 @@ describe("globals css migration", () => {
     expect(globalsSource).not.toContain(".stats-row-enhanced");
     expect(globalsSource).not.toContain(".stat-block-enhanced");
     expect(globalsSource).not.toContain("@keyframes orb-drift-3");
+    for (const selector of [
+      ".hero-chip",
+      ".hero-highlight",
+      ".hero-description",
+      ".pill-row",
+      ".status-passing",
+      ".section-header",
+      ".value-grid",
+      ".kpi-grid",
+      ".action-grid",
+      ".value-card",
+      ".kpi-card",
+      ".action-tile",
+      ".landing-features",
+      ".value-card-icon",
+      "@keyframes pipelinePulse",
+      "@keyframes pipelineFlow",
+      "@keyframes pipelineDash",
+      "@keyframes gradientShift",
+    ]) {
+      expect(globalsSource).not.toContain(selector);
+    }
     expect(globalsSource.trim().split(/\r?\n/).length).toBeLessThanOrEqual(1900);
   });
 });

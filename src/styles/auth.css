@@ -2,10 +2,6 @@
   justify-content: center;
 }
 
-.auth-header .hero-kicker {
-  font-weight: 700;
-}
-
 .callback-card,
 .auth-card {
   margin: 0 auto;

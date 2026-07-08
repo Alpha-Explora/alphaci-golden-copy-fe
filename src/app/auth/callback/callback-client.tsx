@@ -74,6 +74,7 @@ function statusMessage(authStatus: string, provider: OAuthProvider): string {
 }
 
 const EASE_OUT: [number, number, number, number] = [0.25, 0, 0, 1];
+const authKickerClasses = "m-0 text-[0.72rem] font-semibold uppercase tracking-[0.12em] text-[var(--brand)]";
 
 const cardVariants = {
   hidden: { opacity: 0, y: 16, scale: 0.98 },
@@ -174,7 +175,7 @@ function ArchivedChoiceCard({
         </svg>
       </div>
 
-      <p className="hero-kicker" style={{ margin: 0 }}>
+      <p className={authKickerClasses}>
         Welcome back, <span style={{ fontFamily: "ui-monospace, monospace" }}>@{pending.login}</span>
       </p>
 
@@ -568,7 +569,7 @@ export function AuthCallbackClient() {
               <polyline points="21 3 21 9 15 9" />
             </svg>
           </div>
-          <p className="hero-kicker" style={{ margin: 0 }}>
+          <p className={authKickerClasses}>
             {providerName} {intent === "signup" ? "Sign Up" : "Login"}
           </p>
           <h1>Authentication needs retry</h1>

@@ -109,6 +109,7 @@ describe("globals css migration", () => {
       ".action-tile",
       ".landing-features",
       ".value-card-icon",
+      ".hero-kicker",
       "@keyframes pipelinePulse",
       "@keyframes pipelineFlow",
       "@keyframes pipelineDash",

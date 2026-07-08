@@ -496,7 +496,7 @@ export function WorkflowSetupTab({
                 </div>
               </div>
 
-              <p className="helper-text" id="existing-repo-disabled-help" style={{ margin: 0, fontSize: "0.82rem" }}>
+              <p className={productSharedStyles.helperText} id="existing-repo-disabled-help" style={{ margin: 0, fontSize: "0.82rem" }}>
                 Scan the repository to detect its project type, then open a setup PR to add CI/CD workflows.
               </p>
 

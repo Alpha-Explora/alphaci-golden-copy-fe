@@ -1,4 +1,5 @@
 export const productSharedStyles = {
+  helperText: "m-0 text-[0.86rem] text-[var(--text-secondary)] [overflow-wrap:anywhere] [word-break:break-word]",
   branchChip: "inline-flex items-center rounded-full border border-[rgba(79,142,255,0.25)] bg-[rgba(79,142,255,0.1)] px-[0.55rem] py-[0.15rem] font-mono text-[0.72rem] tracking-[0.02em] text-[var(--brand)]",
   branchChipMono: "border-[var(--border-soft)] bg-white/[0.04] text-[0.7rem] text-[var(--text-secondary)]",
   guestBanner: "flex w-full flex-wrap items-center justify-between gap-4 border-b border-[rgba(79,142,255,0.15)] bg-[rgba(79,142,255,0.08)] px-[clamp(1.5rem,4vw,3rem)] py-[0.65rem]",

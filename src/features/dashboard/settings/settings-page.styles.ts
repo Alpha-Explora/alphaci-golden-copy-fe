@@ -23,6 +23,7 @@ const styles = {
   textStackTight: "flex flex-col gap-1",
   primaryText: "text-[0.9rem] font-semibold text-[var(--text-primary)]",
   secondaryText: "m-0 text-[0.82rem] text-[var(--text-secondary)]",
+  helperText: "m-0 text-[0.86rem] text-[var(--text-secondary)] [overflow-wrap:anywhere] [word-break:break-word]",
   mutedText: "m-0 text-[0.8rem] text-[var(--text-muted)]",
   fineMutedText: "text-[0.78rem] text-[var(--text-muted)]",
   activeStatusText: "text-[0.78rem] capitalize text-[var(--success)]",

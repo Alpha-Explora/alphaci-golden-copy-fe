@@ -40,7 +40,7 @@ interface SecondaryRepoSectionProps {
 function SecondaryRepoSection({ url, fullName }: Readonly<SecondaryRepoSectionProps>) {
   if (!url) return null;
   return (
-    <p className="helper-text" style={{ margin: 0 }}>
+    <p className={productSharedStyles.helperText} style={{ margin: 0 }}>
       Secondary repo:{" "}
       <a href={url} target="_blank" rel="noreferrer">{fullName}</a>
     </p>
@@ -75,7 +75,7 @@ function WorkflowFilesList({ files }: Readonly<{ files?: WorkflowFileMetadata[] 
         background: "rgba(0,0,0,0.14)",
       }}
     >
-      <p className="helper-text" style={{ margin: 0, fontWeight: 700 }}>
+      <p className={productSharedStyles.helperText} style={{ margin: 0, fontWeight: 700 }}>
         {files.length} gated workflow stages
       </p>
       {files.map((file) => (
@@ -182,7 +182,7 @@ export function DeploymentProvisioningSummary({
       <div className="env-section-header">
         <div>
           <h4>Deployment provisioning</h4>
-          <p className="helper-text" style={{ margin: "0.25rem 0 0" }}>
+          <p className={productSharedStyles.helperText} style={{ margin: "0.25rem 0 0" }}>
             {result.status === "completed"
               ? "Provider targets were created."
               : result.status === "partial"
@@ -204,17 +204,17 @@ export function DeploymentProvisioningSummary({
               <strong>{formatProvider(target.provider)}</strong>
               <span>{target.providerProjectName ?? target.providerProjectId ?? target.slot}</span>
             </div>
-            <p className="helper-text" style={{ margin: 0 }}>
+            <p className={productSharedStyles.helperText} style={{ margin: 0 }}>
               {target.slot} - {target.status} - {deploymentRouteLabel(target)}
               {target.errorSummary ? ` - ${cleanUserMessage(target.errorSummary)}` : ""}
             </p>
             {renderTargetDetails(target).length > 0 ? (
-              <p className="helper-text" style={{ margin: 0 }}>
+              <p className={productSharedStyles.helperText} style={{ margin: 0 }}>
                 {renderTargetDetails(target).join(" - ")}
               </p>
             ) : null}
             {hasRenderDeploymentSecrets(target) ? (
-              <p className="helper-text" style={{ margin: 0 }}>
+              <p className={productSharedStyles.helperText} style={{ margin: 0 }}>
                 Render API deployment secrets installed
               </p>
             ) : null}
@@ -296,7 +296,7 @@ export function SetupResultPanel({
               <span className={productSharedStyles.branchChip}>{existingRepoResult.branchName}</span>
             </div>
 
-            <p className="helper-text" style={{ margin: 0 }}>
+            <p className={productSharedStyles.helperText} style={{ margin: 0 }}>
               Workflow: <strong>{existingRepoResult.workflowPath}</strong>
             </p>
 
@@ -319,7 +319,7 @@ export function SetupResultPanel({
               </button>
             </div>
 
-            <p className="helper-text" style={{ fontSize: "0.78rem", color: "var(--text-muted)", margin: 0 }}>
+            <p className={productSharedStyles.helperText} style={{ fontSize: "0.78rem", color: "var(--text-muted)", margin: 0 }}>
               Workflow added on <code>{existingRepoResult.branchName}</code>. Merge the PR to apply it to the selected base branch.
             </p>
           </motion.div>
@@ -350,7 +350,7 @@ export function SetupResultPanel({
             </div>
 
             <div>
-              <p className="helper-text" style={{ margin: "0 0 0.3rem", fontSize: "0.72rem", color: "var(--text-muted)" }}>
+              <p className={productSharedStyles.helperText} style={{ margin: "0 0 0.3rem", fontSize: "0.72rem", color: "var(--text-muted)" }}>
                 Workflow file
               </p>
               <div className="terminal-path">{setupResult.workflowPath}</div>
@@ -358,7 +358,7 @@ export function SetupResultPanel({
             <WorkflowFilesList files={setupResult.workflowFiles} />
             <DeploymentProvisioningSummary result={setupResult.deploymentProvisioning} />
             <div>
-              <p className="helper-text" style={{ margin: "0 0 0.3rem", fontSize: "0.72rem", color: "var(--text-muted)" }}>
+              <p className={productSharedStyles.helperText} style={{ margin: "0 0 0.3rem", fontSize: "0.72rem", color: "var(--text-muted)" }}>
                 Commit
               </p>
               <div className="terminal-hash">
@@ -393,7 +393,7 @@ export function SetupResultPanel({
               </button>
             </div>
 
-            <p className="helper-text" style={{ fontSize: "0.78rem", color: "var(--text-muted)", margin: 0 }}>
+            <p className={productSharedStyles.helperText} style={{ fontSize: "0.78rem", color: "var(--text-muted)", margin: 0 }}>
               Workflow committed to <code>{setupResult.workflowPath}</code> on <code>main</code>.
               Push to <code>test</code> to trigger your first CI run.
             </p>

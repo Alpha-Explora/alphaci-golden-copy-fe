@@ -2,6 +2,9 @@
 
 import { useMemo } from "react";
 
+import { productSharedStyles } from "@/components/product/product-shared-styles";
+import { cn } from "@/lib/utils";
+
 import type {
   DeploymentProvisioningRequest,
   EnvEnvironment,
@@ -94,7 +97,7 @@ export function DeploymentProvisioningSetup({
       <div className="deployment-provisioning-setup__header">
         <div>
           <span className={controlsPanelLabelClasses}>Deployment provisioning</span>
-          <p className="helper-text" style={{ margin: "0.35rem 0 0" }}>
+          <p className={productSharedStyles.helperText} style={{ margin: "0.35rem 0 0" }}>
             Create provider targets during setup, then send initial env vars directly to the provider.
           </p>
         </div>
@@ -154,7 +157,7 @@ export function DeploymentProvisioningSetup({
             <div className="env-section-header">
               <div>
                 <h4>Variable groups</h4>
-                <p className="helper-text" style={{ margin: "0.25rem 0 0" }}>
+                <p className={productSharedStyles.helperText} style={{ margin: "0.25rem 0 0" }}>
                   Create provider-specific groups. Render groups only apply to Render targets, and Vercel groups only apply to Vercel targets.
                 </p>
               </div>
@@ -171,7 +174,7 @@ export function DeploymentProvisioningSetup({
                   <div className="deployment-provider-groups__header">
                     <div>
                       <strong>{providerLabel(provider)} variable groups</strong>
-                      <p className="helper-text" style={{ margin: "0.25rem 0 0" }}>
+                      <p className={productSharedStyles.helperText} style={{ margin: "0.25rem 0 0" }}>
                         {providerTargets.length} {providerLabel(provider)} target branch{providerTargets.length === 1 ? "" : "es"} available.
                       </p>
                     </div>
@@ -386,7 +389,7 @@ export function DeploymentProvisioningSetup({
                 <div className="env-section-header">
                   <div>
                     <h4>{target.slot === "standalone" ? "Deployment target" : `${target.slot} target`}</h4>
-                    <p className="helper-text" style={{ margin: "0.25rem 0 0" }}>
+                    <p className={productSharedStyles.helperText} style={{ margin: "0.25rem 0 0" }}>
                       {target.provider === "vercel" ? "Vercel project" : "Render service"} on the test branch.
                     </p>
                   </div>
@@ -455,7 +458,7 @@ export function DeploymentProvisioningSetup({
                       <option value="vercel">Vercel</option>
                     </select>
                   </label>
-                  <p className="helper-text env-target-grid__field env-target-grid__field--wide" style={{ margin: 0 }}>
+                  <p className={cn(productSharedStyles.helperText, "env-target-grid__field env-target-grid__field--wide")} style={{ margin: 0 }}>
                     {ownershipDescription(target)}
                   </p>
                   <label className="env-target-grid__field env-target-grid__field--wide">
@@ -509,7 +512,7 @@ export function DeploymentProvisioningSetup({
                         >
                           <option value="managed_image">Automatic package deploy</option>
                         </select>
-                        <span className="helper-text env-target-grid__note">
+                        <span className={cn(productSharedStyles.helperText, "env-target-grid__note")}>
                           AlphaCI packages and deploys this backend automatically.
                         </span>
                       </label>
@@ -551,7 +554,7 @@ export function DeploymentProvisioningSetup({
                             </option>
                           ))}
                         </select>
-                        <span className="helper-text env-target-grid__note">
+                        <span className={cn(productSharedStyles.helperText, "env-target-grid__note")}>
                           Image-backed deploys run as a Docker image; this records the service runtime intent.
                         </span>
                       </label>
@@ -572,13 +575,13 @@ export function DeploymentProvisioningSetup({
                         />
                       </label>
                       {target.ownershipMode === "flowci_managed" && (target.renderInstanceType ?? "free") !== "free" ? (
-                        <p className="helper-text env-target-grid__field env-target-grid__field--wide" style={{ margin: 0 }}>
+                        <p className={cn(productSharedStyles.helperText, "env-target-grid__field env-target-grid__field--wide")} style={{ margin: 0 }}>
                           Paid managed Render services require AlphaCI approval. Use free until GCP managed tiers replace this path.
                         </p>
                       ) : null}
                       <details className="env-target-grid__field env-target-grid__field--wide">
                         <summary>Packaging details</summary>
-                        <p className="helper-text">Uses a generated Dockerfile and GitHub Actions image deployment.</p>
+                        <p className={productSharedStyles.helperText}>Uses a generated Dockerfile and GitHub Actions image deployment.</p>
                         <label>
                           <span>Docker context</span>
                           <input
@@ -623,7 +626,7 @@ export function DeploymentProvisioningSetup({
                 <div className="env-section-header deployment-provisioning-setup__vars-header">
                   <div>
                     <strong>Branch-specific variables</strong>
-                    <p className="helper-text" style={{ margin: "0.25rem 0 0" }}>
+                    <p className={productSharedStyles.helperText} style={{ margin: "0.25rem 0 0" }}>
                       {targetBranchLabel(target)} can override shared keys or add its own values. Values are sent to the provider during setup and are not stored by AlphaCI.
                     </p>
                   </div>
@@ -643,7 +646,7 @@ export function DeploymentProvisioningSetup({
                 </div>
 
                 {target.provider === "vercel" ? (
-                  <p className="helper-text" style={{ margin: "0 0 0.6rem" }}>
+                  <p className={productSharedStyles.helperText} style={{ margin: "0 0 0.6rem" }}>
                     AlphaCI will install per-slot GitHub Actions secrets for Vercel deployment after the Vercel project is created.
                   </p>
                 ) : null}

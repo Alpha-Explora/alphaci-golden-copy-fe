@@ -72,7 +72,7 @@ export function SettingsBillingSection({
             </ButtonLink>
           </div>
           {!canManageBilling ? (
-            <p className="helper-text" style={{ margin: 0 }}>
+            <p className={styles.helperText}>
               Billing management requires owner or admin workspace access.
             </p>
           ) : null}

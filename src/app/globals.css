@@ -439,13 +439,6 @@ select option {
   background: var(--bg-panel);
   color: var(--text-primary);
 }
-.helper-text {
-  margin: 0;
-  color: var(--text-secondary);
-  font-size: 0.86rem;
-  overflow-wrap: anywhere;
-  word-break: break-word;
-}
 .error-text {
   margin: 0;
   padding: 0.55rem 0.74rem;

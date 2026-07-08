@@ -8,6 +8,7 @@ describe("globals css migration", () => {
   const providerSettingsPath = path.join(process.cwd(), "src/styles/provider-settings.css");
   const publicSitePath = path.join(process.cwd(), "src/styles/public-site.css");
   const workflowSetupUtilsPath = path.join(process.cwd(), "src/components/product/workflow-setup-utils.ts");
+  const productSharedStylesPath = path.join(process.cwd(), "src/components/product/product-shared-styles.ts");
 
   it("moves public site selector families out of globals css", () => {
     const globalsSource = fs.readFileSync(globalsPath, "utf8");
@@ -57,6 +58,9 @@ describe("globals css migration", () => {
     const setupUtilsSource = fs.existsSync(workflowSetupUtilsPath)
       ? fs.readFileSync(workflowSetupUtilsPath, "utf8")
       : "";
+    const productSharedStylesSource = fs.existsSync(productSharedStylesPath)
+      ? fs.readFileSync(productSharedStylesPath, "utf8")
+      : "";
 
     expect(fs.existsSync(productWorkflowsPath)).toBe(true);
     expect(fs.existsSync(providerSettingsPath)).toBe(true);
@@ -69,6 +73,7 @@ describe("globals css migration", () => {
     expect(globalsSource).not.toContain(".state-card");
     expect(globalsSource).not.toContain(".input-label");
     expect(globalsSource).not.toContain(".status-pill");
+    expect(globalsSource).not.toContain(".helper-text");
     expect(globalsSource).not.toContain(".provider-settings-panel");
     expect(productWorkflowsSource).toContain(".deployment-provisioning-setup");
     expect(productWorkflowsSource).toContain(".project-workspace");
@@ -76,6 +81,7 @@ describe("globals css migration", () => {
     expect(publicSiteSource).toContain(".state-body");
     expect(publicSiteSource).toContain(".state-card");
     expect(setupUtilsSource).toContain("setupInputLabelClasses");
+    expect(productSharedStylesSource).toContain("helperText");
     expect(providerSettingsSource).toContain(".provider-settings-panel");
     expect(providerSettingsSource).toContain(".provider-connections-table");
     expect(globalsSource).not.toContain(".cta-gradient-button");

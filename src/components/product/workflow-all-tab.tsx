@@ -80,7 +80,7 @@ export function WorkflowAllTab({ allTemplates, onUseTemplate }: Readonly<Workflo
               <line x1="12" y1="19" x2="20" y2="19"/>
             </svg>
           </span>
-          <p className="helper-text" style={{ maxWidth: "36ch", margin: 0 }}>
+          <p className={productSharedStyles.helperText} style={{ maxWidth: "36ch", margin: 0 }}>
             No templates loaded yet. Templates are sourced from <strong>cicd-workflow/workflow-templates</strong>.
           </p>
         </div>

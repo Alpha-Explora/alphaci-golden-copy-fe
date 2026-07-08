@@ -7,6 +7,8 @@ describe("workflow setup tab migration", () => {
   const setupUtilsPath = path.join(process.cwd(), "src/components/product/workflow-setup-utils.ts");
   const githubPanelPath = path.join(process.cwd(), "src/components/product/workflow-setup-github-panel.tsx");
   const githubPanelStylesPath = path.join(process.cwd(), "src/components/product/workflow-setup-github-panel.styles.ts");
+  const setupResultPanelPath = path.join(process.cwd(), "src/components/product/setup-result-panel.tsx");
+  const setupResultPanelStylesPath = path.join(process.cwd(), "src/components/product/setup-result-panel.styles.ts");
   const studioTabsPath = path.join(process.cwd(), "src/components/product/workflow-studio-tabs.tsx");
   const studioTabsStylesPath = path.join(process.cwd(), "src/components/product/workflow-studio-tabs.styles.ts");
   const globalsPath = path.join(process.cwd(), "src/app/globals.css");
@@ -28,6 +30,8 @@ describe("workflow setup tab migration", () => {
     expect(componentSource).toContain("WorkflowSetupGithubPanel");
     expect(componentSource).not.toContain("installationStatusCopy");
     expect(componentSource).not.toContain("handleLinkInstallation");
+    expect(fs.existsSync(setupResultPanelPath)).toBe(true);
+    expect(fs.existsSync(setupResultPanelStylesPath)).toBe(true);
     expect(fs.existsSync(studioTabsStylesPath)).toBe(true);
   });
 
@@ -37,6 +41,8 @@ describe("workflow setup tab migration", () => {
     const setupUtilsSource = fs.existsSync(setupUtilsPath) ? fs.readFileSync(setupUtilsPath, "utf8") : "";
     const githubPanelSource = fs.existsSync(githubPanelPath) ? fs.readFileSync(githubPanelPath, "utf8") : "";
     const githubPanelStylesSource = fs.existsSync(githubPanelStylesPath) ? fs.readFileSync(githubPanelStylesPath, "utf8") : "";
+    const setupResultPanelSource = fs.existsSync(setupResultPanelPath) ? fs.readFileSync(setupResultPanelPath, "utf8") : "";
+    const setupResultPanelStylesSource = fs.existsSync(setupResultPanelStylesPath) ? fs.readFileSync(setupResultPanelStylesPath, "utf8") : "";
     const studioTabsSource = fs.existsSync(studioTabsPath) ? fs.readFileSync(studioTabsPath, "utf8") : "";
     const studioTabsStylesSource = fs.existsSync(studioTabsStylesPath) ? fs.readFileSync(studioTabsStylesPath, "utf8") : "";
     const globalsSource = fs.readFileSync(globalsPath, "utf8");
@@ -47,6 +53,8 @@ describe("workflow setup tab migration", () => {
     expect(setupUtilsSource.trim().split(/\r?\n/).length).toBeLessThanOrEqual(80);
     expect(githubPanelSource.trim().split(/\r?\n/).length).toBeLessThanOrEqual(180);
     expect(githubPanelStylesSource.trim().split(/\r?\n/).length).toBeLessThanOrEqual(20);
+    expect(setupResultPanelSource.trim().split(/\r?\n/).length).toBeLessThanOrEqual(430);
+    expect(setupResultPanelStylesSource.trim().split(/\r?\n/).length).toBeLessThanOrEqual(10);
     expect(studioTabsSource.trim().split(/\r?\n/).length).toBeLessThanOrEqual(100);
     expect(studioTabsStylesSource.trim().split(/\r?\n/).length).toBeLessThanOrEqual(40);
     expect(studioTabsSource).toContain("workflow-studio-tabs.styles");
@@ -54,6 +62,10 @@ describe("workflow setup tab migration", () => {
     expect(githubPanelSource).toContain("workflow-setup-github-panel.styles");
     expect(githubPanelSource).not.toContain("github-repo-load-btn");
     expect(githubPanelSource).not.toContain("compact-label");
+    expect(setupResultPanelSource).toContain("setup-result-panel.styles");
+    expect(setupResultPanelSource).not.toContain("result-repo-header");
+    expect(setupResultPanelSource).not.toContain("result-status-dot");
+    expect(setupResultPanelSource).not.toContain("result-repo-name");
     expect(globalsSource).not.toContain(".studio-tab-");
     expect(globalsSource).not.toContain(".github-repo-load-btn");
     expect(globalsSource).not.toContain(".github-repo-select");
@@ -65,10 +77,15 @@ describe("workflow setup tab migration", () => {
     expect(globalsSource).not.toContain(".github-status-dot");
     expect(globalsSource).not.toContain(".topbar-controls");
     expect(globalsSource).not.toContain("dotPulse");
+    expect(globalsSource).not.toContain(".result-repo-header");
+    expect(globalsSource).not.toContain(".result-status-dot");
+    expect(globalsSource).not.toContain(".result-repo-name");
     expect(hookSource).not.toMatch(mojibakePattern);
     expect(setupUtilsSource).not.toMatch(mojibakePattern);
     expect(githubPanelSource).not.toMatch(mojibakePattern);
     expect(githubPanelStylesSource).not.toMatch(mojibakePattern);
+    expect(setupResultPanelSource).not.toMatch(mojibakePattern);
+    expect(setupResultPanelStylesSource).not.toMatch(mojibakePattern);
     expect(studioTabsSource).not.toMatch(mojibakePattern);
     expect(studioTabsStylesSource).not.toMatch(mojibakePattern);
   });

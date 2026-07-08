@@ -1759,29 +1759,6 @@ select option {
   overflow: hidden;
   text-overflow: ellipsis;
 }
-.result-repo-header {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-}
-.result-status-dot {
-  width: 8px;
-  height: 8px;
-  border-radius: 50%;
-  background: var(--success);
-  flex-shrink: 0;
-  box-shadow: 0 0 0 3px rgba(0, 208, 132, 0.15);
-}
-.result-repo-name {
-  font-size: 0.9rem;
-  font-weight: 600;
-  color: var(--text-primary);
-  text-decoration: none;
-  word-break: break-all;
-}
-.result-repo-name:hover {
-  text-decoration: underline;
-}
 .result-branches {
   display: flex;
   flex-wrap: wrap;

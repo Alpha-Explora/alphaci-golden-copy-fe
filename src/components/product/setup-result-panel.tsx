@@ -9,6 +9,7 @@ import type {
   SetupExistingRepoPrResponse,
   WorkflowFileMetadata,
 } from "@/lib/api/contracts";
+import { setupResultPanelStyles as styles } from "./setup-result-panel.styles";
 import { cleanUserMessage } from "./workflow-builder-utils";
 
 interface SetupResultPanelProps {
@@ -276,13 +277,13 @@ export function SetupResultPanel({
             exit={{ opacity: 0, y: -8 }}
             style={{ display: "flex", flexDirection: "column", gap: "0.75rem" }}
           >
-            <div className="result-repo-header">
-              <span className="result-status-dot" aria-hidden="true" />
+            <div className={styles.repoHeader}>
+              <span className={styles.statusDot} aria-hidden="true" />
               <a
                 href={repoUrl ?? existingRepoResult.pullRequestUrl}
                 target="_blank"
                 rel="noreferrer"
-                className="result-repo-name"
+                className={styles.repoName}
               >
                 {existingRepoResult.repoFullName}
               </a>
@@ -329,13 +330,13 @@ export function SetupResultPanel({
             exit={{ opacity: 0, y: -8 }}
             style={{ display: "flex", flexDirection: "column", gap: "0.75rem" }}
           >
-            <div className="result-repo-header">
-              <span className="result-status-dot" aria-hidden="true" />
+            <div className={styles.repoHeader}>
+              <span className={styles.statusDot} aria-hidden="true" />
               <a
                 href={setupResult.repoUrl}
                 target="_blank"
                 rel="noreferrer"
-                className="result-repo-name"
+                className={styles.repoName}
               >
                 {setupResult.repoFullName}
               </a>

@@ -58,6 +58,7 @@ export interface AuthMeResponse {
   authenticated: boolean;
   user: SessionUser;
   subscription: SubscriptionInfo;
+  githubConnected?: boolean;
   /** null for ordinary users; set for platform admins. Gates the /admin surface. */
   platformRole?: PlatformRole | null;
 }

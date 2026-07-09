@@ -52,7 +52,8 @@ describe("LandingPricingSection migration", () => {
     expect(result.container.querySelector("section#pricing")?.getAttribute("aria-label")).toBe("Pricing plans");
     expect(result.container.querySelector("[data-landing-pricing-section='true']")).toBeInTheDocument();
     expect(result.container.querySelector("a[href='/pricing']")).toHaveTextContent("View plans");
-    expect(result.container.querySelector("a[href='/signup?next=/subscribe']")).toHaveTextContent("Start Pro");
+    const startProLink = Array.from(result.container.querySelectorAll("a")).find((link) => link.textContent === "Start Pro");
+    expect(startProLink).toHaveAttribute("href", "/signup?next=%2Fsignup%3Fstep%3Dplan");
     expect(result.container).toHaveTextContent("Start free");
     expect(result.container).toHaveTextContent("PHP 300");
     expect(result.container.querySelectorAll("[data-pricing-feature-row='true']")).toHaveLength(7);

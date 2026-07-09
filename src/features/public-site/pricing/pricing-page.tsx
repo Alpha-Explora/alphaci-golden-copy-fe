@@ -10,7 +10,7 @@ const plans = [
     period: "/ month",
     creditLine: "Starter credits included",
     status: "Included",
-    action: { label: "Sign up", href: "/signup?next=/subscribe" },
+    action: { label: "Sign up", href: "/signup?next=%2Fsignup%3Fstep%3Dplan" },
     features: [
       "Starter workflow generation",
       "Basic release visibility",
@@ -26,7 +26,7 @@ const plans = [
     creditLine: "2,500 credits / month",
     creditNote: "Placeholder allowance while credit pricing is finalized.",
     status: "Self-serve",
-    action: { label: "Start Pro", href: "/signup?next=/subscribe" },
+    action: { label: "Start Pro", href: "/signup?next=%2Fsignup%3Fstep%3Dplan" },
     featured: true,
     features: [
       "Monthly automation credits",

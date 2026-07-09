@@ -107,7 +107,7 @@ export function LandingPricingSection({ reduced = false }: LandingPricingSection
               <Link className={styles.primaryAction} href="/pricing">View plans &rarr;</Link>
             </motion.div>
             <motion.div whileHover={reduced ? undefined : { scale: 1.03 }} whileTap={{ scale: 0.97 }}>
-              <Link className={styles.secondaryAction} href="/signup?next=/subscribe">Start Pro</Link>
+              <Link className={styles.secondaryAction} href="/signup?next=%2Fsignup%3Fstep%3Dplan">Start Pro</Link>
             </motion.div>
           </div>
         </motion.div>

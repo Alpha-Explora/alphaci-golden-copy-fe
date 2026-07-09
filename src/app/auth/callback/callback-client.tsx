@@ -67,6 +67,12 @@ function statusMessage(authStatus: string, provider: OAuthProvider): string {
       return "The OAuth state token was invalid. Please retry sign in.";
     case "unavailable":
       return `${providerName} OAuth is unavailable in this environment.`;
+    case "email_required":
+      return `${providerName} did not provide a verified email address. Make sure your ${providerName} account has a verified primary email, then retry sign in.`;
+    case "email_unverified":
+      return `${providerName} returned an email address that is not verified. Verify your email with ${providerName}, then retry sign in.`;
+    case "ambiguous_identity":
+      return "This sign in matches more than one AlphaCI account. Contact support before retrying.";
     case "archived_choice":
       return "Checking archived account...";
     default:
@@ -473,7 +479,10 @@ export function AuthCallbackClient() {
     if (
       authStatus === "failed" ||
       authStatus === "invalid_state" ||
-      authStatus === "unavailable"
+      authStatus === "unavailable" ||
+      authStatus === "email_required" ||
+      authStatus === "email_unverified" ||
+      authStatus === "ambiguous_identity"
     ) {
       setState("failed");
       return;

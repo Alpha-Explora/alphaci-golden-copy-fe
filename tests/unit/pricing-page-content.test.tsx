@@ -37,11 +37,13 @@ describe("PricingPage content migration", () => {
 
     expect(result.container.querySelector("main")?.getAttribute("data-pricing-page-shell")).toBe("true");
     expect(result.container.querySelector("#pricing-page-title")).toHaveTextContent("Credits for governed CI/CD automation.");
-    expect(
-      Array.from(result.container.querySelectorAll("a[href='/signup?next=/subscribe']")).some(
-        (link) => link.textContent === "Start Pro",
-      ),
-    ).toBe(true);
+    const startProLink = Array.from(result.container.querySelectorAll("a")).find(
+      (link) => link.textContent === "Start Pro",
+    );
+    expect(startProLink).toHaveAttribute(
+      "href",
+      "/signup?next=%2Fsignup%3Fstep%3Dplan",
+    );
     expect(result.container).toHaveTextContent("PHP 0");
     expect(result.container).toHaveTextContent("PHP 300");
     expect(result.container).toHaveTextContent("Coming soon");

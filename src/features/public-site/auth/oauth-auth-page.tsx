@@ -36,6 +36,12 @@ interface OAuthAuthPageProps {
 type SignupStep = "identity" | "plan" | "password" | "verify";
 type SignupPlanId = "starter" | "growth" | "business";
 
+type GitHubInstallationMessage = {
+  type: "alphaci:github-installation";
+  installationId: number;
+  setupAction?: string | null;
+};
+
 const signupPlans: Array<{
   id: SignupPlanId;
   name: string;
@@ -198,6 +204,67 @@ function toSafeNextPath(raw: string | null): string {
   if (!raw) return "/home";
   if (raw.startsWith("/") && !raw.startsWith("//")) return raw;
   return "/home";
+}
+
+function getGithubAppInstallationSearchParams(searchParams: URLSearchParams): URLSearchParams | null {
+  const directInstallationId = Number(searchParams.get("installation_id"));
+  if (Number.isInteger(directInstallationId) && directInstallationId > 0) {
+    return searchParams;
+  }
+
+  const nextPath = toSafeNextPath(searchParams.get("next"));
+  if (!nextPath.startsWith("/onboarding?")) {
+    return null;
+  }
+
+  return new URL(nextPath, "http://alphaci.local").searchParams;
+}
+
+function getGithubAppInstallationMessage(searchParams: URLSearchParams): GitHubInstallationMessage | null {
+  const installationParams = getGithubAppInstallationSearchParams(searchParams);
+  const installationId = Number(installationParams?.get("installation_id"));
+  if (!Number.isInteger(installationId) || installationId < 1) {
+    return null;
+  }
+
+  return {
+    type: "alphaci:github-installation",
+    installationId,
+    setupAction: installationParams?.get("setup_action") ?? null,
+  };
+}
+
+function getGithubAppInstallationNextPath(searchParams: URLSearchParams): string | null {
+  const message = getGithubAppInstallationMessage(searchParams);
+  if (!message) {
+    return null;
+  }
+
+  const onboardingParams = new URLSearchParams({ installation_id: String(message.installationId) });
+  if (message.setupAction) {
+    onboardingParams.set("setup_action", message.setupAction);
+  }
+
+  return `/onboarding?${onboardingParams.toString()}`;
+}
+
+function isLoopbackHost(hostname: string) {
+  return hostname === "localhost" || hostname === "127.0.0.1";
+}
+
+function getGitHubInstallationTargetOrigins(currentOrigin: string) {
+  const origins = new Set([currentOrigin]);
+  try {
+    const current = new URL(currentOrigin);
+    if (isLoopbackHost(current.hostname)) {
+      current.hostname = current.hostname === "localhost" ? "127.0.0.1" : "localhost";
+      origins.add(current.origin);
+    }
+  } catch {
+    // Keep the current origin only.
+  }
+
+  return Array.from(origins);
 }
 
 function _ProductPreviewPanel() {
@@ -414,15 +481,25 @@ export function OAuthAuthPage({
   const [resendCooldown, setResendCooldown] = useState(29);
   const [showPassword, setShowPassword] = useState(false);
 
-  const { status, session } = useAuthSession();
+  const { status, session, refresh } = useAuthSession();
 
   const requestedSignupStep = mode === "signup" ? searchParams.get("step") : null;
   const isPlanSelectionRoute = requestedSignupStep === "plan";
   const requestedNextPath = useMemo(
-    () => toSafeNextPath(searchParams.get("next")),
+    () => getGithubAppInstallationNextPath(searchParams) ?? toSafeNextPath(searchParams.get("next")),
     [searchParams],
   );
-  const postAuthPath = mode === "signup" && requestedNextPath === "/home" ? "/subscribe" : requestedNextPath;
+  const postAuthPath = mode === "signup" && requestedNextPath === "/home" ? "/signup?step=plan" : requestedNextPath;
+  const isPostAuthPlanSelection = mode === "signup" && postAuthPath === "/signup?step=plan";
+  const switchHrefWithNext = useMemo(() => {
+    if (requestedNextPath === "/home") {
+      return switchHref;
+    }
+
+    const separator = switchHref.includes("?") ? "&" : "?";
+    const params = new URLSearchParams({ next: requestedNextPath });
+    return `${switchHref}${separator}${params.toString()}`;
+  }, [requestedNextPath, switchHref]);
   const githubCallbackReturnTo = useMemo(() => {
     const callbackPath = new URLSearchParams({
       intent: mode,
@@ -480,6 +557,20 @@ export function OAuthAuthPage({
   }, []);
 
   useEffect(() => {
+    const message = getGithubAppInstallationMessage(searchParams);
+    if (!message || !window.opener) {
+      return undefined;
+    }
+
+    for (const origin of getGitHubInstallationTargetOrigins(window.location.origin)) {
+      window.opener.postMessage(message, origin);
+    }
+
+    const closeTimer = window.setTimeout(() => window.close(), 300);
+    return () => window.clearTimeout(closeTimer);
+  }, [searchParams]);
+
+  useEffect(() => {
     if (!isPlanSelectionRoute) return;
     setSignupStep("plan");
   }, [isPlanSelectionRoute]);
@@ -487,9 +578,13 @@ export function OAuthAuthPage({
   useEffect(() => {
     if (isPlanSelectionRoute) return;
     if (status !== "signed-in") return;
+    if (isPostAuthPlanSelection) {
+      router.replace(postAuthPath);
+      return;
+    }
     const redirectPath = getAuthenticatedRedirectPath(session, postAuthPath);
     if (redirectPath) router.replace(redirectPath);
-  }, [isPlanSelectionRoute, postAuthPath, router, session, status]);
+  }, [isPlanSelectionRoute, isPostAuthPlanSelection, postAuthPath, router, session, status]);
 
   useEffect(() => {
     if (signupStep !== "verify" || resendCooldown <= 0) return undefined;
@@ -530,16 +625,19 @@ export function OAuthAuthPage({
       setAuthMessage(null);
       try {
         await checkEmailSignupAvailability(email);
+      } catch (error) {
+        if (error instanceof ApiError && error.status === 409) {
+          setAuthMessage("An account already exists. Sign in instead.");
+          setIsSubmitting(false);
+          return;
+        }
+      }
+
+      try {
         setSignupFirstName(String(formData.get("firstName") ?? "").trim());
         setSignupLastName(String(formData.get("lastName") ?? "").trim());
         setSignupEmail(email);
         setSignupStep("password");
-      } catch (error) {
-        setAuthMessage(
-          error instanceof ApiError && error.status === 409
-            ? "An account already exists. Sign in instead."
-            : "We could not check that email. Please try again.",
-        );
       } finally {
         setIsSubmitting(false);
       }
@@ -547,8 +645,20 @@ export function OAuthAuthPage({
     }
 
     if (mode === "signup" && signupStep === "plan") {
-      const params = new URLSearchParams({ plan: signupPlan });
-      router.push(`/subscribe?${params.toString()}`);
+      setIsSubmitting(true);
+      setAuthMessage(null);
+      try {
+        const currentSession = await refresh();
+        if (!currentSession?.authenticated) {
+          setAuthMessage("We could not finish signing you in. Please try again.");
+          return;
+        }
+
+        const params = new URLSearchParams({ plan: signupPlan });
+        router.push(`/subscribe?${params.toString()}`);
+      } finally {
+        setIsSubmitting(false);
+      }
       return;
     }
 
@@ -591,6 +701,12 @@ export function OAuthAuthPage({
     setAuthMessage(null);
     try {
       await verifyEmailSignupCode({ email: signupEmail, code });
+      const currentSession = await refresh();
+      if (!currentSession?.authenticated) {
+        setAuthMessage("We could not finish signing you in. Please try again.");
+        return;
+      }
+
       setVerificationCode("");
       setResendCooldown(0);
       setSignupStep("plan");
@@ -839,13 +955,10 @@ export function OAuthAuthPage({
                   {authMessage}
                 </p>
               ) : null}
-              {status === "loading" ? (
-                <p className={cardStyles.notice}>Checking current session...</p>
-              ) : null}
 
               {mode !== "signup" || signupStep !== "plan" ? (
                 <p className={cardStyles.switchText}>
-                  {switchText} <Link href={switchHref}>{switchCta}</Link>
+                  {switchText} <Link href={switchHrefWithNext}>{switchCta}</Link>
                 </p>
               ) : null}
             </>

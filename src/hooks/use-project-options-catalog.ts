@@ -20,6 +20,15 @@ const emptyCatalog: ProjectOptionsResponse = {
   starterKits: [],
 };
 
+function normalizeProjectOptionsResponse(
+  response: ProjectOptionsResponse,
+): ProjectOptionsResponse {
+  return {
+    ...response,
+    starterKits: Array.isArray(response.starterKits) ? response.starterKits : [],
+  };
+}
+
 export const mvpProjectOptionKeys: MvpProjectOptionKey[] = [
   "lint",
   "unit",
@@ -89,7 +98,7 @@ export function useProjectOptionsCatalog() {
           return;
         }
 
-        setCatalog(response);
+        setCatalog(normalizeProjectOptionsResponse(response));
       } catch {
         if (!active) {
           return;
@@ -278,6 +287,7 @@ export function useProjectOptionsCatalog() {
     setSelectedProjectTypeId,
     setSelectedRepoShapeId,
     setSelectedWorkflowRecipeId,
+    starterKits: catalog.starterKits,
     supportedTestOptions,
     tests,
     toggleTestOption,

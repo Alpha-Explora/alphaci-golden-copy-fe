@@ -342,6 +342,30 @@ describe("workflow hooks", () => {
     expect(current?.selectedRepoShapeId).toBe("single-app");
   });
 
+  it("normalizes project options from older backends without starter kits", async () => {
+    let current = null as ReturnType<typeof useProjectOptionsCatalog> | null;
+    const legacyProjectOptions = { ...projectOptions } as Partial<ProjectOptionsResponse>;
+    delete legacyProjectOptions.starterKits;
+    mockedGetProjectOptions.mockResolvedValueOnce(legacyProjectOptions as ProjectOptionsResponse);
+
+    function Probe() {
+      const value = useProjectOptionsCatalog();
+      useEffect(() => {
+        current = value;
+      }, [value]);
+      return null;
+    }
+
+    await act(async () => {
+      hookRoot.root.render(<Probe />);
+    });
+
+    await waitForCondition(() => current?.selectedProjectType?.id === "nextjs-app");
+
+    expect(current?.enabledRepoShapes.map((shape) => shape.id)).toEqual(["single-app"]);
+    expect(current?.starterKits).toEqual([]);
+    expect(current?.projectOptionsError).toBeNull();
+  });
   it("reports project option catalog load failures", async () => {
     let current = null as ReturnType<typeof useProjectOptionsCatalog> | null;
     mockedGetProjectOptions.mockRejectedValueOnce(new Error("catalog unavailable"));

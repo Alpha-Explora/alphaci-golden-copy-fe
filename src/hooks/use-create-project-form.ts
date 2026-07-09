@@ -12,6 +12,8 @@ type CreateProjectPayloadResult =
 interface BuildPayloadInput {
   isMicroservicesShape: boolean;
   isMultiRepoShape: boolean;
+  sourceType?: CreateProjectRequest["sourceType"];
+  starterKitId?: string;
   repoShapeId: string;
   projectTypeId: string;
   workflowRecipeId: string;
@@ -217,6 +219,8 @@ export function useCreateProjectForm() {
       payload: {
         repoName: normalizedRepoName,
         visibility,
+        ...(input.sourceType ? { sourceType: input.sourceType } : {}),
+        ...(input.starterKitId ? { starterKitId: input.starterKitId } : {}),
         repoShape: input.repoShapeId,
         projectTypeId: input.projectTypeId,
         workflowRecipeId: input.workflowRecipeId,

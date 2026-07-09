@@ -743,6 +743,8 @@ export interface MicroservicesConfig {
 export interface CreateProjectRequest {
   repoName: string;
   visibility: "private" | "public";
+  sourceType?: "scaffold" | "starter-kit";
+  starterKitId?: string;
   repoShape?: string;
   projectTypeId: string;
   workflowRecipeId?: string;

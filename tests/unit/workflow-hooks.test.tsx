@@ -450,6 +450,33 @@ describe("workflow hooks", () => {
         outputFileName: "ci.yml",
       },
     });
+
+    const starterResult = current?.buildPayload({
+      isMicroservicesShape: false,
+      isMultiRepoShape: false,
+      sourceType: "starter-kit",
+      starterKitId: "react-starter-kit",
+      repoShapeId: "single-app",
+      projectTypeId: "react-spa",
+      workflowRecipeId: "frontend-standard-ci",
+      tests: {
+        lint: true,
+        unit: true,
+        build: true,
+        coverage: true,
+        security: true,
+        docker: false,
+      },
+    });
+
+    expect(starterResult).toEqual({
+      ok: true,
+      payload: expect.objectContaining({
+        sourceType: "starter-kit",
+        starterKitId: "react-starter-kit",
+      }),
+    });
+    expect(JSON.stringify(starterResult)).not.toContain('"plan"');
   });
 
   it("reports create project form validation branches", async () => {

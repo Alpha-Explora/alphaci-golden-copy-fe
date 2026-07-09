@@ -17,6 +17,7 @@ const emptyCatalog: ProjectOptionsResponse = {
   projectTypes: [],
   recipes: [],
   nodeVersions: [],
+  starterKits: [],
 };
 
 export const mvpProjectOptionKeys: MvpProjectOptionKey[] = [

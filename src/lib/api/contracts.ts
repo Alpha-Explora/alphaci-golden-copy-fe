@@ -582,11 +582,27 @@ export interface NodeVersionOption {
   label: string;
 }
 
+export interface StarterKitOption {
+  id: string;
+  label: string;
+  description: string;
+  repo: string;
+  projectType: string;
+  repoShape: string;
+  language: string;
+  framework: string;
+  defaultWorkingDirectory: string;
+  workflowTiming: "after-template";
+  containsWorkflows: boolean;
+  defaultRecipesByPlan: Record<"solo" | "plus" | "pro", string>;
+}
+
 export interface ProjectOptionsResponse {
   repoShapes: RepoShapeOption[];
   projectTypes: ProjectTypeOption[];
   recipes: WorkflowRecipeOption[];
   nodeVersions: NodeVersionOption[];
+  starterKits: StarterKitOption[];
 }
 
 export interface GenerateWorkflowRequest {

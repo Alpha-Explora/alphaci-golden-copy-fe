@@ -147,6 +147,7 @@ describe("API client project setup helpers", () => {
             defaultOptions: { lint: true, unit: true, build: true, coverage: true },
           },
         ],
+        starterKits: [],
         recipes: [
           {
             id: "frontend-standard-ci",

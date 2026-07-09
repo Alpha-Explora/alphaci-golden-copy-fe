@@ -68,6 +68,7 @@ const projectOptions: ProjectOptionsResponse = {
     { value: "22", label: "Node 22 LTS (Jod)" },
     { value: "24", label: "Node 24 (Latest)" },
   ],
+  starterKits: [],
   repoShapes: [
     {
       id: "single-app",

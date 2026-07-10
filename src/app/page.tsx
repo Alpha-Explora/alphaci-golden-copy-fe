@@ -22,7 +22,7 @@ export default function LandingPage() {
   const hasSubscription = hasActiveSubscription(session);
   const { scrollYProgress: pageScrollYProgress } = useScroll();
 
-  const primaryHref = status === "signed-in" ? (hasSubscription ? "/home" : "/subscribe") : "/signup";
+  const primaryHref = status === "signed-in" ? (hasSubscription ? "/home" : "/signup?step=plan") : "/signup";
   const primaryLabel = status === "signed-in" ? (hasSubscription ? "Open your workspace" : "View plans") : "Get Started";
 
   return (

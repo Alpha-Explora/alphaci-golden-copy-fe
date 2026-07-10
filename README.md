@@ -1,4 +1,4 @@
-# CI/CD Workflow Studio Frontend
+# AlphaCI Frontend
 
 Next.js frontend for the product experience:
 
@@ -9,7 +9,7 @@ Next.js frontend for the product experience:
 
 ## Active Backend
 
-The frontend expects the active backend to be `../cicd-workflow-be`.
+The frontend expects the active backend to be `../alphaci-be`.
 For local development, use:
 
 ```bash
@@ -74,7 +74,7 @@ npm run build
 
 ## Product Integration
 
-- Frontend connects to `cicd-workflow-be` API using cookie-based session auth.
+- Frontend connects to `alphaci-be` API using cookie-based session auth.
 - Backend reads catalog, starter templates, and workflow templates from sibling repo `../cicd-workflow`.
 - The Create Project UI should be catalog-driven through `repoShape -> projectTypeId -> workflowRecipeId -> options`, not hardcoded per language.
 - Generated output is shown in UI and can be copied or downloaded as `.yml`.

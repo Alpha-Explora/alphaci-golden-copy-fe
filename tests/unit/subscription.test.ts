@@ -123,7 +123,7 @@ describe("isGuest", () => {
 });
 
 describe("getAuthenticatedRedirectPath", () => {
-  it("sends authenticated free users to subscribe", () => {
+  it("sends authenticated free users to plan selection", () => {
     expect(
       getAuthenticatedRedirectPath(
         buildSession({
@@ -136,10 +136,10 @@ describe("getAuthenticatedRedirectPath", () => {
         }),
         "/home",
       ),
-    ).toBe("/subscribe");
+    ).toBe("/signup?step=plan");
   });
 
-  it("sends inactive paid users to subscribe", () => {
+  it("sends inactive paid users to plan selection", () => {
     expect(
       getAuthenticatedRedirectPath(
         buildSession({
@@ -152,7 +152,7 @@ describe("getAuthenticatedRedirectPath", () => {
         }),
         "/home",
       ),
-    ).toBe("/subscribe");
+    ).toBe("/signup?step=plan");
   });
 
   it("returns null for unauthenticated users", () => {

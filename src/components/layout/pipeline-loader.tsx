@@ -46,19 +46,19 @@ export function PipelineLoader({ label = "Loading" }: Readonly<PipelineLoaderPro
   const activeStage = STAGES[activeIndex];
 
   return (
-    <main className="pipeline-loader-shell max-[640px]:overflow-x-hidden">
+    <main className="relative flex min-h-dvh items-center justify-center overflow-hidden bg-background max-[640px]:overflow-x-hidden">
       <FlowBackground />
 
-      <div className="pipeline-loader-center" role="status" aria-label={label}>
+      <div className="relative z-[1] flex flex-col items-center gap-5 p-8" role="status" aria-label={label}>
         {/* Logo lockup */}
         <motion.div
-          className="pipeline-loader-logo"
+          className="flex items-center justify-center"
           initial={prefersReducedMotion ? false : { opacity: 0, scale: 0.9 }}
           animate={{ opacity: 1, scale: 1 }}
           transition={{ duration: 0.4, ease: EASE_OUT }}
         >
           <div
-            className="pipeline-loader-logo-ring"
+            className="flex size-14 items-center justify-center rounded-[14px] border-[1.5px] bg-[linear-gradient(135deg,rgba(56,189,248,0.12)_0%,rgba(167,139,250,0.08)_100%)]"
             style={prefersReducedMotion ? {} : {
               boxShadow: `0 0 28px ${activeStage?.glow ?? "rgba(56,189,248,0.45)"}`,
               borderColor: activeStage?.color ?? "var(--brand)",
@@ -71,7 +71,7 @@ export function PipelineLoader({ label = "Loading" }: Readonly<PipelineLoaderPro
 
         {/* Label */}
         <motion.p
-          className="pipeline-loader-label"
+          className="m-0 text-base font-semibold text-foreground/80"
           initial={prefersReducedMotion ? false : { opacity: 0, y: 8 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.35, ease: EASE_OUT, delay: 0.12 }}
@@ -81,7 +81,7 @@ export function PipelineLoader({ label = "Loading" }: Readonly<PipelineLoaderPro
 
         {/* Stage track */}
         <motion.div
-          className="pipeline-loader-track"
+          className="flex items-start pb-5"
           initial={prefersReducedMotion ? false : { opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.35, ease: EASE_OUT, delay: 0.22 }}
@@ -92,10 +92,10 @@ export function PipelineLoader({ label = "Loading" }: Readonly<PipelineLoaderPro
             const isDone    = i < activeIndex;
             const isPending = i > activeIndex;
             return (
-              <span key={stage.id} className="pipeline-loader-stage-group">
+              <span key={stage.id} className="relative inline-flex flex-row items-center">
                 {/* Node dot */}
                 <span
-                  className="pipeline-loader-node"
+                  className="inline-block size-2.5 shrink-0 rounded-full border-[1.5px]"
                   style={
                     prefersReducedMotion
                       ? { background: "var(--brand)", opacity: 0.8 }
@@ -123,7 +123,7 @@ export function PipelineLoader({ label = "Loading" }: Readonly<PipelineLoaderPro
 
                 {/* Stage label under node */}
                 <span
-                  className="pipeline-loader-node-label"
+                  className="absolute left-1/2 top-[calc(100%+6px)] -translate-x-1/2 whitespace-nowrap text-[0.6rem] font-semibold lowercase"
                   style={
                     prefersReducedMotion
                       ? {}
@@ -145,7 +145,7 @@ export function PipelineLoader({ label = "Loading" }: Readonly<PipelineLoaderPro
                 {/* Connector line (not after last stage) */}
                 {i < STAGES.length - 1 && (
                   <span
-                    className="pipeline-loader-connector"
+                    className="inline-block h-px w-[clamp(2.5rem,6vw,4rem)] shrink-0 bg-white/10"
                     style={
                       prefersReducedMotion
                         ? {}
@@ -166,9 +166,9 @@ export function PipelineLoader({ label = "Loading" }: Readonly<PipelineLoaderPro
 
         {/* Traveling pulse line */}
         {!prefersReducedMotion && (
-          <div className="pipeline-loader-pulse-line" aria-hidden="true">
+          <div className="relative mt-2 h-0.5 w-[clamp(200px,50vw,360px)] overflow-hidden rounded-sm bg-white/[0.04]" aria-hidden="true">
             <motion.span
-              className="pipeline-loader-pulse-dot"
+              className="block h-full w-10 rounded-sm blur-[1px]"
               style={{ background: activeStage?.color ?? "var(--brand)" }}
               animate={{ x: ["0%", "100%"] }}
               transition={{ duration: 2.6, ease: "linear", repeat: Infinity }}

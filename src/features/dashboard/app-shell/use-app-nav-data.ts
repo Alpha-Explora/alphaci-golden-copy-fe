@@ -3,7 +3,8 @@
 import { useEffect, useMemo, useState } from "react";
 
 import { useWorkspaceSelection } from "@/components/layout/workspace-context";
-import type { ProvisionedProject, WorkspacesMeResponse } from "@/lib/api/contracts";
+import type { NotificationsResponse, ProvisionedProject, WorkspacesMeResponse } from "@/lib/api/contracts";
+import { getNotifications, markNotificationRead } from "@/lib/api/notifications";
 import { getProjects } from "@/lib/api/projects";
 import { getMyWorkspaces } from "@/lib/api/workspaces";
 
@@ -13,12 +14,17 @@ interface UseAppNavDataOptions {
 
 export function useAppNavData({ guest }: Readonly<UseAppNavDataOptions>) {
   const [workspaces, setWorkspacesState] = useState<WorkspacesMeResponse | null>(null);
+  const [notifications, setNotifications] = useState<NotificationsResponse | null>(null);
   const [projects, setProjects] = useState<ProvisionedProject[]>([]);
   const [selectedProjectId, setSelectedProjectId] = useState<string | null>(null);
   const { selectedWorkspaceId, setWorkspaces } = useWorkspaceSelection();
 
   useEffect(() => {
-    if (guest) return;
+    if (guest) {
+      setWorkspacesState(null);
+      setNotifications(null);
+      return;
+    }
     let active = true;
     void getMyWorkspaces()
       .then((response) => {
@@ -35,6 +41,21 @@ export function useAppNavData({ guest }: Readonly<UseAppNavDataOptions>) {
       active = false;
     };
   }, [guest, setWorkspaces]);
+
+  useEffect(() => {
+    if (guest) return;
+    let active = true;
+    void getNotifications()
+      .then((response) => {
+        if (active) setNotifications(response);
+      })
+      .catch(() => {
+        if (active) setNotifications({ enabled: false, unreadCount: 0, items: [] });
+      });
+    return () => {
+      active = false;
+    };
+  }, [guest]);
 
   useEffect(() => {
     if (guest) return;
@@ -64,5 +85,21 @@ export function useAppNavData({ guest }: Readonly<UseAppNavDataOptions>) {
     [projects, selectedProjectId],
   );
 
-  return { projects, selectedProject, workspaces };
+  async function handleMarkNotificationRead(id: string) {
+    await markNotificationRead(id);
+    setNotifications((current) => {
+      if (!current) return current;
+      const items = current.items.map((notification) => {
+        if (notification.id !== id || notification.readAt) return notification;
+        return { ...notification, readAt: new Date().toISOString() };
+      });
+      return {
+        ...current,
+        items,
+        unreadCount: items.filter((notification) => !notification.readAt).length,
+      };
+    });
+  }
+
+  return { handleMarkNotificationRead, notifications, projects, selectedProject, workspaces };
 }

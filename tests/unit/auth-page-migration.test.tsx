@@ -624,6 +624,38 @@ describe("OAuth auth page migration", () => {
     expect(replaceMock).not.toHaveBeenCalledWith("/subscribe");
   });
 
+  it("redirects signed-in login users without a paid plan to plan selection before payment", () => {
+    mockedUseAuthSession.mockReturnValue({
+      status: "signed-in",
+      session: {
+        authenticated: true,
+        user: { id: "user-1", login: "tone" },
+        subscription: {
+          plan: "free",
+          status: "active",
+          provider: "mock",
+          updatedAt: "2026-01-01T00:00:00.000Z",
+        },
+      },
+      error: null,
+      refresh: jest.fn().mockResolvedValue({ authenticated: true, user: { id: "user-1", login: "tone" } }),
+    });
+
+    const result = render(
+      <OAuthAuthPage
+        mode="login"
+        title="Sign in to your AlphaCI workspace."
+        subtitle="Connect GitHub to keep building, exporting, and deploying workflows."
+        switchText="New here?"
+        switchHref="/signup"
+        switchCta="Create your account"
+      />,
+    );
+    root = result.root;
+
+    expect(replaceMock).toHaveBeenCalledWith("/signup?step=plan");
+    expect(replaceMock).not.toHaveBeenCalledWith("/subscribe");
+  });
   it("renders the plan selector when signed-in users change plans from checkout", () => {
     searchParamsValue = "step=plan";
     mockedUseAuthSession.mockReturnValue({
@@ -650,13 +682,41 @@ describe("OAuth auth page migration", () => {
     expect(result.container).toHaveTextContent("Continue to payment");
   });
 
+  it("makes the selected plan card visibly explicit", () => {
+    searchParamsValue = "step=plan";
+    mockedUseAuthSession.mockReturnValue({
+      status: "signed-in",
+      session: {
+        authenticated: true,
+        user: { id: "user-1", login: "tone", onboardingCompleted: false },
+        subscription: {
+          plan: "free",
+          status: "active",
+          provider: "mock",
+          updatedAt: "2026-01-01T00:00:00.000Z",
+        },
+      },
+      error: null,
+      refresh: jest.fn().mockResolvedValue({ authenticated: true, user: { id: "user-1", login: "tone" } }),
+    });
+
+    const result = renderSignup();
+    root = result.root;
+
+    expect(result.container).not.toHaveTextContent("Self-serve checkout");
+    expect(result.container).toHaveTextContent("Paid monthly");
+    expect(result.container).toHaveTextContent("Selected");
+    expect(
+      result.container.querySelector('label[data-selected="true"]'),
+    ).toHaveTextContent("Starter");
+  });
   it("redirects signed-in signup users to plan selection before payment when requested", () => {
     searchParamsValue = "next=%2Fsignup%3Fstep%3Dplan";
     mockedUseAuthSession.mockReturnValue({
       status: "signed-in",
       session: {
         authenticated: true,
-        user: { id: "user-1", login: "tone" },
+        user: { id: "user-1", login: "tone", onboardingCompleted: false },
         subscription: {
           plan: "free",
           status: "active",

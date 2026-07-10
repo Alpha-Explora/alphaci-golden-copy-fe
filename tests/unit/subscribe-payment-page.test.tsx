@@ -3,7 +3,7 @@ import { createRoot, type Root } from "react-dom/client";
 
 import SubscribePage from "../../src/features/dashboard/subscribe/subscribe-page";
 import { useAuthSession } from "../../src/hooks/use-auth-session";
-import { createSubscriptionPaymentIntent, getPaymentIntentStatus } from "../../src/lib/api/client";
+import { createSubscriptionCheckout, createSubscriptionPaymentIntent, getPaymentIntentStatus } from "../../src/lib/api/client";
 import type { AuthMeResponse } from "../../src/lib/api/contracts";
 
 const pushMock = jest.fn();
@@ -24,11 +24,13 @@ jest.mock("../../src/hooks/use-auth-session", () => ({
 }));
 
 jest.mock("../../src/lib/api/client", () => ({
+  createSubscriptionCheckout: jest.fn(),
   createSubscriptionPaymentIntent: jest.fn(),
   getPaymentIntentStatus: jest.fn(),
 }));
 
 const mockedUseAuthSession = useAuthSession as jest.MockedFunction<typeof useAuthSession>;
+const mockedCreateSubscriptionCheckout = createSubscriptionCheckout as jest.MockedFunction<typeof createSubscriptionCheckout>;
 const mockedCreateSubscriptionPaymentIntent = createSubscriptionPaymentIntent as jest.MockedFunction<typeof createSubscriptionPaymentIntent>;
 const mockedGetPaymentIntentStatus = getPaymentIntentStatus as jest.MockedFunction<typeof getPaymentIntentStatus>;
 const originalPaymongoPublicKey = process.env.NEXT_PUBLIC_PAYMONGO_PUBLIC_KEY;
@@ -71,6 +73,12 @@ async function flushEffects() {
   });
 }
 
+function setSelectValue(select: HTMLSelectElement, value: string) {
+  const setter = Object.getOwnPropertyDescriptor(HTMLSelectElement.prototype, "value")?.set;
+  setter?.call(select, value);
+  select.dispatchEvent(new Event("change", { bubbles: true }));
+}
+
 function setInputValue(input: HTMLInputElement, value: string) {
   const setter = Object.getOwnPropertyDescriptor(HTMLInputElement.prototype, "value")?.set;
   setter?.call(input, value);
@@ -110,12 +118,44 @@ function mockActiveSubscriptionStatus() {
   });
 }
 
-async function fillPaymentForm(container: HTMLElement, cardNumber: string, cvc = "321") {
+async function fillPaymentForm(
+  container: HTMLElement,
+  cardNumber: string,
+  cvc = "321",
+  options: { billingDetails?: boolean } = {},
+) {
+  const { billingDetails = true } = options;
+
+  await showCardPaymentForm(container);
+
   await act(async () => {
+    if (billingDetails) {
+      setInputValue(container.querySelector<HTMLInputElement>("#billing-name")!, "Anthony Torres");
+      setInputValue(container.querySelector<HTMLInputElement>("#billing-email")!, "billing@example.com");
+      setInputValue(container.querySelector<HTMLInputElement>("#address-line-1")!, "123 Test Street");
+      setInputValue(container.querySelector<HTMLInputElement>("#city")!, "Makati");
+      setInputValue(container.querySelector<HTMLInputElement>("#state")!, "Metro Manila");
+      setInputValue(container.querySelector<HTMLInputElement>("#zip")!, "1200");
+      setSelectValue(container.querySelector<HTMLSelectElement>("#country")!, "PH");
+    }
+
     setInputValue(container.querySelector<HTMLInputElement>("#card-number")!, cardNumber);
     setInputValue(container.querySelector<HTMLInputElement>("#expiration")!, "12 / 31");
     setInputValue(container.querySelector<HTMLInputElement>("#security-code")!, cvc);
   });
+}
+async function choosePaymentMethod(container: HTMLElement, label: "GCash" | "Maya" | "Card") {
+  await act(async () => {
+    container.querySelector<HTMLInputElement>(`input[aria-label="${label}"]`)?.click();
+  });
+
+  await submitPaymentForm(container);
+}
+
+async function showCardPaymentForm(container: HTMLElement) {
+  if (!container.querySelector<HTMLInputElement>("#card-number")) {
+    await choosePaymentMethod(container, "Card");
+  }
 }
 
 async function submitPaymentForm(container: HTMLElement) {
@@ -135,6 +175,7 @@ describe("Subscribe payment page", () => {
     pushMock.mockClear();
     replaceMock.mockClear();
     process.env.NEXT_PUBLIC_PAYMONGO_PUBLIC_KEY = "pk_test_123";
+    mockedCreateSubscriptionCheckout.mockReset();
     mockedCreateSubscriptionPaymentIntent.mockReset();
     mockedGetPaymentIntentStatus.mockReset();
     global.fetch = jest.fn();
@@ -142,7 +183,7 @@ describe("Subscribe payment page", () => {
       status: "signed-in",
       session: signedInSession,
       error: null,
-      refresh: jest.fn(),
+      refresh: jest.fn().mockResolvedValue(signedInSession),
     });
   });
 
@@ -166,19 +207,197 @@ describe("Subscribe payment page", () => {
     jest.clearAllMocks();
   });
 
-  it("defaults billing name and email from the signed-in session", async () => {
+  it("rechecks the session before showing payment for signed-out visits", async () => {
+    let currentAuth = {
+      status: "signed-out" as const,
+      session: null,
+      error: null,
+      refresh: jest.fn(async () => {
+        currentAuth = {
+          ...currentAuth,
+          status: "signed-in" as const,
+          session: signedInSession,
+        };
+        return signedInSession;
+      }),
+    };
+    mockedUseAuthSession.mockImplementation(() => currentAuth);
+
     const rendered = await renderSubscribePage();
     root = rendered.root;
 
-    expect(rendered.container.querySelector<HTMLInputElement>("#billing-name")?.value).toBe("Anthony Torres");
+    expect(rendered.container).toHaveTextContent("Choose payment method");
+    expect(currentAuth.refresh).toHaveBeenCalledTimes(1);
+    expect(replaceMock).not.toHaveBeenCalledWith("/signup?next=%2Fsubscribe%3Fplan%3Dstarter");
+  });
+  it("does not redirect to signup after the payment session recheck still finds no session", async () => {
+    const refreshMock = jest.fn().mockResolvedValue(undefined);
+    mockedUseAuthSession.mockReturnValue({
+      status: "signed-out",
+      session: null,
+      error: null,
+      refresh: refreshMock,
+    });
+
+    const rendered = await renderSubscribePage();
+    root = rendered.root;
+
+    expect(rendered.container).toHaveTextContent("We could not confirm your sign-in. Please return to signup and try again.");
+    expect(refreshMock).toHaveBeenCalledTimes(1);
+    expect(replaceMock).not.toHaveBeenCalledWith("/signup?next=%2Fsubscribe%3Fplan%3Dstarter");
+  });
+  it("does not restart the signed-out recheck while the session hook is loading", async () => {
+    let currentAuth = {
+      status: "signed-out" as const,
+      session: null,
+      error: null,
+      refresh: jest.fn(() => {
+        currentAuth = {
+          ...currentAuth,
+          status: "loading" as const,
+        };
+        return new Promise<void>(() => undefined);
+      }),
+    };
+    mockedUseAuthSession.mockImplementation(() => currentAuth);
+
+    const rendered = await renderSubscribePage();
+    root = rendered.root;
+
+    expect(currentAuth.refresh).toHaveBeenCalledTimes(1);
+
+    await act(async () => {
+      root?.render(<SubscribePage />);
+    });
+    await flushEffects();
+
+    currentAuth = {
+      ...currentAuth,
+      status: "signed-out" as const,
+    };
+
+    await act(async () => {
+      root?.render(<SubscribePage />);
+    });
+    await flushEffects();
+
+    expect(rendered.container).toHaveTextContent("Preparing payment");
+    expect(currentAuth.refresh).toHaveBeenCalledTimes(1);
+    expect(replaceMock).not.toHaveBeenCalled();
+  });
+  it("does not redirect to signup when payment session verification fails", async () => {
+    mockedUseAuthSession.mockReturnValue({
+      status: "error",
+      session: null,
+      error: "Unable to verify your session right now.",
+      refresh: jest.fn().mockResolvedValue(signedInSession),
+    });
+
+    const rendered = await renderSubscribePage();
+    root = rendered.root;
+
+    expect(rendered.container).toHaveTextContent("Unable to verify your session right now.");
+    expect(rendered.container).not.toHaveTextContent("Billing name");
+    expect(replaceMock).not.toHaveBeenCalledWith("/signup?next=%2Fsubscribe%3Fplan%3Dstarter");
+  });
+  it("prefills billing email but not billing name from the signed-in session", async () => {
+    const rendered = await renderSubscribePage();
+    root = rendered.root;
+
+    await showCardPaymentForm(rendered.container);
+
+    expect(rendered.container.querySelector<HTMLInputElement>("#billing-name")?.value).toBe("");
     expect(rendered.container.querySelector<HTMLInputElement>("#billing-email")?.value).toBe("antoneeeeetorres@gmail.com");
     expect(rendered.container).toHaveTextContent("Card details are encrypted and never stored by AlphaCI.");
     expect(rendered.container).not.toHaveTextContent("PayMongo");
   });
 
+
+
+  it("shows Card, GCash, and Maya with brand logo marks before collecting billing details", async () => {
+    const rendered = await renderSubscribePage();
+    root = rendered.root;
+
+    expect(rendered.container).toHaveTextContent("Choose payment method");
+    expect(
+      Array.from(rendered.container.querySelectorAll<HTMLElement>("[data-payment-method-option]")).map((option) => option.dataset.paymentMethodOption),
+    ).toEqual(["card", "gcash", "maya"]);
+    expect(rendered.container.querySelector<HTMLInputElement>('input[aria-label="Card"]')).not.toBeNull();
+    expect(rendered.container.querySelector<HTMLInputElement>('input[aria-label="GCash"]')).not.toBeNull();
+    expect(rendered.container.querySelector<HTMLInputElement>('input[aria-label="Maya"]')).not.toBeNull();
+    expect(rendered.container.querySelector('[data-payment-method-logo="card"] img[alt="Visa"]')?.getAttribute("src")).toBe("/payment-logos/visa.svg");
+    expect(rendered.container.querySelector('[data-payment-method-logo="card"] img[alt="Mastercard"]')?.getAttribute("src")).toBe("/payment-logos/mastercard.svg");
+    expect(rendered.container.querySelector('[data-payment-method-logo="gcash"] img[alt="GCash"]')?.getAttribute("src")).toBe("/payment-logos/gcash.svg");
+    expect(rendered.container.querySelector('[data-payment-method-logo="maya"] img[alt="Maya"]')?.getAttribute("src")).toBe("/payment-logos/maya.svg");
+    expect(rendered.container.querySelector<HTMLInputElement>("#card-number")).toBeNull();
+    expect(rendered.container).not.toHaveTextContent("Billing name");
+  });
+
+  it("keeps the custom billing form for Card and can go back to method selection", async () => {
+    const rendered = await renderSubscribePage();
+    root = rendered.root;
+
+    await showCardPaymentForm(rendered.container);
+
+    expect(rendered.container).toHaveTextContent("Billing name");
+    expect(rendered.container.querySelector<HTMLInputElement>("#card-number")).not.toBeNull();
+    expect(mockedCreateSubscriptionCheckout).not.toHaveBeenCalled();
+    expect(mockedCreateSubscriptionPaymentIntent).not.toHaveBeenCalled();
+
+    await act(async () => {
+      rendered.container.querySelector<HTMLButtonElement>('[data-testid="payment-method-back"]')?.click();
+    });
+
+    expect(rendered.container).toHaveTextContent("Choose payment method");
+    expect(rendered.container.querySelector<HTMLInputElement>("#card-number")).toBeNull();
+  });
+
+  it.each(["GCash", "Maya"] as const)("starts hosted checkout for %s", async (method) => {
+    mockedCreateSubscriptionCheckout.mockResolvedValue({
+      checkoutId: "cs_paymongo_123",
+      status: "active",
+      redirectUrl: "https://checkout.test/session",
+    });
+    const rendered = await renderSubscribePage();
+    root = rendered.root;
+
+    await choosePaymentMethod(rendered.container, method);
+
+    expect(mockedCreateSubscriptionCheckout).toHaveBeenCalledWith("pro", method.toLowerCase());
+    expect(mockedCreateSubscriptionPaymentIntent).not.toHaveBeenCalled();
+
+  });
+
+  it("shows exact required billing field errors before creating a payment intent", async () => {
+    const rendered = await renderSubscribePage();
+    root = rendered.root;
+
+    await showCardPaymentForm(rendered.container);
+
+    await act(async () => {
+      setInputValue(rendered.container.querySelector<HTMLInputElement>("#card-number")!, "4343 4343 4343 4345");
+      setInputValue(rendered.container.querySelector<HTMLInputElement>("#expiration")!, "12 / 31");
+      setInputValue(rendered.container.querySelector<HTMLInputElement>("#security-code")!, "321");
+    });
+
+    await submitPaymentForm(rendered.container);
+
+    expect(rendered.container).toHaveTextContent("Enter your billing name.");
+    expect(rendered.container).toHaveTextContent("Enter your billing address.");
+    expect(rendered.container).toHaveTextContent("Enter your billing city.");
+    expect(rendered.container).toHaveTextContent("Enter your billing state or province.");
+    expect(rendered.container).toHaveTextContent("Enter your ZIP or postal code.");
+    expect(rendered.container).toHaveTextContent("Select your billing country.");
+    expect(rendered.container.querySelector<HTMLInputElement>("#billing-name")?.getAttribute("aria-invalid")).toBe("true");
+    expect(rendered.container.querySelector<HTMLInputElement>("#address-line-1")?.getAttribute("aria-invalid")).toBe("true");
+    expect(mockedCreateSubscriptionPaymentIntent).not.toHaveBeenCalled();
+  });
+
   it("blocks invalid card numbers before creating a PayMongo intent", async () => {
     const rendered = await renderSubscribePage();
     root = rendered.root;
+
+    await showCardPaymentForm(rendered.container);
 
     const cardNumber = rendered.container.querySelector<HTMLInputElement>("#card-number");
     expect(cardNumber).not.toBeNull();
@@ -187,11 +406,22 @@ describe("Subscribe payment page", () => {
       setInputValue(cardNumber!, "5100 0000 0000 0199");
     });
 
-    await act(async () => {
-      rendered.container.querySelector("form")?.dispatchEvent(new Event("submit", { bubbles: true, cancelable: true }));
-    });
+    await submitPaymentForm(rendered.container);
 
     expect(rendered.container).toHaveTextContent("Your card number is invalid.");
+    expect(mockedCreateSubscriptionPaymentIntent).not.toHaveBeenCalled();
+  });
+  it("does not show a card-number error while the user is still typing", async () => {
+    const rendered = await renderSubscribePage();
+    root = rendered.root;
+
+    await showCardPaymentForm(rendered.container);
+
+    await act(async () => {
+      setInputValue(rendered.container.querySelector<HTMLInputElement>("#card-number")!, "4343 4343 4343 43");
+    });
+
+    expect(rendered.container).not.toHaveTextContent("Your card number is invalid.");
     expect(mockedCreateSubscriptionPaymentIntent).not.toHaveBeenCalled();
   });
 
@@ -201,16 +431,8 @@ describe("Subscribe payment page", () => {
     const rendered = await renderSubscribePage();
     root = rendered.root;
 
-    await act(async () => {
-      setInputValue(rendered.container.querySelector<HTMLInputElement>("#card-number")!, "4343 4343 4343 4345");
-      setInputValue(rendered.container.querySelector<HTMLInputElement>("#expiration")!, "12 / 31");
-      setInputValue(rendered.container.querySelector<HTMLInputElement>("#security-code")!, "321");
-    });
-
-    await act(async () => {
-      rendered.container.querySelector("form")?.dispatchEvent(new Event("submit", { bubbles: true, cancelable: true }));
-      await Promise.resolve();
-    });
+    await fillPaymentForm(rendered.container, "4343434343434345");
+    await submitPaymentForm(rendered.container);
 
     expect(rendered.container).toHaveTextContent("Processing payment...");
     expect(rendered.container).not.toHaveTextContent("Processing with PayMongo");
@@ -283,7 +505,7 @@ describe("Subscribe payment page", () => {
     expect(rendered.container).not.toHaveTextContent("Your card number is invalid.");
     const attachRequest = jest.mocked(global.fetch).mock.calls[1]?.[1];
     const attachBody = JSON.parse(String(attachRequest?.body));
-    expect(attachBody.data.attributes.return_url).toBe("http://localhost/subscribe?plan=starter&payment_intent=pi_paymongo_123");
+    expect(attachBody.data.attributes.return_url).toBe("http://localhost/subscribe/success?plan=starter&payment_intent=pi_paymongo_123");
     expect(mockedGetPaymentIntentStatus).not.toHaveBeenCalled();
   });
 
@@ -336,20 +558,45 @@ describe("Subscribe payment page", () => {
     const rendered = await renderSubscribePage();
     root = rendered.root;
 
-    await act(async () => {
-      setInputValue(rendered.container.querySelector<HTMLInputElement>("#card-number")!, "4200 0000 0000 0018");
-      setInputValue(rendered.container.querySelector<HTMLInputElement>("#expiration")!, "12 / 31");
-      setInputValue(rendered.container.querySelector<HTMLInputElement>("#security-code")!, "312");
-    });
-
-    await act(async () => {
-      rendered.container.querySelector("form")?.dispatchEvent(new Event("submit", { bubbles: true, cancelable: true }));
-      await Promise.resolve();
-      await Promise.resolve();
-    });
+    await fillPaymentForm(rendered.container, "4200000000000018", "312");
+    await submitPaymentForm(rendered.container);
 
     expect(rendered.container).toHaveTextContent("The card has expired.");
     expect(rendered.container).not.toHaveTextContent("PayMongo payment confirmation failed");
+  });
+  it("does not expose raw payment intent state or processor ids", async () => {
+    jest.spyOn(console, "error").mockImplementation(() => undefined);
+    mockedCreateSubscriptionPaymentIntent.mockResolvedValue({
+      paymentIntentId: "pi_paymongo_123",
+      clientKey: "pi_client_key_123",
+      status: "awaiting_payment_method",
+    });
+    jest.mocked(global.fetch)
+      .mockResolvedValueOnce({
+        ok: true,
+        json: async () => ({ data: { id: "pm_card_123" } }),
+      } as Response)
+      .mockResolvedValueOnce({
+        ok: false,
+        status: 400,
+        json: async () => ({
+          errors: [
+            {
+              detail: "Payment intent with id pi_FrVDGAKfbGqQzcPnovhyswxK has already succeeded.",
+            },
+          ],
+        }),
+      } as Response);
+
+    const rendered = await renderSubscribePage();
+    root = rendered.root;
+
+    await fillPaymentForm(rendered.container, "4343434343434345");
+    await submitPaymentForm(rendered.container);
+
+    expect(rendered.container).toHaveTextContent("This payment was already completed. Please refresh the page.");
+    expect(rendered.container).not.toHaveTextContent("pi_FrVDGAKfbGqQzcPnovhyswxK");
+    expect(rendered.container).not.toHaveTextContent("Payment intent with id");
   });
   it("surfaces unexpected PayMongo request errors instead of a vague fallback", async () => {
     jest.spyOn(console, "error").mockImplementation(() => undefined);
@@ -363,17 +610,8 @@ describe("Subscribe payment page", () => {
     const rendered = await renderSubscribePage();
     root = rendered.root;
 
-    await act(async () => {
-      setInputValue(rendered.container.querySelector<HTMLInputElement>("#card-number")!, "4343 4343 4343 4345");
-      setInputValue(rendered.container.querySelector<HTMLInputElement>("#expiration")!, "12 / 31");
-      setInputValue(rendered.container.querySelector<HTMLInputElement>("#security-code")!, "321");
-    });
-
-    await act(async () => {
-      rendered.container.querySelector("form")?.dispatchEvent(new Event("submit", { bubbles: true, cancelable: true }));
-      await Promise.resolve();
-      await Promise.resolve();
-    });
+    await fillPaymentForm(rendered.container, "4343434343434345");
+    await submitPaymentForm(rendered.container);
 
     expect(mockedCreateSubscriptionPaymentIntent).toHaveBeenCalledWith("pro");
     expect(rendered.container).toHaveTextContent("Failed to fetch");

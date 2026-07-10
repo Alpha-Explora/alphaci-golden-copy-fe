@@ -5,13 +5,34 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { ApiError, getAuthSession } from "@/lib/api/client";
 import type { AuthMeResponse } from "@/lib/api/contracts";
 
+export const AUTH_SESSION_TIMEOUT_MS = 8_000;
+
+class AuthSessionTimeoutError extends Error {
+  constructor() {
+    super("Session check timed out.");
+    this.name = "AuthSessionTimeoutError";
+  }
+}
+
+async function getAuthSessionWithTimeout() {
+  let timeoutId: ReturnType<typeof setTimeout> | undefined;
+  const timeout = new Promise<never>((_resolve, reject) => {
+    timeoutId = setTimeout(() => reject(new AuthSessionTimeoutError()), AUTH_SESSION_TIMEOUT_MS);
+  });
+
+  try {
+    return await Promise.race([getAuthSession(), timeout]);
+  } finally {
+    if (timeoutId) clearTimeout(timeoutId);
+  }
+}
 export type AuthSessionStatus = "loading" | "signed-out" | "signed-in" | "error";
 
 interface UseAuthSessionResult {
   status: AuthSessionStatus;
   session: AuthMeResponse | null;
   error: string | null;
-  refresh: () => Promise<void>;
+  refresh: () => Promise<AuthMeResponse | null>;
 }
 
 function getFriendlyAuthError(error: unknown): string {
@@ -45,7 +66,7 @@ export function useAuthSession(): UseAuthSessionResult {
     setError(null);
   }, []);
 
-  const refresh = useCallback(async () => {
+  const refresh = useCallback(async (): Promise<AuthMeResponse | null> => {
     const requestVersion = requestVersionRef.current + 1;
     requestVersionRef.current = requestVersion;
 
@@ -53,27 +74,29 @@ export function useAuthSession(): UseAuthSessionResult {
     setError(null);
 
     try {
-      const current = await getAuthSession();
+      const current = await getAuthSessionWithTimeout();
 
       if (requestVersion !== requestVersionRef.current) {
-        return;
+        return current.authenticated ? current : null;
       }
 
       applySession(current);
+      return current.authenticated ? current : null;
     } catch (cause) {
       if (requestVersion !== requestVersionRef.current) {
-        return;
+        return null;
       }
 
       if (cause instanceof ApiError && (cause.status === 401 || cause.status === 403)) {
         setSession(null);
         setStatus("signed-out");
-        return;
+        return null;
       }
 
       setSession(null);
       setStatus("error");
       setError(getFriendlyAuthError(cause));
+      return null;
     }
   }, [applySession]);
 
@@ -84,7 +107,7 @@ export function useAuthSession(): UseAuthSessionResult {
 
     async function loadInitialSession() {
       try {
-        const current = await getAuthSession();
+        const current = await getAuthSessionWithTimeout();
 
         if (!active || requestVersion !== requestVersionRef.current) {
           return;

@@ -1,0 +1,52 @@
+.payment-success-card-pop {
+  animation: paymentSuccessCardPop 720ms 120ms cubic-bezier(0.16, 1, 0.3, 1) both;
+  will-change: opacity, transform;
+}
+
+.payment-success-copy-pop {
+  animation: paymentSuccessDetailPop 420ms 560ms ease-out both;
+  will-change: opacity, transform;
+}
+
+.payment-success-action-pop {
+  animation: paymentSuccessDetailPop 420ms 660ms ease-out both;
+  will-change: opacity, transform;
+}
+
+@keyframes paymentSuccessCardPop {
+  from {
+    opacity: 0;
+    transform: translateY(5.75rem) scale(0.96);
+  }
+
+  72% {
+    opacity: 1;
+    transform: translateY(-0.3rem) scale(1.01);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes paymentSuccessDetailPop {
+  from {
+    opacity: 0;
+    transform: translateY(0.5rem);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .payment-success-card-pop,
+  .payment-success-copy-pop,
+  .payment-success-action-pop {
+    animation: none;
+    will-change: auto;
+  }
+}

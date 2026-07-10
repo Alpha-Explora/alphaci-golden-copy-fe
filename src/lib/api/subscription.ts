@@ -7,12 +7,15 @@ import type {
 } from "./contracts";
 import { request } from "./request";
 
+export type SubscriptionHostedPaymentMethod = "gcash" | "maya";
+
 export async function createSubscriptionCheckout(
   plan: "pro",
+  paymentMethod?: SubscriptionHostedPaymentMethod,
 ): Promise<SubscriptionCheckoutResponse> {
   return request<SubscriptionCheckoutResponse>("/subscription/checkout", {
     method: "POST",
-    body: JSON.stringify({ plan }),
+    body: JSON.stringify(paymentMethod ? { plan, paymentMethod } : { plan }),
   });
 }
 

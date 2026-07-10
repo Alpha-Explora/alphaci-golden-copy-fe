@@ -2,18 +2,20 @@
 
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
-import { FormEvent, Suspense, useEffect, useMemo, useState } from "react";
+import { FormEvent, Suspense, useEffect, useMemo, useRef, useState } from "react";
 
 import { Logo } from "@/components/brand";
 import { PipelineLoader } from "@/components/layout/pipeline-loader";
 import { Button } from "@/components/ui/button";
 import { useAuthSession } from "@/hooks/use-auth-session";
 import {
+  createSubscriptionCheckout,
   createSubscriptionPaymentIntent,
   getPaymentIntentStatus,
 } from "@/lib/api/client";
 import { hasActiveSubscription } from "@/lib/auth/subscription";
 import { ApiError } from "@/lib/api/request";
+import { cn } from "@/lib/utils";
 
 import {
   CardBrandMarks,
@@ -31,9 +33,36 @@ function getPayMongoPublicKey() {
   return process.env.NEXT_PUBLIC_PAYMONGO_PUBLIC_KEY ?? "";
 }
 
+type SignedOutSessionRecheck = "idle" | "checking" | "checked";
+
+const PAYMENT_PROVIDER_OBJECT_ID_PATTERN = /\b(?:pi|pm|cus|sub)_[A-Za-z0-9]+\b/g;
 const PAYMONGO_DOCUMENTED_TEST_CARD_NUMBERS = new Set(["5123000000000002"]);
+const CARD_NUMBER_LENGTH_FOR_INLINE_VALIDATION = 16;
+
+const paymentMethods: Array<{ id: PaymentMethodId; label: string; description: string }> = [
+  { id: "card", label: "Card", description: "Visa or Mastercard." },
+  { id: "gcash", label: "GCash", description: "Pay with your GCash wallet." },
+  { id: "maya", label: "Maya", description: "Pay with Maya." },
+];
+
+type BillingFieldErrors = Partial<Record<
+  | "billingName"
+  | "billingEmail"
+  | "addressLine1"
+  | "city"
+  | "state"
+  | "zip"
+  | "country"
+  | "cardNumber"
+  | "expiration"
+  | "securityCode",
+  string
+>>;
 
 type SubscribePlanId = "starter" | "growth" | "business";
+type HostedPaymentMethodId = "gcash" | "maya";
+type PaymentMethodId = HostedPaymentMethodId | "card";
+type CheckoutStep = "method" | "card";
 
 interface PayMongoPaymentMethodResponse {
   data?: {
@@ -109,6 +138,31 @@ function formatExpiry(value: string) {
   return digits.length > 2 ? `${digits.slice(0, 2)} / ${digits.slice(2)}` : digits;
 }
 
+function PaymentMethodLogo({ id }: { id: PaymentMethodId }) {
+  if (id === "card") {
+    return (
+      <span className={styles.methodCardLogos} data-payment-method-logo="card" aria-label="Visa and Mastercard accepted">
+        <img alt="Visa" src="/payment-logos/visa.svg" />
+        <img alt="Mastercard" src="/payment-logos/mastercard.svg" />
+      </span>
+    );
+  }
+
+  if (id === "gcash") {
+    return (
+      <span className={styles.methodWalletLogo} data-payment-method-logo="gcash" aria-label="GCash">
+        <img alt="GCash" src="/payment-logos/gcash.svg" />
+      </span>
+    );
+  }
+
+  return (
+    <span className={styles.methodWalletLogo} data-payment-method-logo="maya" aria-label="Maya">
+      <img alt="Maya" src="/payment-logos/maya.svg" />
+    </span>
+  );
+}
+
 function isSupportedCard(value: string) {
   return /^4\d{12}(\d{3})?$/.test(value) || /^5[1-5]\d{14}$/.test(value) || /^2(2[2-9]\d|[3-6]\d{2}|7[01]\d|720)\d{12}$/.test(value);
 }
@@ -164,10 +218,21 @@ function getPayMongoErrorDetail(error?: { code?: string; detail?: string; sub_co
   return error.detail ?? error.sub_code ?? error.code ?? null;
 }
 
+function getCustomerSafePaymentDetail(detail: string | null) {
+  if (!detail) return null;
+
+  if (detail.toLowerCase().includes("already succeeded")) {
+    return "This payment was already completed. Please refresh the page.";
+  }
+
+  const sanitizedDetail = detail.replace(PAYMENT_PROVIDER_OBJECT_ID_PATTERN, "this payment");
+  return sanitizedDetail.trim() || null;
+}
+
 function getCheckoutErrorMessage(error: unknown) {
   if (error instanceof PayMongoRequestError) {
     const firstError = error.payload.errors?.[0];
-    const detail = getPayMongoErrorDetail(firstError);
+    const detail = getCustomerSafePaymentDetail(getPayMongoErrorDetail(firstError));
     return detail ?? "Payment failed. Please check the details and try again.";
   }
 
@@ -195,17 +260,43 @@ function getExpiryParts(value: string) {
   return { month, year };
 }
 
+function getRequiredString(formData: FormData, field: string) {
+  return String(formData.get(field) ?? "").trim();
+}
+
+function validateBillingForm(formData: FormData, cardDigits: string, expirationDigits: string, securityCode: string, cardNumberError: string | null) {
+  const errors: BillingFieldErrors = {};
+
+  if (!getRequiredString(formData, "billingName")) errors.billingName = "Enter your billing name.";
+  if (!getRequiredString(formData, "billingEmail")) errors.billingEmail = "Enter your billing email.";
+  if (!getRequiredString(formData, "addressLine1")) errors.addressLine1 = "Enter your billing address.";
+  if (!getRequiredString(formData, "city")) errors.city = "Enter your billing city.";
+  if (!getRequiredString(formData, "state")) errors.state = "Enter your billing state or province.";
+  if (!getRequiredString(formData, "zip")) errors.zip = "Enter your ZIP or postal code.";
+  if (!getRequiredString(formData, "country")) errors.country = "Select your billing country.";
+  if (cardNumberError || !isValidCardNumber(cardDigits)) errors.cardNumber = cardNumberError ?? "Enter a valid card number.";
+  if (expirationDigits.length !== 4) errors.expiration = "Enter a valid expiration date.";
+  if (securityCode.length < 3) errors.securityCode = "Enter a valid security code.";
+
+  return errors;
+}
+
 function SubscribePaymentPage() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const { status, session, refresh } = useAuthSession();
+  const { status, session, error: sessionError, refresh } = useAuthSession();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [checkoutMessage, setCheckoutMessage] = useState<string | null>(null);
+  const [fieldErrors, setFieldErrors] = useState<BillingFieldErrors>({});
+  const [checkoutStep, setCheckoutStep] = useState<CheckoutStep>("method");
+  const [selectedPaymentMethod, setSelectedPaymentMethod] = useState<PaymentMethodId | null>(null);
   const [billingName, setBillingName] = useState("");
   const [billingEmail, setBillingEmail] = useState("");
   const [cardDigits, setCardDigits] = useState("");
   const [expirationDigits, setExpirationDigits] = useState("");
   const [securityCode, setSecurityCode] = useState("");
+  const [signedOutSessionRecheck, setSignedOutSessionRecheck] = useState<SignedOutSessionRecheck>("idle");
+  const isMountedRef = useRef(true);
 
   const selectedPlan = useMemo(
     () => getPlan(searchParams.get("plan")),
@@ -214,30 +305,56 @@ function SubscribePaymentPage() {
   const returningPaymentIntentId = searchParams.get("payment_intent");
   const plan = planCopy[selectedPlan];
   const isCustomPlan = selectedPlan !== "starter";
-  const defaultName = session?.user.name ?? session?.user.login ?? "";
   const defaultEmail = session?.user.email ?? "";
   const hasSubscription = hasActiveSubscription(session);
   const cardNumber = groupCardDigits(cardDigits);
   const expirationDate = formatExpiry(expirationDigits);
-  const cardNumberError = cardDigits.length >= 13 && !isValidCardNumber(cardDigits) ? "Your card number is invalid." : null;
-
-  useEffect(() => {
-    if (!defaultName) return;
-    setBillingName((current) => current || defaultName);
-  }, [defaultName]);
+  const cardNumberError = cardDigits.length >= CARD_NUMBER_LENGTH_FOR_INLINE_VALIDATION && !isValidCardNumber(cardDigits) ? "Your card number is invalid." : null;
+  const cardNumberFieldError = cardNumberError ?? fieldErrors.cardNumber ?? null;
 
   useEffect(() => {
     if (!defaultEmail) return;
     setBillingEmail((current) => current || defaultEmail);
   }, [defaultEmail]);
 
-  useEffect(() => {
-    if (status !== "signed-out") return;
-    const params = new URLSearchParams({
-      next: `/subscribe?plan=${selectedPlan}`,
+  function clearFieldError(field: keyof BillingFieldErrors) {
+    setFieldErrors((current) => {
+      if (!current[field]) return current;
+      const next = { ...current };
+      delete next[field];
+      return next;
     });
-    router.replace(`/signup?${params.toString()}`);
-  }, [router, selectedPlan, status]);
+  }
+
+  useEffect(() => {
+    return () => {
+      isMountedRef.current = false;
+    };
+  }, []);
+
+  useEffect(() => {
+    if (status === "loading") {
+      return;
+    }
+
+
+    if (status !== "signed-out") {
+      if (signedOutSessionRecheck !== "idle") setSignedOutSessionRecheck("idle");
+      return;
+    }
+
+    if (signedOutSessionRecheck === "idle") {
+      setSignedOutSessionRecheck("checking");
+      void refresh().finally(() => {
+        if (isMountedRef.current) setSignedOutSessionRecheck("checked");
+      });
+      return;
+    }
+
+    if (signedOutSessionRecheck === "checked") {
+      return;
+    }
+  }, [refresh, signedOutSessionRecheck, status]);
 
   useEffect(() => {
     if (status !== "signed-in" || !returningPaymentIntentId) return;
@@ -294,8 +411,8 @@ function SubscribePaymentPage() {
               cvc: securityCode,
             },
             billing: {
-              name: String(formData.get("billingName") ?? defaultName),
-              email: String(formData.get("billingEmail") ?? defaultEmail),
+              name: getRequiredString(formData, "billingName"),
+              email: getRequiredString(formData, "billingEmail"),
               address: {
                 line1: String(formData.get("addressLine1") ?? ""),
                 line2: String(formData.get("addressLine2") ?? ""),
@@ -324,7 +441,7 @@ function SubscribePaymentPage() {
       plan: selectedPlan,
       payment_intent: paymentIntentId,
     });
-    const returnUrl = `${window.location.origin}/subscribe?${params.toString()}`;
+    const returnUrl = `${window.location.origin}/subscribe/success?${params.toString()}`;
     const response = await fetch(
       `https://api.paymongo.com/v1/payment_intents/${encodeURIComponent(paymentIntentId)}/attach`,
       {
@@ -348,9 +465,33 @@ function SubscribePaymentPage() {
     return readPayMongoResponse<PayMongoAttachResponse>(response, "Payment confirmation failed");
   }
 
+  function handleBackToPaymentMethods() {
+    setCheckoutStep("method");
+    setCheckoutMessage(null);
+    setFieldErrors({});
+  }
+
+  async function startHostedCheckout(paymentMethod: HostedPaymentMethodId) {
+    setIsSubmitting(true);
+    try {
+      const checkout = await createSubscriptionCheckout("pro", paymentMethod);
+      if (checkout.redirectUrl) {
+        window.location.assign(checkout.redirectUrl);
+        return;
+      }
+      setCheckoutMessage("Payment checkout did not return a redirect URL.");
+    } catch (error) {
+      console.error("[subscribe] hosted checkout failed", error);
+      setCheckoutMessage(getCheckoutErrorMessage(error));
+    } finally {
+      setIsSubmitting(false);
+    }
+  }
+
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     setCheckoutMessage(null);
+    setFieldErrors({});
 
     if (isCustomPlan) return;
 
@@ -359,8 +500,25 @@ function SubscribePaymentPage() {
       return;
     }
 
-    if (cardNumberError || !isValidCardNumber(cardDigits)) {
-      setCheckoutMessage("Your card number is invalid.");
+    if (checkoutStep === "method") {
+      if (!selectedPaymentMethod) {
+        setCheckoutMessage("Choose a payment method.");
+        return;
+      }
+
+      if (selectedPaymentMethod === "card") {
+        setCheckoutStep("card");
+        return;
+      }
+
+      await startHostedCheckout(selectedPaymentMethod);
+      return;
+    }
+
+    const formData = new FormData(event.currentTarget);
+    const nextFieldErrors = validateBillingForm(formData, cardDigits, expirationDigits, securityCode, cardNumberError);
+    if (Object.keys(nextFieldErrors).length > 0) {
+      setFieldErrors(nextFieldErrors);
       return;
     }
 
@@ -369,19 +527,9 @@ function SubscribePaymentPage() {
       return;
     }
 
-    if (expirationDigits.length !== 4) {
-      setCheckoutMessage("Enter a valid expiration date.");
-      return;
-    }
-
-    if (securityCode.length < 3) {
-      setCheckoutMessage("Enter a valid security code.");
-      return;
-    }
 
     setIsSubmitting(true);
     try {
-      const formData = new FormData(event.currentTarget);
       const intent = await createSubscriptionPaymentIntent("pro");
       window.sessionStorage.setItem(PAYMENT_INTENT_SESSION_KEY, intent.paymentIntentId);
       const paymentMethodId = await createPayMongoPaymentMethod(formData);
@@ -400,7 +548,7 @@ function SubscribePaymentPage() {
       }
 
       if (nextStatus === "awaiting_payment_method") {
-        const detail = getPayMongoErrorDetail(attributes?.last_payment_error);
+        const detail = getCustomerSafePaymentDetail(getPayMongoErrorDetail(attributes?.last_payment_error));
         setCheckoutMessage(detail ? `Payment failed: ${detail}` : "This payment method was rejected.");
         return;
       }
@@ -425,8 +573,16 @@ function SubscribePaymentPage() {
     }
   }
 
+  if (status === "signed-out" && signedOutSessionRecheck === "checked") {
+    return <PipelineLoader label="We could not confirm your sign-in. Please return to signup and try again." />;
+  }
+
   if (status === "loading" || status === "signed-out") {
     return <PipelineLoader label="Preparing payment" />;
+  }
+
+  if (status === "error") {
+    return <PipelineLoader label={sessionError ?? "Preparing payment"} />;
   }
 
   return (
@@ -447,19 +603,80 @@ function SubscribePaymentPage() {
             <strong>Payment</strong>
           </nav>
 
-          <form className={styles.form} onSubmit={handleSubmit}>
-            <CheckoutField htmlFor="billing-name" label="Billing name">
+          <form className={styles.form} noValidate onSubmit={handleSubmit}>
+            {checkoutStep === "method" ? (
+              <>
+                <fieldset className={styles.methodFieldset}>
+                  <legend>Choose payment method</legend>
+                  <div className={styles.methodList}>
+                    {paymentMethods.map((method) => {
+                      const isSelected = selectedPaymentMethod === method.id;
+                      return (
+                        <label
+                          className={cn(styles.methodOption, isSelected && styles.methodOptionSelected)}
+                          data-payment-method-option={method.id}
+                          key={method.id}
+                        >
+                          <input
+                            aria-label={method.label}
+                            checked={isSelected}
+                            name="paymentMethod"
+                            onChange={() => {
+                              setSelectedPaymentMethod(method.id);
+                              setCheckoutMessage(null);
+                            }}
+                            type="radio"
+                            value={method.id}
+                          />
+                          <span className={styles.methodLogoSlot}>
+                            <PaymentMethodLogo id={method.id} />
+                          </span>
+                          <span className={styles.methodOptionContent}>
+                            <span className={styles.methodOptionTop}>
+                              <strong>{method.label}</strong>
+                              <span aria-hidden="true">{isSelected ? "Selected" : ""}</span>
+                            </span>
+                            <em>{method.description}</em>
+                          </span>
+                        </label>
+                      );
+                    })}
+                  </div>
+                </fieldset>
+
+                {checkoutMessage ? (
+                  <p className={styles.notice} role="status">
+                    {checkoutMessage}
+                  </p>
+                ) : null}
+
+                <Button className={styles.submitButton} disabled={isSubmitting} loading={isSubmitting} type="submit" variant="secondary">
+                  {isSubmitting ? "Starting checkout..." : "Continue"}
+                </Button>
+              </>
+            ) : (
+              <>
+                <button className={styles.backButton} data-testid="payment-method-back" onClick={handleBackToPaymentMethods} type="button">
+                  Back to payment methods
+                </button>
+            <CheckoutField error={fieldErrors.billingName} htmlFor="billing-name" label="Billing name">
               <CheckoutInput
                 autoComplete="name"
                 id="billing-name"
                 name="billingName"
-                onChange={(event) => setBillingName(event.target.value)}
+                aria-describedby={fieldErrors.billingName ? "billing-name-error" : undefined}
+                aria-invalid={Boolean(fieldErrors.billingName)}
+                onChange={(event) => {
+                  setBillingName(event.target.value);
+                  clearFieldError("billingName");
+                }}
                 required
                 value={billingName}
               />
             </CheckoutField>
 
             <CheckoutField
+              error={fieldErrors.billingEmail}
               description="Where invoices get sent. This can be different from your account email address."
               htmlFor="billing-email"
               label="Billing email"
@@ -468,7 +685,12 @@ function SubscribePaymentPage() {
                 autoComplete="email"
                 id="billing-email"
                 name="billingEmail"
-                onChange={(event) => setBillingEmail(event.target.value)}
+                aria-describedby={fieldErrors.billingEmail ? "billing-email-error" : undefined}
+                aria-invalid={Boolean(fieldErrors.billingEmail)}
+                onChange={(event) => {
+                  setBillingEmail(event.target.value);
+                  clearFieldError("billingEmail");
+                }}
                 required
                 type="email"
                 value={billingEmail}
@@ -477,14 +699,68 @@ function SubscribePaymentPage() {
 
             <fieldset className={styles.addressGroup}>
               <legend>Billing address</legend>
-              <CheckoutInput name="addressLine1" placeholder="Address line 1" />
-              <CheckoutInput name="addressLine2" placeholder="Address line 2" />
-              <CheckoutInput name="city" placeholder="City" />
-              <div className={styles.twoColumnFields}>
-                <CheckoutInput name="state" placeholder="State/province" />
-                <CheckoutInput name="zip" placeholder="ZIP code" />
+              <CheckoutInput
+                aria-describedby={fieldErrors.addressLine1 ? "address-line-1-error" : undefined}
+                aria-invalid={Boolean(fieldErrors.addressLine1)}
+                aria-label="Address line 1"
+                className={cn(styles.addressFieldControl, styles.addressInputTop)}
+                id="address-line-1"
+                name="addressLine1"
+                onChange={() => clearFieldError("addressLine1")}
+                placeholder="Address line 1"
+                required
+              />
+              {fieldErrors.addressLine1 ? <em className={styles.fieldError} id="address-line-1-error">{fieldErrors.addressLine1}</em> : null}
+              <CheckoutInput className={cn(styles.addressFieldControl, styles.addressInputMiddle)} name="addressLine2" placeholder="Address line 2" />
+              <CheckoutInput
+                aria-describedby={fieldErrors.city ? "city-error" : undefined}
+                aria-invalid={Boolean(fieldErrors.city)}
+                aria-label="City"
+                className={cn(styles.addressFieldControl, styles.addressInputMiddle)}
+                id="city"
+                name="city"
+                onChange={() => clearFieldError("city")}
+                placeholder="City"
+                required
+              />
+              {fieldErrors.city ? <em className={styles.fieldError} id="city-error">{fieldErrors.city}</em> : null}
+              <div className={styles.addressSplitRow}>
+                <CheckoutInput
+                  aria-describedby={fieldErrors.state ? "state-error" : undefined}
+                  aria-invalid={Boolean(fieldErrors.state)}
+                  aria-label="State or province"
+                  className={cn(styles.addressFieldControl, styles.addressInputLeft)}
+                  id="state"
+                  name="state"
+                  onChange={() => clearFieldError("state")}
+                  placeholder="State/province"
+                  required
+                />
+                <CheckoutInput
+                  aria-describedby={fieldErrors.zip ? "zip-error" : undefined}
+                  aria-invalid={Boolean(fieldErrors.zip)}
+                  aria-label="ZIP or postal code"
+                  className={cn(styles.addressFieldControl, styles.addressInputRight)}
+                  id="zip"
+                  name="zip"
+                  onChange={() => clearFieldError("zip")}
+                  placeholder="ZIP code"
+                  required
+                />
               </div>
-              <CheckoutSelect name="country" defaultValue="">
+              {fieldErrors.state ? <em className={styles.fieldError} id="state-error">{fieldErrors.state}</em> : null}
+              {fieldErrors.zip ? <em className={styles.fieldError} id="zip-error">{fieldErrors.zip}</em> : null}
+              <CheckoutSelect
+                aria-describedby={fieldErrors.country ? "country-error" : undefined}
+                aria-invalid={Boolean(fieldErrors.country)}
+                aria-label="Billing country"
+                className={cn(styles.addressFieldControl, styles.addressSelect)}
+                id="country"
+                name="country"
+                defaultValue=""
+                onChange={() => clearFieldError("country")}
+                required
+              >
                 <option value="" disabled>Select billing country</option>
                 <option value="PH">Philippines</option>
                 <option value="US">United States</option>
@@ -495,18 +771,22 @@ function SubscribePaymentPage() {
                 <option value="AS">American Samoa</option>
                 <option value="SG">Singapore</option>
               </CheckoutSelect>
+              {fieldErrors.country ? <em className={styles.fieldError} id="country-error">{fieldErrors.country}</em> : null}
             </fieldset>
 
-            <CheckoutField error={cardNumberError} htmlFor="card-number" label="Card number">
+            <CheckoutField error={cardNumberFieldError} htmlFor="card-number" label="Card number">
               <PaymentInputShell variant="card" suffix={<CardBrandMarks />}>
                 <CheckoutInput
-                  aria-describedby={cardNumberError ? "card-number-error" : undefined}
-                  aria-invalid={Boolean(cardNumberError)}
+                  aria-describedby={cardNumberFieldError ? "card-number-error" : undefined}
+                  aria-invalid={Boolean(cardNumberFieldError)}
                   autoComplete="cc-number"
                   id="card-number"
                   inputMode="numeric"
                   name="cardNumber"
-                  onChange={(event) => setCardDigits(onlyDigits(event.target.value, 16))}
+                  onChange={(event) => {
+                    setCardDigits(onlyDigits(event.target.value, 16));
+                    clearFieldError("cardNumber");
+                  }}
                   pattern="[0-9 ]*"
                   placeholder="1234 1234 1234 1234"
                   value={cardNumber}
@@ -515,28 +795,38 @@ function SubscribePaymentPage() {
             </CheckoutField>
 
             <div className={styles.twoColumnFields}>
-              <CheckoutField htmlFor="expiration" label="Expiration date">
+              <CheckoutField error={fieldErrors.expiration} htmlFor="expiration" label="Expiration date">
                 <CheckoutInput
+                  aria-describedby={fieldErrors.expiration ? "expiration-error" : undefined}
+                  aria-invalid={Boolean(fieldErrors.expiration)}
                   autoComplete="cc-exp"
                   id="expiration"
                   inputMode="numeric"
                   maxLength={7}
                   name="expiration"
-                  onChange={(event) => setExpirationDigits(onlyDigits(event.target.value, 4))}
+                  onChange={(event) => {
+                    setExpirationDigits(onlyDigits(event.target.value, 4));
+                    clearFieldError("expiration");
+                  }}
                   pattern="[0-9 /]*"
                   placeholder="MM / YY"
                   value={expirationDate}
                 />
               </CheckoutField>
-              <CheckoutField htmlFor="security-code" label="Security code">
+              <CheckoutField error={fieldErrors.securityCode} htmlFor="security-code" label="Security code">
                 <PaymentInputShell variant="cvc" suffix={<CvcIcon />}>
                   <CheckoutInput
+                    aria-describedby={fieldErrors.securityCode ? "security-code-error" : undefined}
+                    aria-invalid={Boolean(fieldErrors.securityCode)}
                     autoComplete="cc-csc"
                     id="security-code"
                     inputMode="numeric"
                     maxLength={3}
                     name="securityCode"
-                    onChange={(event) => setSecurityCode(onlyDigits(event.target.value, 3))}
+                    onChange={(event) => {
+                      setSecurityCode(onlyDigits(event.target.value, 3));
+                      clearFieldError("securityCode");
+                    }}
                     pattern="[0-9]*"
                     placeholder="CVC"
                     value={securityCode}
@@ -554,12 +844,16 @@ function SubscribePaymentPage() {
             <Button className={styles.submitButton} disabled={isSubmitting} loading={isSubmitting} type="submit" variant="secondary">
               {isSubmitting ? "Processing payment..." : hasSubscription ? "Manage billing" : "Save payment details"}
             </Button>
+              </>
+            )}
           </form>
 
-          <p className={styles.secureCopy}>
-            <SecureShieldIcon />
-            Card details are encrypted and never stored by AlphaCI.
-          </p>
+          {checkoutStep === "card" ? (
+            <p className={styles.secureCopy}>
+              <SecureShieldIcon />
+              Card details are encrypted and never stored by AlphaCI.
+            </p>
+          ) : null}
         </div>
       </section>
 

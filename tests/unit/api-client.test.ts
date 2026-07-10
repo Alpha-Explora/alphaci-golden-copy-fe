@@ -1244,6 +1244,32 @@ describe("API client project setup helpers", () => {
     );
   });
 
+
+
+  it("creates a method-specific hosted subscription checkout session", async () => {
+    fetchMock.mockResolvedValueOnce({
+      ok: true,
+      status: 201,
+      json: async () => ({
+        checkoutId: "cs_paymongo_123",
+        status: "active",
+        redirectUrl: "https://checkout.paymongo.com/cs_paymongo_123",
+      }),
+    });
+
+    await expect(createSubscriptionCheckout("pro", "gcash")).resolves.toMatchObject({
+      checkoutId: "cs_paymongo_123",
+    });
+
+    expect(fetchMock).toHaveBeenCalledWith(
+      "http://localhost:4000/api/v1/subscription/checkout",
+      expect.objectContaining({
+        method: "POST",
+        body: JSON.stringify({ plan: "pro", paymentMethod: "gcash" }),
+      }),
+    );
+  });
+
   it("loads subscription checkout status", async () => {
     fetchMock.mockResolvedValueOnce({
       ok: true,

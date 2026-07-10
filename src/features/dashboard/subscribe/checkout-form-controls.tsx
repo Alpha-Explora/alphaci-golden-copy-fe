@@ -1,5 +1,7 @@
 import type { InputHTMLAttributes, ReactNode, SelectHTMLAttributes } from "react";
 
+import { cn } from "@/lib/utils";
+
 import styles from "./subscribe-page.styles";
 
 interface CheckoutFieldProps {
@@ -23,18 +25,18 @@ export function CheckoutField({ children, description, error, htmlFor, label }: 
 
 type CheckoutInputProps = InputHTMLAttributes<HTMLInputElement>;
 
-export function CheckoutInput(props: Readonly<CheckoutInputProps>) {
-  return <input className={styles.checkoutInput} {...props} />;
+export function CheckoutInput({ className, ...props }: Readonly<CheckoutInputProps>) {
+  return <input className={cn(styles.checkoutInput, className)} {...props} />;
 }
 
 interface CheckoutSelectProps extends SelectHTMLAttributes<HTMLSelectElement> {
   children: ReactNode;
 }
 
-export function CheckoutSelect({ children, ...props }: Readonly<CheckoutSelectProps>) {
+export function CheckoutSelect({ children, className, ...props }: Readonly<CheckoutSelectProps>) {
   return (
     <span className={styles.selectControl}>
-      <select {...props}>{children}</select>
+      <select className={cn(styles.checkoutInput, className)} {...props}>{children}</select>
       <ChevronDownIcon />
     </span>
   );

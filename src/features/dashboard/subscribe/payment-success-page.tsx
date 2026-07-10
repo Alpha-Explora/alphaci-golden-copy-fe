@@ -12,10 +12,12 @@ import { PipelineLoader } from "@/components/layout/pipeline-loader";
 import { WorkspaceProvider } from "@/components/layout/workspace-context";
 import { useAuthSession } from "@/hooks/use-auth-session";
 import { logout } from "@/lib/api/auth";
+import { getPaymentIntentStatus } from "@/lib/api/client";
 import { isGuest } from "@/lib/auth/subscription";
 import { cn } from "@/lib/utils";
 
 type SuccessPlan = "starter" | "growth" | "business";
+type PaymentConfirmationStatus = "idle" | "confirming" | "confirmed" | "failed";
 
 const planContent: Record<
   SuccessPlan,
@@ -53,7 +55,7 @@ export function UsageCreditCard({ amount }: Readonly<{ amount: string }>) {
   return (
     <article
       className={cn(
-        "relative flex aspect-[1.58/1] w-full max-w-[28rem] flex-col items-center justify-center overflow-hidden rounded-lg border border-white/10",
+        "payment-success-card-pop relative flex aspect-[1.58/1] w-full max-w-[28rem] flex-col items-center justify-center overflow-hidden rounded-lg border border-white/10",
         "bg-[linear-gradient(180deg,#101010_0%,#111827_31%,#0f5ed7_68%,#0ea5e9_100%)] shadow-[0_18px_34px_rgba(0,0,0,0.36)]",
       )}
       aria-label={`${amount} usage credit`}
@@ -81,6 +83,10 @@ function PaymentSuccessContent() {
   const searchParams = useSearchParams();
   const { session, status, refresh } = useAuthSession();
   const [isLoggingOut, setIsLoggingOut] = useState(false);
+  const returnedPaymentIntentId = searchParams.get("payment_intent");
+  const [paymentConfirmationStatus, setPaymentConfirmationStatus] = useState<PaymentConfirmationStatus>(
+    returnedPaymentIntentId ? "confirming" : "idle",
+  );
   const selectedPlan = planContent[getPlan(searchParams.get("plan"))];
 
   useEffect(() => {
@@ -88,6 +94,40 @@ function PaymentSuccessContent() {
       router.replace("/signup");
     }
   }, [router, status]);
+
+  useEffect(() => {
+    if (!returnedPaymentIntentId) {
+      if (paymentConfirmationStatus !== "idle") {
+        setPaymentConfirmationStatus("idle");
+      }
+      return;
+    }
+
+    if (status !== "signed-in") return;
+
+    let active = true;
+    setPaymentConfirmationStatus("confirming");
+
+    void getPaymentIntentStatus(returnedPaymentIntentId)
+      .then(async (result) => {
+        if (!active) return;
+
+        if (result.subscription) {
+          await refresh();
+          if (active) setPaymentConfirmationStatus("confirmed");
+          return;
+        }
+
+        setPaymentConfirmationStatus("failed");
+      })
+      .catch(() => {
+        if (active) setPaymentConfirmationStatus("failed");
+      });
+
+    return () => {
+      active = false;
+    };
+  }, [refresh, returnedPaymentIntentId, status]);
 
   async function handleLogout() {
     setIsLoggingOut(true);
@@ -106,6 +146,14 @@ function PaymentSuccessContent() {
 
   if (status === "signed-out") {
     return <PipelineLoader label="Redirecting to sign up" />;
+  }
+
+  if (returnedPaymentIntentId && paymentConfirmationStatus === "confirming") {
+    return <PipelineLoader label="Confirming payment" />;
+  }
+
+  if (returnedPaymentIntentId && paymentConfirmationStatus === "failed") {
+    return <PipelineLoader label="We could not confirm your payment yet. Please return to billing and try again." />;
   }
 
   const guest = isGuest(session);
@@ -130,12 +178,12 @@ function PaymentSuccessContent() {
         >
           <div className="relative flex w-full max-w-2xl flex-col items-center gap-8">
             <UsageCreditCard amount={selectedPlan.amount} />
-            <p className="m-0 max-w-[34rem] text-balance text-sm leading-6 text-muted-foreground sm:text-base">
+            <p className="payment-success-copy-pop m-0 max-w-[34rem] text-balance text-sm leading-6 text-muted-foreground sm:text-base">
               <span className="font-semibold text-foreground">Your {selectedPlan.planLabel} plan is active.</span>{" "}
               {selectedPlan.message.replace(`Your ${selectedPlan.planLabel} plan is active. `, "")}
             </p>
             <Link
-              className="inline-flex min-h-10 items-center justify-center rounded-md border border-primary bg-primary px-6 text-sm font-semibold text-primary-foreground hover:bg-primary/90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
+              className="payment-success-action-pop inline-flex min-h-10 items-center justify-center rounded-md border border-primary bg-primary px-6 text-sm font-semibold text-primary-foreground hover:bg-primary/90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
               href="/onboarding"
             >
               Get started

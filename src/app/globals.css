@@ -7,6 +7,7 @@
 @import "../styles/auth.css";
 @import "../styles/product-workflows.css";
 @import "../styles/provider-settings.css";
+@import "../styles/payment-success.css";
 @import "tw-animate-css";
 @import "shadcn/tailwind.css";
 @import "../styles/form-controls.css";
@@ -53,4 +54,9 @@
   --radius-2xl: calc(var(--radius) * 1.8);
   --radius-3xl: calc(var(--radius) * 2.2);
   --radius-4xl: calc(var(--radius) * 2.6);
+}
+
+.addressFieldControl:focus {
+  border-color: rgba(56, 189, 248, 0.55);
+  box-shadow: none;
 }

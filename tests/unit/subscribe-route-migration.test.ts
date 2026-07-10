@@ -23,6 +23,11 @@ describe("subscribe payment route", () => {
     process.cwd(),
     "src/features/dashboard/subscribe/checkout-form-controls.tsx",
   );
+  const globalStylesPath = path.join(process.cwd(), "src/app/globals.css");
+  const paymentSuccessStylesPath = path.join(
+    process.cwd(),
+    "src/styles/payment-success.css",
+  );
 
   it("keeps the standalone subscribe app route", () => {
     expect(fs.existsSync(routePath)).toBe(true);
@@ -57,7 +62,21 @@ describe("subscribe payment route", () => {
     expect(source).toContain('href="/onboarding"');
     expect(source).toContain("Get started");
     expect(source).toContain("Your Starter plan is active");
+    expect(source).toContain("payment-success-card-pop");
+    expect(source).toContain("payment-success-copy-pop");
+    expect(source).toContain("payment-success-action-pop");
     expect(source).not.toContain('href="/home"');
+  });
+
+  it("keeps the payment success card bottom-pop animation accessible", () => {
+    const globalStyles = fs.readFileSync(globalStylesPath, "utf8");
+    const paymentSuccessStyles = fs.readFileSync(paymentSuccessStylesPath, "utf8");
+
+    expect(globalStyles).toContain('../styles/payment-success.css');
+    expect(paymentSuccessStyles).toContain("payment-success-card-pop");
+    expect(paymentSuccessStyles).toContain("@keyframes paymentSuccessCardPop");
+    expect(paymentSuccessStyles).toContain("@keyframes paymentSuccessDetailPop");
+    expect(paymentSuccessStyles).toContain("prefers-reduced-motion: reduce");
   });
 
   it("keeps the custom payment form while tokenizing through PayMongo", () => {

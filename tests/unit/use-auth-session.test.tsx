@@ -1,7 +1,7 @@
 import { act, useEffect } from "react";
 import { createRoot, type Root } from "react-dom/client";
 
-import { useAuthSession } from "../../src/hooks/use-auth-session";
+import { AUTH_SESSION_TIMEOUT_MS, useAuthSession } from "../../src/hooks/use-auth-session";
 import { ApiError, getAuthSession } from "../../src/lib/api/client";
 import type { AuthMeResponse } from "../../src/lib/api/contracts";
 
@@ -106,6 +106,7 @@ describe("useAuthSession", () => {
       root.unmount();
     });
     container.remove();
+    jest.useRealTimers();
   });
 
   async function mountProbe() {
@@ -155,6 +156,21 @@ describe("useAuthSession", () => {
     expect(latestSnapshot?.error).toBe("Unable to verify your session right now.");
   });
 
+  it("times out when the initial session check never resolves", async () => {
+    jest.useFakeTimers();
+    mockedGetAuthSession.mockReturnValue(new Promise(() => undefined));
+
+    await mountProbe();
+    expect(latestSnapshot?.status).toBe("loading");
+
+    await act(async () => {
+      jest.advanceTimersByTime(AUTH_SESSION_TIMEOUT_MS);
+      await Promise.resolve();
+    });
+
+    await waitForCondition(() => latestSnapshot?.status === "error");
+    expect(latestSnapshot?.error).toBe("Unable to verify your session right now.");
+  });
   it("refresh transitions from signed-out to signed-in", async () => {
     mockedGetAuthSession
       .mockResolvedValueOnce(buildSession({ authenticated: false }))

@@ -55,7 +55,7 @@ const signupPlans: Array<{
     name: "Starter",
     description: "Everything needed to start deploying governed workflows.",
     price: "\u20B1300 per month",
-    note: "Self-serve checkout",
+    note: "Paid monthly",
     features: [
       "GitHub-backed workflow generation",
       "Project setup and release visibility",
@@ -103,6 +103,7 @@ function SignupPlanSelector({
             className={`${cardStyles.planOption}${
               selectedPlan === plan.id ? ` ${cardStyles.planOptionSelected}` : ""
             }`}
+            data-selected={selectedPlan === plan.id ? "true" : undefined}
             key={plan.id}
           >
             <input
@@ -117,10 +118,11 @@ function SignupPlanSelector({
                 <strong>{plan.name}</strong>
                 <em>{plan.description}</em>
               </span>
-              <i aria-hidden="true" />
+              <i className={cardStyles.planRadio} aria-hidden="true" />
             </span>
             <span className={cardStyles.planPrice}>
               {plan.price}
+              {selectedPlan === plan.id ? <span className={cardStyles.selectedBadge}>Selected</span> : null}
               {plan.note ? <b>{plan.note}</b> : null}
             </span>
             <span className={cardStyles.planDivider} />

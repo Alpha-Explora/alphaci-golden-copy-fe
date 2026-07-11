@@ -594,10 +594,8 @@ export function OAuthAuthPage({
           return;
         }
 
-        const redirectPath = getAuthenticatedRedirectPath(currentSession, postAuthPath);
-        if (redirectPath) {
-          router.replace(redirectPath);
-        }
+        const redirectPath = getAuthenticatedRedirectPath(currentSession, postAuthPath) ?? postAuthPath;
+        router.replace(redirectPath);
       });
     }
 

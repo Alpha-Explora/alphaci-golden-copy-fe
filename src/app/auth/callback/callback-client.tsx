@@ -554,7 +554,8 @@ export function AuthCallbackClient() {
         if (disposedRef.current) return;
 
         const redirectPath = getAuthenticatedRedirectPath(session, nextPath);
-        if (redirectPath && !finishPopupAuth()) router.replace(redirectPath);
+        const popupFinished = finishPopupAuth();
+        if (!popupFinished && redirectPath) router.replace(redirectPath);
       } catch (error) {
         if (disposedRef.current) return;
 

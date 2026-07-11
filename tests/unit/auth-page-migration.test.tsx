@@ -197,7 +197,7 @@ describe("OAuth auth page migration", () => {
     root = result.root;
 
     expect(mockedCreateGitHubLoginUrl).toHaveBeenLastCalledWith(
-      "http://localhost/auth/callback?intent=signup&next=%2Fsignup%3Fstep%3Dplan&provider=github",
+      "http://localhost/auth/callback?intent=signup&next=%2Fsignup%3Fstep%3Dplan&popup=1&provider=github",
     );
   });
   it("recovers GitHub App callbacks that land directly on signup", () => {

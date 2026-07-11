@@ -62,13 +62,24 @@ function getAuthPopupTargetOrigins(currentOrigin: string) {
   return Array.from(origins);
 }
 
-function finishPopupAuth() {
-  if (!window.opener) {
+const GITHUB_AUTH_COMPLETION_STORAGE_KEY = "alphaci:github-auth-complete";
+
+function finishPopupAuth(isPopupRequest: boolean) {
+  const isPopup = isPopupRequest || Boolean(window.opener);
+  if (!isPopup) {
     return false;
   }
 
-  for (const origin of getAuthPopupTargetOrigins(window.location.origin)) {
-    window.opener.postMessage({ type: "alphaci:github-auth-complete" }, origin);
+  try {
+    window.localStorage.setItem(GITHUB_AUTH_COMPLETION_STORAGE_KEY, String(Date.now()));
+  } catch {
+    // Private browsing may block storage; postMessage remains the fast path.
+  }
+
+  if (window.opener) {
+    for (const origin of getAuthPopupTargetOrigins(window.location.origin)) {
+      window.opener.postMessage({ type: "alphaci:github-auth-complete" }, origin);
+    }
   }
 
   window.setTimeout(() => window.close(), 300);
@@ -474,6 +485,7 @@ export function AuthCallbackClient() {
   const nextPath = toSafeNextPath(searchParams.get("next"));
   const provider = toSafeProvider(searchParams.get("provider"));
   const providerName = providerDisplayName(provider);
+  const isPopupRequest = searchParams.get("popup") === "1";
 
   const [state, setState] = useState<CallbackState>("checking");
   const [message, setMessage] = useState<string>(statusMessage(authStatus, provider));
@@ -554,7 +566,7 @@ export function AuthCallbackClient() {
         if (disposedRef.current) return;
 
         const redirectPath = getAuthenticatedRedirectPath(session, nextPath);
-        const popupFinished = finishPopupAuth();
+        const popupFinished = finishPopupAuth(isPopupRequest);
         if (!popupFinished && redirectPath) router.replace(redirectPath);
       } catch (error) {
         if (disposedRef.current) return;

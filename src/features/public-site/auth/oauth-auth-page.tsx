@@ -45,6 +45,7 @@ type GitHubInstallationMessage = {
 type GitHubAuthCompleteMessage = {
   type: "alphaci:github-auth-complete";
 };
+const GITHUB_AUTH_COMPLETION_STORAGE_KEY = "alphaci:github-auth-complete";
 
 const signupPlans: Array<{
   id: SignupPlanId;
@@ -514,6 +515,7 @@ export function OAuthAuthPage({
     const callbackPath = new URLSearchParams({
       intent: mode,
       next: postAuthPath,
+      popup: "1",
       provider: "github",
     });
     const relativeCallbackPath = `/auth/callback?${callbackPath.toString()}`;
@@ -581,13 +583,11 @@ export function OAuthAuthPage({
   }, [searchParams]);
 
   useEffect(() => {
-    function handleGitHubAuthComplete(event: MessageEvent) {
-      if (
-        !getGitHubInstallationTargetOrigins(window.location.origin).includes(event.origin) ||
-        !isGitHubAuthCompleteMessage(event.data)
-      ) {
-        return;
-      }
+    let completionHandled = false;
+
+    function completeGitHubAuth() {
+      if (completionHandled) return;
+      completionHandled = true;
 
       void refresh().then((currentSession) => {
         if (!currentSession?.authenticated) {
@@ -599,8 +599,29 @@ export function OAuthAuthPage({
       });
     }
 
+    function handleGitHubAuthComplete(event: MessageEvent) {
+      if (
+        !getGitHubInstallationTargetOrigins(window.location.origin).includes(event.origin) ||
+        !isGitHubAuthCompleteMessage(event.data)
+      ) {
+        return;
+      }
+
+      completeGitHubAuth();
+    }
+
+    function handleGitHubAuthStorage(event: StorageEvent) {
+      if (event.key === GITHUB_AUTH_COMPLETION_STORAGE_KEY && event.newValue) {
+        completeGitHubAuth();
+      }
+    }
+
     window.addEventListener("message", handleGitHubAuthComplete);
-    return () => window.removeEventListener("message", handleGitHubAuthComplete);
+    window.addEventListener("storage", handleGitHubAuthStorage);
+    return () => {
+      window.removeEventListener("message", handleGitHubAuthComplete);
+      window.removeEventListener("storage", handleGitHubAuthStorage);
+    };
   }, [postAuthPath, refresh, router]);
 
   useEffect(() => {

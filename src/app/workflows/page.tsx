@@ -15,7 +15,7 @@ import { WorkspaceProvider } from "@/components/layout/workspace-context";
 import { WorkflowBuilder } from "../../components/product/workflow-builder";
 import { useAuthSession } from "@/hooks/use-auth-session";
 import { logout } from "@/lib/api/client";
-import { isGuest } from "@/lib/auth/subscription";
+import { getRouteAccessRedirect, isGuest } from "@/lib/auth/subscription";
 import { cn } from "@/lib/utils";
 
 /* ── Page ───────────────────────────────────────────────────────────────────── */
@@ -24,6 +24,7 @@ export default function WorkflowsPage() {
   const router = useRouter();
   const prefersReducedMotion = useReducedMotion();
   const { status, session, error, refresh } = useAuthSession();
+  const routeRedirect = getRouteAccessRedirect(session, "/workflows", "paid");
   const [isLoggingOut, setIsLoggingOut]   = useState(false);
   const [logoutMessage, setLogoutMessage] = useState<string | null>(null);
 
@@ -43,16 +44,16 @@ export default function WorkflowsPage() {
 
   /* ── Guard: loading ─────────────────────────────────────────────────────── */
   useEffect(() => {
-    if (status === "signed-out") {
-      router.replace("/signup");
+    if (routeRedirect) {
+      router.replace(routeRedirect);
     }
-  }, [router, status]);
+  }, [routeRedirect, router]);
   if (status === "loading") {
     return <PipelineLoader label="Loading Workflow Studio" />;
   }
 
-  if (status === "signed-out") {
-    return <PipelineLoader label="Redirecting to sign up" />;
+  if (routeRedirect) {
+    return <PipelineLoader label="Checking workspace access" />;
   }
 
   /* ── Guard: error ───────────────────────────────────────────────────────── */

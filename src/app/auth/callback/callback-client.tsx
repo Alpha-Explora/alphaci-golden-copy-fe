@@ -43,6 +43,38 @@ function providerDisplayName(provider: OAuthProvider): "GitHub" | "Google" {
   return provider === "google" ? "Google" : "GitHub";
 }
 
+function isLoopbackHost(hostname: string) {
+  return hostname === "localhost" || hostname === "127.0.0.1";
+}
+
+function getAuthPopupTargetOrigins(currentOrigin: string) {
+  const origins = new Set([currentOrigin]);
+  try {
+    const current = new URL(currentOrigin);
+    if (isLoopbackHost(current.hostname)) {
+      current.hostname = current.hostname === "localhost" ? "127.0.0.1" : "localhost";
+      origins.add(current.origin);
+    }
+  } catch {
+    // Keep the current origin only.
+  }
+
+  return Array.from(origins);
+}
+
+function finishPopupAuth() {
+  if (!window.opener) {
+    return false;
+  }
+
+  for (const origin of getAuthPopupTargetOrigins(window.location.origin)) {
+    window.opener.postMessage({ type: "alphaci:github-auth-complete" }, origin);
+  }
+
+  window.setTimeout(() => window.close(), 300);
+  return true;
+}
+
 function formatDate(iso: string): string {
   try {
     return new Intl.DateTimeFormat("en-US", {
@@ -522,7 +554,7 @@ export function AuthCallbackClient() {
         if (disposedRef.current) return;
 
         const redirectPath = getAuthenticatedRedirectPath(session, nextPath);
-        if (redirectPath) router.replace(redirectPath);
+        if (redirectPath && !finishPopupAuth()) router.replace(redirectPath);
       } catch (error) {
         if (disposedRef.current) return;
 

@@ -14,5 +14,22 @@ export function getAuthenticatedRedirectPath(
   nextPath: string,
 ): string | null {
   if (!session?.authenticated) return null;
-  return hasActiveSubscription(session) ? nextPath : "/signup?step=plan";
+  return getRouteAccessRedirect(session, nextPath, "paid");
+}
+
+export type RouteAccess = "public" | "authenticated" | "paid";
+
+export function getRouteAccessRedirect(
+  session: AuthMeResponse | null | undefined,
+  nextPath: string,
+  access: RouteAccess,
+): string | null {
+  if (access === "public") return null;
+  if (!session?.authenticated) {
+    return `/login?next=${encodeURIComponent(nextPath)}`;
+  }
+  if (access === "paid" && !hasActiveSubscription(session)) {
+    return "/signup?step=plan";
+  }
+  return null;
 }

@@ -42,6 +42,10 @@ type GitHubInstallationMessage = {
   setupAction?: string | null;
 };
 
+type GitHubAuthCompleteMessage = {
+  type: "alphaci:github-auth-complete";
+};
+
 const signupPlans: Array<{
   id: SignupPlanId;
   name: string;
@@ -267,6 +271,10 @@ function getGitHubInstallationTargetOrigins(currentOrigin: string) {
   }
 
   return Array.from(origins);
+}
+
+function isGitHubAuthCompleteMessage(data: unknown): data is GitHubAuthCompleteMessage {
+  return !!data && typeof data === "object" && (data as { type?: unknown }).type === "alphaci:github-auth-complete";
 }
 
 function _ProductPreviewPanel() {
@@ -573,6 +581,31 @@ export function OAuthAuthPage({
   }, [searchParams]);
 
   useEffect(() => {
+    function handleGitHubAuthComplete(event: MessageEvent) {
+      if (
+        !getGitHubInstallationTargetOrigins(window.location.origin).includes(event.origin) ||
+        !isGitHubAuthCompleteMessage(event.data)
+      ) {
+        return;
+      }
+
+      void refresh().then((currentSession) => {
+        if (!currentSession?.authenticated) {
+          return;
+        }
+
+        const redirectPath = getAuthenticatedRedirectPath(currentSession, postAuthPath);
+        if (redirectPath) {
+          router.replace(redirectPath);
+        }
+      });
+    }
+
+    window.addEventListener("message", handleGitHubAuthComplete);
+    return () => window.removeEventListener("message", handleGitHubAuthComplete);
+  }, [postAuthPath, refresh, router]);
+
+  useEffect(() => {
     if (!isPlanSelectionRoute) return;
     setSignupStep("plan");
   }, [isPlanSelectionRoute]);
@@ -610,7 +643,18 @@ export function OAuthAuthPage({
   }
 
   function startGitHubLogin() {
-    void startProviderLogin(githubLoginHref);
+    const width = 560;
+    const height = 720;
+    const left = Math.max(0, window.screenX + (window.outerWidth - width) / 2);
+    const top = Math.max(0, window.screenY + (window.outerHeight - height) / 2);
+
+    window.open(
+      githubLoginHref,
+      "alphaci-github-auth",
+      `popup=yes,width=${width},height=${height},left=${left},top=${top},resizable=yes,scrollbars=yes`,
+    );
+
+    void warmupBackend().catch(() => undefined);
   }
 
   function handleGoogleStart() {
@@ -684,7 +728,9 @@ export function OAuthAuthPage({
         email,
         password: String(formData.get("password") ?? ""),
       });
-      router.replace(postAuthPath);
+      const currentSession = await refresh();
+      const redirectPath = getAuthenticatedRedirectPath(currentSession, postAuthPath);
+      router.replace(redirectPath ?? "/");
     } catch (error) {
       setAuthMessage(
         mode === "login"

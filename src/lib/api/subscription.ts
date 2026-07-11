@@ -7,7 +7,7 @@ import type {
 } from "./contracts";
 import { request } from "./request";
 
-export type SubscriptionHostedPaymentMethod = "gcash" | "maya";
+export type SubscriptionHostedPaymentMethod = "ewallets";
 
 export async function createSubscriptionCheckout(
   plan: "pro",
@@ -29,13 +29,23 @@ export async function getCheckoutStatus(
 
 export async function createSubscriptionPaymentIntent(
   plan: "pro",
+  paymentMethod: "card" | "gcash" | "paymaya" | "qrph" = "card",
 ): Promise<SubscriptionPaymentIntentResponse> {
   return request<SubscriptionPaymentIntentResponse>(
     "/subscription/payment-intent",
     {
       method: "POST",
-      body: JSON.stringify({ plan }),
+      body: JSON.stringify({ plan, paymentMethod }),
     },
+  );
+}
+
+export async function cancelSubscriptionPaymentIntent(
+  paymentIntentId: string,
+): Promise<{ status: string }> {
+  return request<{ status: string }>(
+    `/subscription/payment-intent/${encodeURIComponent(paymentIntentId)}/cancel`,
+    { method: "POST" },
   );
 }
 

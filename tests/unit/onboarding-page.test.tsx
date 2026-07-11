@@ -152,8 +152,8 @@ describe("OnboardingPage", () => {
     expect(result.container).toHaveTextContent("Ship your first application");
     expect(result.container.querySelectorAll("[data-onboarding-step]")).toHaveLength(1);
     expect(result.container.querySelector("[data-onboarding-step='connect-github']")).not.toBeNull();
-    expect(result.container).toHaveTextContent("Step 2 of 4 - Connect your source control provider");
-    expect(result.container).not.toHaveTextContent("Step 2 of 4 - Authorize GitHub access");
+    expect(result.container).toHaveTextContent("Step 2 of 4·Connect your source control provider");
+    expect(result.container).not.toHaveTextContent("Step 2 of 4·Authorize GitHub access");
     expect(result.container).not.toHaveTextContent("Step 3 of 4 - Select a repository");
 
     await flushAsyncEffects();
@@ -170,12 +170,12 @@ describe("OnboardingPage", () => {
 
     expect(result.container.querySelectorAll("[data-onboarding-step]")).toHaveLength(1);
     expect(result.container.querySelector("[data-onboarding-step='connect-github']")).not.toBeNull();
-    expect(result.container).not.toHaveTextContent("Step 2 of 4 - Authorize GitHub access");
+    expect(result.container).not.toHaveTextContent("Step 2 of 4·Authorize GitHub access");
     expect(result.container).not.toHaveTextContent("Authorized as");
     expect(mockedLinkGithubInstallation).not.toHaveBeenCalled();
   });
 
-  it("starts at repository selection when GitHub is already connected", async () => {
+  it("shows the authorized GitHub account before repository selection", async () => {
     mockUseAuthSession.mockReturnValue(signedInAuthSession({ githubConnected: true }));
 
     const result = render(<OnboardingPage />);
@@ -184,8 +184,15 @@ describe("OnboardingPage", () => {
     await flushAsyncEffects();
 
     expect(result.container.querySelectorAll("[data-onboarding-step]")).toHaveLength(1);
-    expect(result.container.querySelector("[data-onboarding-step='select-repository']")).not.toBeNull();
+    expect(result.container.querySelector("[data-onboarding-step='authorize-github']")).not.toBeNull();
     expect(result.container.querySelector("[data-onboarding-step='connect-github']")).toBeNull();
+    expect(result.container).toHaveTextContent("Step 2 of 4·Authorize GitHub access");
+    expect(result.container).toHaveTextContent("Authorized as");
+    expect(result.container).toHaveTextContent("antoneeeems");
+
+    click(result.container.querySelector("button[data-action='finish-github-setup']"));
+
+    expect(result.container.querySelector("[data-onboarding-step='select-repository']")).not.toBeNull();
     expect(result.container).toHaveTextContent("Step 3 of 4 - Select a repository");
     expect(result.container).toHaveTextContent("Use a template");
     expect(result.container.querySelectorAll("button[data-template]")).toHaveLength(4);
@@ -239,6 +246,7 @@ describe("OnboardingPage", () => {
     root = result.root;
 
     await flushAsyncEffects();
+    click(result.container.querySelector("button[data-action='finish-github-setup']"));
 
     expect(result.container.querySelector("[data-onboarding-step='select-repository']")).not.toBeNull();
     expect(result.container).toHaveTextContent("Import a repository");

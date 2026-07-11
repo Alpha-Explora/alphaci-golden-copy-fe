@@ -17,7 +17,7 @@ import { WelcomeModal } from "@/components/product/welcome-modal";
 import { useAuthSession } from "@/hooks/use-auth-session";
 import { logout } from "@/lib/api/client";
 import { completeOnboarding } from "@/lib/api/auth";
-import { isGuest } from "@/lib/auth/subscription";
+import { getRouteAccessRedirect, isGuest } from "@/lib/auth/subscription";
 
 import { HomeActivityPanel } from "./home-activity-panel";
 import { HomeDashboardHeader } from "./home-dashboard-header";
@@ -32,6 +32,7 @@ import { useHomeDashboardData } from "./use-home-dashboard-data";
 function HomeDashboardContent() {
   const router = useRouter();
   const { status, session, error, refresh } = useAuthSession();
+  const routeRedirect = getRouteAccessRedirect(session, "/home", "paid");
   const { selectedWorkspaceId } = useWorkspaceSelection();
   const prefersReducedMotion = useReducedMotion();
   const [isLoggingOut, setIsLoggingOut]     = useState(false);
@@ -91,16 +92,16 @@ function HomeDashboardContent() {
 
   /* Guard: loading */
   useEffect(() => {
-    if (status === "signed-out") {
-      router.replace("/signup");
+    if (routeRedirect) {
+      router.replace(routeRedirect);
     }
-  }, [router, status]);
+  }, [routeRedirect, router]);
   if (status === "loading") {
     return <PipelineLoader label="Loading your dashboard" />;
   }
 
-  if (status === "signed-out") {
-    return <PipelineLoader label="Redirecting to sign up" />;
+  if (routeRedirect) {
+    return <PipelineLoader label="Checking workspace access" />;
   }
 
   /* Guard: error */

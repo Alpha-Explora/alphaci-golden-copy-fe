@@ -31,7 +31,7 @@ import { logout } from "@/lib/api/auth";
 import { getGithubAppInstallUrl, linkGithubInstallation } from "@/lib/api/client";
 import { createProject } from "@/lib/api/projects";
 import type { SubscriptionInfo } from "@/lib/api/contracts";
-import { isGuest } from "@/lib/auth/subscription";
+import { getRouteAccessRedirect, isGuest } from "@/lib/auth/subscription";
 import { cn } from "@/lib/utils";
 
 type OnboardingStep = "connect-github" | "authorize-github" | "select-repository" | "create-application";
@@ -282,6 +282,16 @@ function TimelineRow({
   );
 }
 
+function StepLabel({ step, children }: Readonly<{ step: string; children: React.ReactNode }>) {
+  return (
+    <span className="inline-flex flex-wrap items-baseline gap-x-1.5">
+      <span className="font-normal text-muted-foreground">{step}</span>
+      <span className="font-normal text-muted-foreground" aria-hidden="true">·</span>
+      <span className="font-semibold text-foreground">{children}</span>
+    </span>
+  );
+}
+
 function FlowHeader() {
   return (
     <div className="ml-9 flex flex-col gap-2">
@@ -322,7 +332,7 @@ function ConnectGitHubStep({
         copy="Connect your Git provider to deploy an existing repository or start from a template."
         trail={false}
       >
-        Step 2 of 4 - Connect your source control provider
+        <StepLabel step="Step 2 of 4">Connect your source control provider</StepLabel>
       </TimelineRow>
       <div className="ml-9 flex flex-col gap-3">
         <Button
@@ -363,7 +373,7 @@ function AuthorizeGitHubStep({
         copy="Finish your GitHub installation by giving AlphaCI permission to access your repositories."
         trail={false}
       >
-        Step 2 of 4 - Authorize GitHub access
+        <StepLabel step="Step 2 of 4">Authorize GitHub access</StepLabel>
       </TimelineRow>
       <Card className="ml-9 grid min-h-[4.5rem] grid-cols-[2.25rem_minmax(0,1fr)_auto_auto] items-center gap-3 px-3 py-3 max-sm:grid-cols-[2.25rem_minmax(0,1fr)]">
         <div className="flex size-9 items-center justify-center rounded-md border border-border bg-muted text-muted-foreground" aria-hidden="true">
@@ -732,8 +742,9 @@ function ActiveStep({
 function OnboardingContent() {
   const router = useRouter();
   const { session, status, refresh } = useAuthSession();
+  const routeRedirect = getRouteAccessRedirect(session, "/onboarding", "paid");
   const [isLoggingOut, setIsLoggingOut] = useState(false);
-  const [currentStep, setCurrentStep] = useState<OnboardingStep>("connect-github");
+  const [currentStep, setCurrentStep] = useState<OnboardingStep>(session?.githubConnected ? "authorize-github" : "connect-github");
   const [selectedRepository, setSelectedRepository] = useState<Repository>(applicationTemplates[0]);
   const [githubInstallation, setGithubInstallation] = useState<GitHubInstallationState>({
     accountLogin: session?.user.login ?? "GitHub account",
@@ -746,17 +757,17 @@ function OnboardingContent() {
   const [setupMessage, setSetupMessage] = useState<string | null>(null);
 
   useEffect(() => {
-    if (status === "signed-out") {
-      router.replace(getOnboardingSignupRedirectHref());
+    if (routeRedirect) {
+      router.replace(routeRedirect);
     }
-  }, [router, status]);
+  }, [routeRedirect, router]);
 
   useEffect(() => {
     if (status !== "signed-in" || !session?.githubConnected) {
       return;
     }
 
-    setCurrentStep((current) => current === "connect-github" ? "select-repository" : current);
+    setCurrentStep((current) => current === "connect-github" ? "authorize-github" : current);
   }, [session?.githubConnected, status]);
 
   useEffect(() => {
@@ -956,8 +967,8 @@ function OnboardingContent() {
     return <PipelineLoader label="Loading onboarding" />;
   }
 
-  if (status === "signed-out") {
-    return <PipelineLoader label="Redirecting to sign up" />;
+  if (routeRedirect) {
+    return <PipelineLoader label="Checking workspace access" />;
   }
 
   const guest = isGuest(session);

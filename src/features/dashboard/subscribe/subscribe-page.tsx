@@ -1,5 +1,6 @@
 "use client";
 
+
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { FormEvent, Suspense, useEffect, useMemo, useRef, useState } from "react";
@@ -9,7 +10,6 @@ import { PipelineLoader } from "@/components/layout/pipeline-loader";
 import { Button } from "@/components/ui/button";
 import { useAuthSession } from "@/hooks/use-auth-session";
 import {
-  createSubscriptionCheckout,
   createSubscriptionPaymentIntent,
   getPaymentIntentStatus,
 } from "@/lib/api/client";
@@ -40,9 +40,9 @@ const PAYMONGO_DOCUMENTED_TEST_CARD_NUMBERS = new Set(["5123000000000002"]);
 const CARD_NUMBER_LENGTH_FOR_INLINE_VALIDATION = 16;
 
 const paymentMethods: Array<{ id: PaymentMethodId; label: string; description: string }> = [
-  { id: "card", label: "Card", description: "Visa or Mastercard." },
-  { id: "gcash", label: "GCash", description: "Pay with your GCash wallet." },
-  { id: "maya", label: "Maya", description: "Pay with Maya." },
+  { id: "card", label: "Credit or Debit Card", description: "Visa or Mastercard." },
+  { id: "ewallets", label: "E-Wallets", description: "Choose GCash or Maya on PayMongo." },
+  { id: "qrph", label: "Scan to Pay", description: "Pay with a QR Ph bank or wallet app." },
 ];
 
 type BillingFieldErrors = Partial<Record<
@@ -60,9 +60,9 @@ type BillingFieldErrors = Partial<Record<
 >>;
 
 type SubscribePlanId = "starter" | "growth" | "business";
-type HostedPaymentMethodId = "gcash" | "maya";
-type PaymentMethodId = HostedPaymentMethodId | "card";
-type CheckoutStep = "method" | "card";
+type WalletPaymentMethodId = "gcash" | "paymaya";
+type PaymentMethodId = WalletPaymentMethodId | "ewallets" | "card" | "qrph";
+type CheckoutStep = "method" | "wallet" | "card" | "qrph";
 
 interface PayMongoPaymentMethodResponse {
   data?: {
@@ -87,6 +87,9 @@ interface PayMongoAttachResponse {
           url?: string;
         };
         redirect_url?: string;
+        code?: {
+          image_url?: string;
+        };
       };
       last_payment_error?: {
         code?: string;
@@ -148,6 +151,10 @@ function PaymentMethodLogo({ id }: { id: PaymentMethodId }) {
     );
   }
 
+  if (id === "ewallets") {
+    return <EWalletLogos />;
+  }
+
   if (id === "gcash") {
     return (
       <span className={styles.methodWalletLogo} data-payment-method-logo="gcash" aria-label="GCash">
@@ -156,10 +163,63 @@ function PaymentMethodLogo({ id }: { id: PaymentMethodId }) {
     );
   }
 
+  if (id === "paymaya") {
+    return (
+      <span className={styles.methodWalletLogo} data-payment-method-logo="maya" aria-label="Maya">
+        <img alt="Maya" src="/payment-logos/maya.svg" />
+      </span>
+    );
+  }
+
   return (
-    <span className={styles.methodWalletLogo} data-payment-method-logo="maya" aria-label="Maya">
+    <span className={styles.methodWalletLogo} data-payment-method-logo="qrph" aria-label="QR Ph">
+      <img alt="QR Ph" src="/payment-logos/qrph.svg" />
+    </span>
+  );
+}
+
+function EWalletLogos() {
+  return (
+    <span className={styles.walletLogoMarks} aria-label="GCash and Maya accepted">
+      <img alt="GCash" src="/payment-logos/gcash.svg" />
       <img alt="Maya" src="/payment-logos/maya.svg" />
     </span>
+  );
+}
+
+function PaymentMethodOption({
+  method,
+  selected,
+  onSelect,
+}: Readonly<{
+  method: (typeof paymentMethods)[number];
+  selected: boolean;
+  onSelect: () => void;
+}>) {
+  return (
+    <label
+      className={cn(styles.methodOption, selected && styles.methodOptionSelected)}
+      data-payment-method-option={method.id}
+    >
+      <input
+        aria-label={method.label}
+        checked={selected}
+        name="paymentMethod"
+        onChange={onSelect}
+        type="radio"
+        value={method.id}
+      />
+      <span className={styles.methodLogoSlot}>
+        <PaymentMethodLogo id={method.id} />
+      </span>
+      <span className={styles.methodOptionContent}>
+        <span className={styles.methodOptionTop}>
+          <strong>{method.label}</strong>
+          <span aria-hidden="true">{selected ? "Selected" : ""}</span>
+        </span>
+        <em>{method.description}</em>
+      </span>
+    </label>
   );
 }
 
@@ -254,6 +314,10 @@ function getRedirectUrl(payload: PayMongoAttachResponse) {
   return nextAction?.redirect?.url ?? nextAction?.redirect_url ?? null;
 }
 
+function getQrCodeImageUrl(payload: PayMongoAttachResponse) {
+  return payload.data?.attributes?.next_action?.code?.image_url ?? null;
+}
+
 function getExpiryParts(value: string) {
   const month = Number(value.slice(0, 2));
   const year = Number(`20${value.slice(2, 4)}`);
@@ -290,6 +354,10 @@ function SubscribePaymentPage() {
   const [fieldErrors, setFieldErrors] = useState<BillingFieldErrors>({});
   const [checkoutStep, setCheckoutStep] = useState<CheckoutStep>("method");
   const [selectedPaymentMethod, setSelectedPaymentMethod] = useState<PaymentMethodId | null>(null);
+  const [selectedWalletPaymentMethod, setSelectedWalletPaymentMethod] = useState<WalletPaymentMethodId | null>(null);
+
+  const [qrCodeImageUrl, setQrCodeImageUrl] = useState<string | null>(null);
+  const [qrPaymentIntentId, setQrPaymentIntentId] = useState<string | null>(null);
   const [billingName, setBillingName] = useState("");
   const [billingEmail, setBillingEmail] = useState("");
   const [cardDigits, setCardDigits] = useState("");
@@ -311,6 +379,11 @@ function SubscribePaymentPage() {
   const expirationDate = formatExpiry(expirationDigits);
   const cardNumberError = cardDigits.length >= CARD_NUMBER_LENGTH_FOR_INLINE_VALIDATION && !isValidCardNumber(cardDigits) ? "Your card number is invalid." : null;
   const cardNumberFieldError = cardNumberError ?? fieldErrors.cardNumber ?? null;
+  const walletPaymentMethods: Array<{ id: WalletPaymentMethodId; label: string; description: string }> = [
+    { id: "gcash", label: "GCash", description: "Continue in GCash to authorize payment." },
+    { id: "paymaya", label: "Maya", description: "Continue in Maya to authorize payment." },
+  ];
+
 
   useEffect(() => {
     if (!defaultEmail) return;
@@ -329,6 +402,25 @@ function SubscribePaymentPage() {
   useEffect(() => {
     return () => {
       isMountedRef.current = false;
+    };
+  }, []);
+
+  useEffect(() => {
+    const resetPaymentMethodStep = () => {
+      setCheckoutStep("method");
+      setSelectedPaymentMethod(null);
+      setSelectedWalletPaymentMethod(null);
+      setCheckoutMessage(null);
+      setQrCodeImageUrl(null);
+      setQrPaymentIntentId(null);
+      setIsSubmitting(false);
+    };
+
+    window.addEventListener("popstate", resetPaymentMethodStep);
+    window.addEventListener("pageshow", resetPaymentMethodStep);
+    return () => {
+      window.removeEventListener("popstate", resetPaymentMethodStep);
+      window.removeEventListener("pageshow", resetPaymentMethodStep);
     };
   }, []);
 
@@ -352,9 +444,9 @@ function SubscribePaymentPage() {
     }
 
     if (signedOutSessionRecheck === "checked") {
-      return;
+      router.replace("/");
     }
-  }, [refresh, signedOutSessionRecheck, status]);
+  }, [refresh, router, signedOutSessionRecheck, status]);
 
   useEffect(() => {
     if (status !== "signed-in" || !returningPaymentIntentId) return;
@@ -373,11 +465,17 @@ function SubscribePaymentPage() {
           router.replace(`/subscribe/success?${successParams.toString()}`);
           return;
         }
-        setCheckoutMessage(
-          result.status === "processing"
-            ? "Your payment is still processing. Please refresh in a moment."
-            : "We could not confirm this payment yet.",
-        );
+        if (result.status === "processing") {
+          setCheckoutMessage("Your payment is still processing. Please wait a moment and refresh.");
+          return;
+        }
+
+        if (result.status === "awaiting_payment_method") {
+          setCheckoutMessage("Payment was not completed. No charge was made; choose a payment method to try again.");
+          return;
+        }
+
+        setCheckoutMessage("Payment authorization is still pending. Finish it in your payment app, then return here.");
       })
       .catch(() => {
         if (active) setCheckoutMessage("We could not confirm this payment yet.");
@@ -390,6 +488,36 @@ function SubscribePaymentPage() {
       active = false;
     };
   }, [refresh, returningPaymentIntentId, router, selectedPlan, status]);
+
+  useEffect(() => {
+    const paymentIntentId = qrPaymentIntentId ?? "";
+    if (checkoutStep !== "qrph" || paymentIntentId.length === 0) {
+      return undefined;
+    }
+
+    let active = true;
+    async function confirmQrPhPayment() {
+      try {
+        const result = await getPaymentIntentStatus(paymentIntentId);
+        if (!active || !result.subscription) {
+          return;
+        }
+
+        await refresh();
+        const successParams = new URLSearchParams({ plan: selectedPlan });
+        router.replace(`/subscribe/success?${successParams.toString()}`);
+      } catch {
+        // Keep the QR visible so the customer can finish scanning.
+      }
+    }
+
+    void confirmQrPhPayment();
+    const pollTimer = window.setInterval(() => void confirmQrPhPayment(), 3_000);
+    return () => {
+      active = false;
+      window.clearInterval(pollTimer);
+    };
+  }, [checkoutStep, qrPaymentIntentId, refresh, router, selectedPlan]);
 
   async function createPayMongoPaymentMethod(formData: FormData) {
     const { month, year } = getExpiryParts(expirationDigits);
@@ -432,6 +560,28 @@ function SubscribePaymentPage() {
     return paymentMethodId;
   }
 
+  async function createPayMongoQrPhPaymentMethod() {
+    const response = await fetch("https://api.paymongo.com/v1/payment_methods", {
+      method: "POST",
+      headers: {
+        Authorization: getPayMongoAuthorization(),
+        "Content-Type": "application/json",
+        Accept: "application/json",
+      },
+      body: JSON.stringify({
+        data: {
+          attributes: {
+            type: "qrph",
+          },
+        },
+      }),
+    });
+    const payload = await readPayMongoResponse<PayMongoPaymentMethodResponse>(response, "QR Ph setup failed");
+    const paymentMethodId = payload.data?.id;
+    if (!paymentMethodId) throw new Error("The payment processor did not return a QR Ph payment method.");
+    return paymentMethodId;
+  }
+
   async function attachPayMongoPaymentMethod(
     paymentIntentId: string,
     clientKey: string,
@@ -441,7 +591,7 @@ function SubscribePaymentPage() {
       plan: selectedPlan,
       payment_intent: paymentIntentId,
     });
-    const returnUrl = `${window.location.origin}/subscribe/success?${params.toString()}`;
+    const returnUrl = `${window.location.origin}/subscribe?${params.toString()}`;
     const response = await fetch(
       `https://api.paymongo.com/v1/payment_intents/${encodeURIComponent(paymentIntentId)}/attach`,
       {
@@ -469,24 +619,71 @@ function SubscribePaymentPage() {
     setCheckoutStep("method");
     setCheckoutMessage(null);
     setFieldErrors({});
+    setQrCodeImageUrl(null);
+    setQrPaymentIntentId(null);
   }
 
-  async function startHostedCheckout(paymentMethod: HostedPaymentMethodId) {
+  async function startQrPhPayment() {
+    if (!getPayMongoPublicKey()) {
+      setCheckoutMessage("Payment checkout is not configured.");
+      return;
+    }
+
     setIsSubmitting(true);
     try {
-      const checkout = await createSubscriptionCheckout("pro", paymentMethod);
-      if (checkout.redirectUrl) {
-        window.location.assign(checkout.redirectUrl);
-        return;
+      const intent = await createSubscriptionPaymentIntent("pro", "qrph");
+      const paymentMethodId = await createPayMongoQrPhPaymentMethod();
+      const attached = await attachPayMongoPaymentMethod(intent.paymentIntentId, intent.clientKey, paymentMethodId);
+      const qrCodeUrl = getQrCodeImageUrl(attached);
+      if (!qrCodeUrl) {
+        throw new Error("The payment processor did not return a QR code.");
       }
-      setCheckoutMessage("Payment checkout did not return a redirect URL.");
+
+      setQrCodeImageUrl(qrCodeUrl);
+      setQrPaymentIntentId(intent.paymentIntentId);
+      setCheckoutStep("qrph");
     } catch (error) {
-      console.error("[subscribe] hosted checkout failed", error);
+      console.error("[subscribe] QR Ph payment setup failed", error);
       setCheckoutMessage(getCheckoutErrorMessage(error));
     } finally {
       setIsSubmitting(false);
     }
   }
+
+  async function startWalletPayment(paymentMethod: WalletPaymentMethodId) {
+    if (!getPayMongoPublicKey()) {
+      setCheckoutMessage("Payment checkout is not configured.");
+      return;
+    }
+
+    setIsSubmitting(true);
+    try {
+      const intent = await createSubscriptionPaymentIntent("pro", paymentMethod);
+      const response = await fetch("https://api.paymongo.com/v1/payment_methods", {
+        method: "POST",
+        headers: {
+          Authorization: getPayMongoAuthorization(),
+          "Content-Type": "application/json",
+          Accept: "application/json",
+        },
+        body: JSON.stringify({ data: { attributes: { type: paymentMethod } } }),
+      });
+      const payload = await readPayMongoResponse<PayMongoPaymentMethodResponse>(response, "E-wallet setup failed");
+      const paymentMethodId = payload.data?.id;
+      if (!paymentMethodId) throw new Error("The payment processor did not return an e-wallet payment method.");
+
+      const attached = await attachPayMongoPaymentMethod(intent.paymentIntentId, intent.clientKey, paymentMethodId);
+      const redirectUrl = getRedirectUrl(attached);
+      if (!redirectUrl) throw new Error("The payment processor did not return an e-wallet authorization URL.");
+      window.location.assign(redirectUrl);
+    } catch (error) {
+      console.error("[subscribe] e-wallet payment setup failed", error);
+      setCheckoutMessage(getCheckoutErrorMessage(error));
+    } finally {
+      setIsSubmitting(false);
+    }
+  }
+
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -511,7 +708,24 @@ function SubscribePaymentPage() {
         return;
       }
 
-      await startHostedCheckout(selectedPaymentMethod);
+      if (selectedPaymentMethod === "qrph") {
+        await startQrPhPayment();
+        return;
+      }
+
+      if (selectedPaymentMethod === "ewallets") {
+        setCheckoutStep("wallet");
+        return;
+      }
+    }
+
+    if (checkoutStep === "wallet") {
+      if (!selectedWalletPaymentMethod) {
+        setCheckoutMessage("Choose GCash or Maya.");
+        return;
+      }
+
+      await startWalletPayment(selectedWalletPaymentMethod);
       return;
     }
 
@@ -574,7 +788,7 @@ function SubscribePaymentPage() {
   }
 
   if (status === "signed-out" && signedOutSessionRecheck === "checked") {
-    return <PipelineLoader label="We could not confirm your sign-in. Please return to signup and try again." />;
+    return <PipelineLoader label="Returning to AlphaCI" />;
   }
 
   if (status === "loading" || status === "signed-out") {
@@ -609,38 +823,17 @@ function SubscribePaymentPage() {
                 <fieldset className={styles.methodFieldset}>
                   <legend>Choose payment method</legend>
                   <div className={styles.methodList}>
-                    {paymentMethods.map((method) => {
-                      const isSelected = selectedPaymentMethod === method.id;
-                      return (
-                        <label
-                          className={cn(styles.methodOption, isSelected && styles.methodOptionSelected)}
-                          data-payment-method-option={method.id}
-                          key={method.id}
-                        >
-                          <input
-                            aria-label={method.label}
-                            checked={isSelected}
-                            name="paymentMethod"
-                            onChange={() => {
-                              setSelectedPaymentMethod(method.id);
-                              setCheckoutMessage(null);
-                            }}
-                            type="radio"
-                            value={method.id}
-                          />
-                          <span className={styles.methodLogoSlot}>
-                            <PaymentMethodLogo id={method.id} />
-                          </span>
-                          <span className={styles.methodOptionContent}>
-                            <span className={styles.methodOptionTop}>
-                              <strong>{method.label}</strong>
-                              <span aria-hidden="true">{isSelected ? "Selected" : ""}</span>
-                            </span>
-                            <em>{method.description}</em>
-                          </span>
-                        </label>
-                      );
-                    })}
+                    {paymentMethods.map((method) => (
+                      <PaymentMethodOption
+                        key={method.id}
+                        method={method}
+                        onSelect={() => {
+                          setSelectedPaymentMethod(method.id);
+                          setCheckoutMessage(null);
+                        }}
+                        selected={selectedPaymentMethod === method.id}
+                      />
+                    ))}
                   </div>
                 </fieldset>
 
@@ -654,6 +847,47 @@ function SubscribePaymentPage() {
                   {isSubmitting ? "Starting checkout..." : "Continue"}
                 </Button>
               </>
+            ) : checkoutStep === "wallet" ? (
+              <>
+                <button className={styles.backButton} data-testid="payment-method-back" onClick={handleBackToPaymentMethods} type="button">
+                  Back to payment methods
+                </button>
+                <fieldset className={styles.methodFieldset}>
+                  <legend>Choose an e-wallet</legend>
+                  <div className={styles.methodList}>
+                    {walletPaymentMethods.map((method) => (
+                      <PaymentMethodOption
+                        key={method.id}
+                        method={method}
+                        onSelect={() => {
+                          setSelectedWalletPaymentMethod(method.id);
+                          setCheckoutMessage(null);
+                        }}
+                        selected={selectedWalletPaymentMethod === method.id}
+                      />
+                    ))}
+                  </div>
+                </fieldset>
+                {checkoutMessage ? <p className={styles.notice} role="status">{checkoutMessage}</p> : null}
+                <Button className={styles.submitButton} disabled={isSubmitting} loading={isSubmitting} type="submit" variant="secondary">
+                  {isSubmitting ? "Opening wallet..." : "Continue"}
+                </Button>
+              </>
+            ) : checkoutStep === "qrph" ? (
+              <section className={styles.qrPaymentPanel} aria-labelledby="qrph-title">
+                <button className={styles.backButton} data-testid="payment-method-back" onClick={handleBackToPaymentMethods} type="button">
+                  Back to payment methods
+                </button>
+                <div>
+                  <h2 id="qrph-title">Scan to pay</h2>
+                  <p>Open a participating bank or e-wallet app, then scan this QR Ph code.</p>
+                  {qrCodeImageUrl ? (
+                    <img alt="QR Ph code for this payment" className={styles.qrCodeImage} src={qrCodeImageUrl} />
+                  ) : null}
+                  <span>Waiting for payment confirmation…</span>
+                </div>
+                {checkoutMessage ? <p className={styles.notice} role="status">{checkoutMessage}</p> : null}
+              </section>
             ) : (
               <>
                 <button className={styles.backButton} data-testid="payment-method-back" onClick={handleBackToPaymentMethods} type="button">

@@ -144,9 +144,15 @@ async function fillPaymentForm(
     setInputValue(container.querySelector<HTMLInputElement>("#security-code")!, cvc);
   });
 }
-async function choosePaymentMethod(container: HTMLElement, label: "GCash" | "Maya" | "Card") {
+async function choosePaymentMethod(container: HTMLElement, method: "E-Wallets" | "QR Ph" | "Card") {
+  const labelByMethod = {
+    Card: "Credit or Debit Card",
+    "E-Wallets": "E-Wallets",
+    "QR Ph": "Scan to Pay",
+  } as const;
+
   await act(async () => {
-    container.querySelector<HTMLInputElement>(`input[aria-label="${label}"]`)?.click();
+    container.querySelector<HTMLInputElement>(`input[aria-label="${labelByMethod[method]}"]`)?.click();
   });
 
   await submitPaymentForm(container);
@@ -242,7 +248,7 @@ describe("Subscribe payment page", () => {
     const rendered = await renderSubscribePage();
     root = rendered.root;
 
-    expect(rendered.container).toHaveTextContent("We could not confirm your sign-in. Please return to signup and try again.");
+    expect(rendered.container).toHaveTextContent("Returning to AlphaCI");
     expect(refreshMock).toHaveBeenCalledTimes(1);
     expect(replaceMock).not.toHaveBeenCalledWith("/signup?next=%2Fsubscribe%3Fplan%3Dstarter");
   });
@@ -314,23 +320,23 @@ describe("Subscribe payment page", () => {
 
 
 
-  it("shows Card, GCash, and Maya with brand logo marks before collecting billing details", async () => {
+  it("keeps E-Wallets in AlphaCI before the provider authorization redirect", async () => {
     const rendered = await renderSubscribePage();
     root = rendered.root;
 
-    expect(rendered.container).toHaveTextContent("Choose payment method");
     expect(
       Array.from(rendered.container.querySelectorAll<HTMLElement>("[data-payment-method-option]")).map((option) => option.dataset.paymentMethodOption),
-    ).toEqual(["card", "gcash", "maya"]);
-    expect(rendered.container.querySelector<HTMLInputElement>('input[aria-label="Card"]')).not.toBeNull();
+    ).toEqual(["card", "ewallets", "qrph"]);
+    expect(rendered.container.querySelector<HTMLInputElement>('input[aria-label="E-Wallets"]')).not.toBeNull();
+    expect(rendered.container.querySelector('[data-payment-method-option="ewallets"] img[alt="GCash"]')?.getAttribute("src")).toBe("/payment-logos/gcash.svg");
+    expect(rendered.container.querySelector('[data-payment-method-option="ewallets"] img[alt="Maya"]')?.getAttribute("src")).toBe("/payment-logos/maya.svg");
+
+    await choosePaymentMethod(rendered.container, "E-Wallets");
+
+    expect(rendered.container).toHaveTextContent("Choose an e-wallet");
     expect(rendered.container.querySelector<HTMLInputElement>('input[aria-label="GCash"]')).not.toBeNull();
     expect(rendered.container.querySelector<HTMLInputElement>('input[aria-label="Maya"]')).not.toBeNull();
-    expect(rendered.container.querySelector('[data-payment-method-logo="card"] img[alt="Visa"]')?.getAttribute("src")).toBe("/payment-logos/visa.svg");
-    expect(rendered.container.querySelector('[data-payment-method-logo="card"] img[alt="Mastercard"]')?.getAttribute("src")).toBe("/payment-logos/mastercard.svg");
-    expect(rendered.container.querySelector('[data-payment-method-logo="gcash"] img[alt="GCash"]')?.getAttribute("src")).toBe("/payment-logos/gcash.svg");
-    expect(rendered.container.querySelector('[data-payment-method-logo="maya"] img[alt="Maya"]')?.getAttribute("src")).toBe("/payment-logos/maya.svg");
-    expect(rendered.container.querySelector<HTMLInputElement>("#card-number")).toBeNull();
-    expect(rendered.container).not.toHaveTextContent("Billing name");
+    expect(mockedCreateSubscriptionCheckout).not.toHaveBeenCalled();
   });
 
   it("keeps the custom billing form for Card and can go back to method selection", async () => {
@@ -352,20 +358,41 @@ describe("Subscribe payment page", () => {
     expect(rendered.container.querySelector<HTMLInputElement>("#card-number")).toBeNull();
   });
 
-  it.each(["GCash", "Maya"] as const)("starts hosted checkout for %s", async (method) => {
-    mockedCreateSubscriptionCheckout.mockResolvedValue({
-      checkoutId: "cs_paymongo_123",
-      status: "active",
-      redirectUrl: "https://checkout.test/session",
+
+
+  it("generates a dynamic QR Ph code instead of redirecting to hosted checkout", async () => {
+    mockedCreateSubscriptionPaymentIntent.mockResolvedValue({
+      paymentIntentId: "pi_qrph_123",
+      clientKey: "pi_client_key_123",
+      status: "awaiting_payment_method",
     });
+    jest.mocked(global.fetch)
+      .mockResolvedValueOnce({
+        ok: true,
+        json: async () => ({ data: { id: "pm_qrph_123" } }),
+      } as Response)
+      .mockResolvedValueOnce({
+        ok: true,
+        json: async () => ({
+          data: {
+            attributes: {
+              status: "awaiting_next_action",
+              next_action: {
+                code: { image_url: "data:image/png;base64,qrph" },
+              },
+            },
+          },
+        }),
+      } as Response);
     const rendered = await renderSubscribePage();
     root = rendered.root;
 
-    await choosePaymentMethod(rendered.container, method);
+    await choosePaymentMethod(rendered.container, "QR Ph");
 
-    expect(mockedCreateSubscriptionCheckout).toHaveBeenCalledWith("pro", method.toLowerCase());
-    expect(mockedCreateSubscriptionPaymentIntent).not.toHaveBeenCalled();
-
+    expect(mockedCreateSubscriptionPaymentIntent).toHaveBeenCalledWith("pro", "qrph");
+    expect(mockedCreateSubscriptionCheckout).not.toHaveBeenCalled();
+    expect(rendered.container.querySelector('img[alt="QR Ph code for this payment"]')?.getAttribute("src")).toBe("data:image/png;base64,qrph");
+    expect(rendered.container).toHaveTextContent("Waiting for payment confirmation");
   });
 
   it("shows exact required billing field errors before creating a payment intent", async () => {
@@ -437,6 +464,7 @@ describe("Subscribe payment page", () => {
     expect(rendered.container).toHaveTextContent("Processing payment...");
     expect(rendered.container).not.toHaveTextContent("Processing with PayMongo");
   });
+
   it.each(successfulPayMongoCards)(
     "accepts PayMongo test card %s (%s) and completes payment setup",
     async (cardNumber) => {
@@ -505,7 +533,7 @@ describe("Subscribe payment page", () => {
     expect(rendered.container).not.toHaveTextContent("Your card number is invalid.");
     const attachRequest = jest.mocked(global.fetch).mock.calls[1]?.[1];
     const attachBody = JSON.parse(String(attachRequest?.body));
-    expect(attachBody.data.attributes.return_url).toBe("http://localhost/subscribe/success?plan=starter&payment_intent=pi_paymongo_123");
+    expect(attachBody.data.attributes.return_url).toBe("http://localhost/subscribe?plan=starter&payment_intent=pi_paymongo_123");
     expect(mockedGetPaymentIntentStatus).not.toHaveBeenCalled();
   });
 

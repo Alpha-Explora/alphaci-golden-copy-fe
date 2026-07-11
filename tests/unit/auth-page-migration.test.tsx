@@ -320,6 +320,29 @@ describe("OAuth auth page migration", () => {
     expect(mockedWarmupBackend).toHaveBeenCalledTimes(1);
   });
 
+  it("opens GitHub authentication in the centered connection popup", async () => {
+    const openSpy = jest.spyOn(window, "open").mockImplementation(() => null);
+    const result = renderSignup();
+    root = result.root;
+
+    const githubButton = Array.from(result.container.querySelectorAll("button")).find(
+      (button) => button.textContent?.includes("Continue with GitHub"),
+    )!;
+
+    await act(async () => {
+      githubButton.dispatchEvent(new MouseEvent("click", { bubbles: true }));
+      await Promise.resolve();
+    });
+
+    expect(openSpy).toHaveBeenCalledWith(
+      expect.stringContaining("/api/auth/github"),
+      "alphaci-github-auth",
+      expect.stringContaining("popup=yes,width=560,height=720"),
+    );
+    expect(mockedWarmupBackend).toHaveBeenCalledTimes(1);
+    openSpy.mockRestore();
+  });
+
   it("verifies email before showing the paid plan selector", async () => {
     const result = renderSignup();
     root = result.root;

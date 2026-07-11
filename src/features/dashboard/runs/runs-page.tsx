@@ -16,7 +16,7 @@ import { useAuthSession } from "@/hooks/use-auth-session";
 import { logout, getRuns } from "@/lib/api/client";
 import { ApiError } from "@/lib/api/request";
 import type { RunGroup } from "@/lib/api/contracts";
-import { isGuest } from "@/lib/auth/subscription";
+import { getRouteAccessRedirect, isGuest } from "@/lib/auth/subscription";
 import { RunCard } from "@/components/product/runs/RunCard";
 import { RunsSkeleton } from "@/components/product/runs/RunsSkeleton";
 import { RunsEmptyState, RunsErrorState, RunsSessionErrorState } from "./runs-state-panels";
@@ -292,6 +292,7 @@ function RunsContent({ guest, session, onLogout, isLoggingOut, prefersReducedMot
 export default function RunsPage() {
   const router = useRouter();
   const { status, session, error: sessionError, refresh } = useAuthSession();
+  const routeRedirect = getRouteAccessRedirect(session, "/runs", "paid");
   const prefersReducedMotion = useReducedMotion();
   const [isLoggingOut, setIsLoggingOut]   = useState(false);
   const [logoutMessage, setLogoutMessage] = useState<string | null>(null);
@@ -312,16 +313,16 @@ export default function RunsPage() {
 
   /* Guard: loading */
   useEffect(() => {
-    if (status === "signed-out") {
-      router.replace("/signup");
+    if (routeRedirect) {
+      router.replace(routeRedirect);
     }
-  }, [router, status]);
+  }, [routeRedirect, router]);
   if (status === "loading") {
     return <PipelineLoader label="Loading pipeline runs" />;
   }
 
-  if (status === "signed-out") {
-    return <PipelineLoader label="Redirecting to sign up" />;
+  if (routeRedirect) {
+    return <PipelineLoader label="Checking workspace access" />;
   }
 
   /* Guard: error */

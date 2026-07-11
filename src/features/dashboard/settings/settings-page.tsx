@@ -19,7 +19,7 @@ import { logout, deleteAccount, cancelMonthlySubscription, getMyUsage } from "@/
 import type { NotificationsResponse, UsageMeResponse, WorkspacesMeResponse } from "@/lib/api/contracts";
 import { getNotifications, markNotificationRead } from "@/lib/api/notifications";
 import { getMyWorkspaces } from "@/lib/api/workspaces";
-import { isGuest } from "@/lib/auth/subscription";
+import { getRouteAccessRedirect, isGuest } from "@/lib/auth/subscription";
 
 import { SettingsAccountSection } from "./settings-account-section";
 import { SettingsBillingSection } from "./settings-billing-section";
@@ -57,6 +57,7 @@ function SettingsPageContent() {
   const router = useRouter();
   const prefersReducedMotion = useReducedMotion();
   const { status, session, error, refresh } = useAuthSession();
+  const routeRedirect = getRouteAccessRedirect(session, "/settings", "paid");
   const { workspacesEnabled, notificationsEnabled } = useCapabilities();
   const { selectedWorkspace, setWorkspaces: setWorkspaceContext } = useWorkspaceSelection();
   const [isLoggingOut, setIsLoggingOut] = useState(false);
@@ -81,10 +82,10 @@ function SettingsPageContent() {
   const [markingNotificationId, setMarkingNotificationId] = useState<string | null>(null);
 
   useEffect(() => {
-    if (status === "signed-out") {
-      router.push("/login?next=/settings");
+    if (routeRedirect) {
+      router.replace(routeRedirect);
     }
-  }, [status, router]);
+  }, [routeRedirect, router]);
 
   useEffect(() => {
     const media = window.matchMedia("(max-width: 720px)");

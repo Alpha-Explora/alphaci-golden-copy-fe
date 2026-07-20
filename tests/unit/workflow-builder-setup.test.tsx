@@ -4,14 +4,19 @@ import { createRoot, type Root } from "react-dom/client";
 import { WorkflowBuilder } from "../../src/components/product/workflow-builder";
 import {
   createProject,
+  createGithubRepo,
+  generateWorkflow,
+  getCapabilities,
   getCategories,
   getGithubInstallationAccounts,
   getGithubAppInstallUrl,
   getLinkedGithubRepos,
+  getMyUsage,
   getProjectOptions,
   getProjects,
   getTemplates,
   getWorkflowHistory,
+  listProviderConnections,
 } from "../../src/lib/api/client";
 import type { ProjectOptionsResponse } from "../../src/lib/api/contracts";
 
@@ -25,7 +30,7 @@ jest.mock("framer-motion", () => {
         () =>
         ({ children, ...props }: { children?: React.ReactNode } & Record<string, unknown>) => {
           const domProps = { ...props };
-          for (const key of ["initial", "animate", "exit", "transition", "whileHover", "whileTap", "layout"]) {
+          for (const key of ["initial", "animate", "exit", "transition", "whileHover", "whileTap", "layout", "layoutId"]) {
             delete domProps[key];
           }
 
@@ -42,19 +47,34 @@ jest.mock("framer-motion", () => {
   };
 });
 
+// The onboarding tour hook (rendered inside WorkflowBuilder) reads useSearchParams.
+jest.mock("next/navigation", () => ({
+  useSearchParams: () => ({ get: () => null }),
+}));
+
 jest.mock("../../src/lib/api/client", () => ({
+  createGithubRepo: jest.fn(),
   createProject: jest.fn(),
+  generateWorkflow: jest.fn(),
+  getCapabilities: jest.fn(),
   getCategories: jest.fn(),
   getGithubInstallationAccounts: jest.fn(),
   getGithubAppInstallUrl: jest.fn(),
+  // Current Projects tab groups the list by the user's groups.
+  getGroups: jest.fn().mockResolvedValue([]),
   getLinkedGithubRepos: jest.fn(),
+  getMyUsage: jest.fn(),
   getProjectOptions: jest.fn(),
   getProjects: jest.fn(),
   getTemplates: jest.fn(),
   getWorkflowHistory: jest.fn(),
+  listProviderConnections: jest.fn(),
 }));
 
 const mockedCreateProject = createProject as jest.MockedFunction<typeof createProject>;
+const mockedCreateGithubRepo = createGithubRepo as jest.MockedFunction<typeof createGithubRepo>;
+const mockedGenerateWorkflow = generateWorkflow as jest.MockedFunction<typeof generateWorkflow>;
+const mockedGetCapabilities = getCapabilities as jest.MockedFunction<typeof getCapabilities>;
 const mockedGetCategories = getCategories as jest.MockedFunction<typeof getCategories>;
 const mockedGetGithubInstallationAccounts = getGithubInstallationAccounts as jest.MockedFunction<
   typeof getGithubInstallationAccounts
@@ -65,11 +85,15 @@ const mockedGetGithubAppInstallUrl = getGithubAppInstallUrl as jest.MockedFuncti
 const mockedGetLinkedGithubRepos = getLinkedGithubRepos as jest.MockedFunction<
   typeof getLinkedGithubRepos
 >;
+const mockedGetMyUsage = getMyUsage as jest.MockedFunction<typeof getMyUsage>;
 const mockedGetProjectOptions = getProjectOptions as jest.MockedFunction<typeof getProjectOptions>;
 const mockedGetProjects = getProjects as jest.MockedFunction<typeof getProjects>;
 const mockedGetTemplates = getTemplates as jest.MockedFunction<typeof getTemplates>;
 const mockedGetWorkflowHistory = getWorkflowHistory as jest.MockedFunction<
   typeof getWorkflowHistory
+>;
+const mockedListProviderConnections = listProviderConnections as jest.MockedFunction<
+  typeof listProviderConnections
 >;
 
 const template = {
@@ -85,6 +109,10 @@ const template = {
 };
 
 const projectOptions = {
+  nodeVersions: [
+    { value: "20", label: "Node.js 20 LTS" },
+    { value: "24", label: "Node.js 24 Current" },
+  ],
   repoShapes: [
     {
       id: "single-app",
@@ -103,6 +131,7 @@ const projectOptions = {
     {
       id: "nextjs-app",
       label: "Next.js App",
+      kind: "frontend",
       runtime: "node",
       language: "typescript",
       framework: "nextjs",
@@ -122,6 +151,7 @@ const projectOptions = {
     {
       id: "nestjs-api",
       label: "NestJS API",
+      kind: "backend",
       runtime: "node",
       language: "typescript",
       framework: "nestjs",
@@ -189,6 +219,27 @@ const projectOptions = {
   ],
 };
 
+const stagedWorkflowFiles = [
+  {
+    stage: "access" as const,
+    name: "ALPHACI Access Gate",
+    path: ".github/workflows/00-alphaci-access.yml",
+    gated: true,
+  },
+  {
+    stage: "quality" as const,
+    name: "ALPHACI Quality",
+    path: ".github/workflows/10-alphaci-quality.yml",
+    gated: true,
+  },
+  {
+    stage: "package" as const,
+    name: "ALPHACI Package",
+    path: ".github/workflows/20-alphaci-package.yml",
+    gated: true,
+  },
+];
+
 async function flushMicrotasks(cycles = 1) {
   for (let index = 0; index < cycles; index += 1) {
     await act(async () => {
@@ -226,12 +277,22 @@ describe("WorkflowBuilder project setup", () => {
   let root: Root;
 
   beforeEach(() => {
+    mockedGetCapabilities.mockResolvedValue({
+      envProvisioning: {
+        enabled: true,
+        providers: ["render", "vercel"],
+        environments: ["test", "uat", "production"],
+        modes: ["flowci_managed", "byo"],
+      },
+    });
     mockedGetCategories.mockResolvedValue({ categories: [] });
     mockedGetTemplates.mockResolvedValue({ templates: [template] });
     mockedGetWorkflowHistory.mockResolvedValue({ items: [] });
     mockedGetProjects.mockResolvedValue({ items: [] });
+    mockedListProviderConnections.mockResolvedValue([]);
     mockedGetGithubAppInstallUrl.mockResolvedValue({
       installUrl: "https://github.com/apps/cicd-example/installations/new",
+      appSlug: "cicd-example",
     });
     mockedGetGithubInstallationAccounts.mockResolvedValue({
       accounts: [
@@ -246,17 +307,49 @@ describe("WorkflowBuilder project setup", () => {
     mockedGetLinkedGithubRepos.mockResolvedValue({
       repos: [{ installationId: 12345, repoFullName: "tone/example-app" }],
     });
+    mockedGetMyUsage.mockResolvedValue({
+      enabled: true,
+      plan: "free",
+      items: [
+        { code: "projects", current: 0, limit: 5, upgradeRequired: false },
+        { code: "env_keys", current: 0, limit: 25, upgradeRequired: false },
+      ],
+    });
     mockedGetProjectOptions.mockResolvedValue(projectOptions as unknown as ProjectOptionsResponse);
+    mockedCreateGithubRepo.mockResolvedValue({
+      repoUrl: "https://github.com/tone/demo-next-app",
+      cloneUrl: "https://github.com/tone/demo-next-app.git",
+      defaultBranch: "main",
+      branchesCreated: ["main", "uat", "develop"],
+    });
     mockedCreateProject.mockResolvedValue({
       id: "project-1",
-      repoFullName: "tone/example-app",
-      repoUrl: "https://github.com/tone/example-app",
+      repoFullName: "tone/demo-next-app",
+      repoUrl: "https://github.com/tone/demo-next-app",
       status: "provisioned",
-      workflowPath: ".github/workflows/ci.yml",
+      workflowPath: ".github/workflows/00-alphaci-access.yml",
+      workflowFiles: stagedWorkflowFiles,
       githubCommitSha: "commit-sha",
-      githubCommitUrl: "https://github.com/tone/example-app/commit/commit-sha",
+      githubCommitUrl: "https://github.com/tone/demo-next-app/commit/commit-sha",
       projectTypeId: "nextjs-app",
       workflowRecipeId: "frontend-standard-ci",
+    });
+    mockedGenerateWorkflow.mockResolvedValue({
+      yaml: "name: CI\non: push",
+      metadata: {
+        templateId: "frontend-react",
+        templateName: "React CI",
+        stack: "react",
+        generatedAt: "2026-06-02T00:00:00.000Z",
+        sha256: "abc123",
+        byteSize: 512,
+        lineCount: 40,
+        substitutionsApplied: [],
+        enhancementsApplied: [],
+        sourcePropertiesFile: "workflow-templates/frontend-react.properties.yml",
+        sourceWorkflowFile: "workflow-templates/frontend-react.yml",
+        outputFileName: "ci.yml",
+      },
     });
 
     container = document.createElement("div");
@@ -272,31 +365,40 @@ describe("WorkflowBuilder project setup", () => {
     jest.clearAllMocks();
   });
 
-  async function renderBuilder(accessText = "All repositories access confirmed") {
+  async function renderBuilder() {
     await act(async () => {
       root.render(<WorkflowBuilder login="tone" plan="pro" />);
     });
 
+    // Current Projects is the default tab now — open Create Project first,
+    // the same way a user reaches the setup form.
+    await waitForCondition(
+      () =>
+        container.querySelector<HTMLButtonElement>("#workflow-tab-setup") !==
+        null,
+    );
+    await act(async () => {
+      container
+        .querySelector<HTMLButtonElement>("#workflow-tab-setup")
+        ?.click();
+    });
+
     await waitForCondition(() => container.textContent?.includes("Next.js App") ?? false);
-    await waitForCondition(() => container.textContent?.includes(accessText) ?? false);
+    await waitForCondition(
+      () => container.querySelector<HTMLButtonElement>("[data-testid='setup-project-button']") !== null,
+    );
   }
 
-  it("creates a new project and shows repo, workflow, commit, and Actions links", async () => {
+  it("creates a new project through the backend project endpoint", async () => {
     await renderBuilder();
 
     const repoName = container.querySelector<HTMLInputElement>("#repo-name");
     expect(repoName).not.toBeNull();
-    changeValue(repoName!, "demo next app");
+    changeValue(repoName!, "demo-next-app");
 
     const projectType = container.querySelector<HTMLSelectElement>("#project-type-select");
     expect(projectType).not.toBeNull();
     changeValue(projectType!, "nextjs-app");
-
-    const securityToggle = container.querySelector<HTMLInputElement>("#test-security");
-    expect(securityToggle).not.toBeNull();
-    act(() => {
-      securityToggle!.click();
-    });
 
     await act(async () => {
       container.querySelector<HTMLButtonElement>("[data-testid='setup-project-button']")?.click();
@@ -304,7 +406,7 @@ describe("WorkflowBuilder project setup", () => {
     });
 
     await waitForCondition(
-      () => container.textContent?.includes(".github/workflows/ci.yml") ?? false,
+      () => container.textContent?.includes("tone/demo-next-app") ?? false,
     );
 
     expect(mockedCreateProject).toHaveBeenCalledWith(
@@ -315,62 +417,133 @@ describe("WorkflowBuilder project setup", () => {
         projectTypeId: "nextjs-app",
         workflowRecipeId: "frontend-standard-ci",
         serviceName: "demo-next-app",
-        nodeVersion: "24",
-        coverageThreshold: 80,
-        tests: expect.objectContaining({
-          lint: true,
-          unit: true,
-          build: true,
-          coverage: true,
-          security: false,
-          docker: false,
-        }),
+        outputFileName: "ci.yml",
       }),
     );
-    expect(container.textContent).toContain("https://github.com/tone/example-app");
-    expect(container.textContent).toContain("commit-sha");
-    expect(container.querySelector<HTMLAnchorElement>("a[href='https://github.com/tone/example-app/actions']")).not.toBeNull();
+    expect(mockedCreateGithubRepo).not.toHaveBeenCalled();
+    expect(mockedGenerateWorkflow).not.toHaveBeenCalled();
+    expect(container.textContent).toContain("tone/demo-next-app");
+    expect(container.textContent).toContain("00-alphaci-access.yml");
+    expect(container.textContent).toContain("ALPHACI Access Gate");
+    expect(container.textContent).toContain("10-alphaci-quality.yml");
+    expect(container.textContent).toContain("20-alphaci-package.yml");
+    expect(container.textContent).toContain("3 gated workflow stages");
   });
 
-  it("shows a create project error when the backend rejects project creation", async () => {
+  it("shows project quota and disables repository creation when the limit is reached", async () => {
+    mockedGetMyUsage.mockResolvedValueOnce({
+      enabled: true,
+      plan: "free",
+      items: [
+        { code: "projects", current: 5, limit: 5, upgradeRequired: true },
+        { code: "env_keys", current: 0, limit: 25, upgradeRequired: false },
+      ],
+    });
+
+    await renderBuilder();
+
+    expect(container.textContent).toContain("Project quota: Limit reached. Upgrade to continue.");
+    expect(container.querySelector<HTMLButtonElement>("[data-testid='setup-project-button']")?.disabled).toBe(true);
+  });
+
+  it("shows a create project error when createProject rejects", async () => {
     mockedCreateProject.mockRejectedValueOnce({
-      details: { message: "GitHub App installation must be enabled for all repositories" },
+      details: {
+        message:
+          'Repository already exists or name is invalid: {"message":"Repository creation failed.","errors":[{"resource":"Repository","code":"custom","field":"name","message":"name already exists on this account"}],"documentation_url":"https://docs.github.com/rest/repos/repos#create-a-repository-for-the-authenticated-user","status":"422"}',
+      },
     });
 
     await renderBuilder();
 
     const repoName = container.querySelector<HTMLInputElement>("#repo-name");
     expect(repoName).not.toBeNull();
-    changeValue(repoName!, "demo next app");
+    changeValue(repoName!, "demo-next-app");
+
+    const projectType = container.querySelector<HTMLSelectElement>("#project-type-select");
+    expect(projectType).not.toBeNull();
+    changeValue(projectType!, "nextjs-app");
 
     await act(async () => {
       container.querySelector<HTMLButtonElement>("[data-testid='setup-project-button']")?.click();
       await Promise.resolve();
     });
 
-    await waitForCondition(() => container.textContent?.includes("Create Project failed") ?? false);
+    await waitForCondition(() => container.textContent?.includes("Project creation failed") ?? false);
 
-    expect(container.textContent).toContain("GitHub App installation must be enabled for all repositories");
+    expect(container.textContent).toContain(
+      "A repository with this name already exists on this GitHub account. Choose another repository name and try again.",
+    );
+    expect(container.textContent).not.toContain("documentation_url");
+    expect(mockedCreateGithubRepo).not.toHaveBeenCalled();
   });
 
-  it("keeps Create Project disabled without an all-repositories GitHub App installation", async () => {
-    mockedGetGithubInstallationAccounts.mockResolvedValueOnce({
-      accounts: [
-        {
-          installationId: 12345,
-          accountLogin: "tone",
-          accountId: 999,
-          repositorySelection: "selected",
-        },
-      ],
+  it("includes hosting provisioning in project creation when enabled", async () => {
+    mockedCreateProject.mockResolvedValueOnce({
+      id: "project-1",
+      repoFullName: "tone/orders-api",
+      repoUrl: "https://github.com/tone/orders-api",
+      status: "provisioned",
+      workflowPath: ".github/workflows/00-alphaci-access.yml",
+      workflowFiles: stagedWorkflowFiles,
+      githubCommitSha: "commit-sha",
+      githubCommitUrl: "https://github.com/tone/orders-api/commit/commit-sha",
+      projectTypeId: "nestjs-api",
+      workflowRecipeId: "backend-api-ci",
     });
 
-    await renderBuilder("selected repositories only");
+    await renderBuilder();
+
+    const repoName = container.querySelector<HTMLInputElement>("#repo-name");
+    expect(repoName).not.toBeNull();
+    changeValue(repoName!, "orders-api");
+
+    const projectType = container.querySelector<HTMLSelectElement>("#project-type-select");
+    expect(projectType).not.toBeNull();
+    changeValue(projectType!, "nextjs-app");
+
+    expect(container.textContent).toContain("Deployment provisioning");
+    const provisioningToggle = container.querySelector<HTMLInputElement>(
+      "input[aria-label='Provision deployment target']",
+    );
+    expect(provisioningToggle).not.toBeNull();
+
+    act(() => {
+      provisioningToggle!.click();
+    });
+
+    await act(async () => {
+      container.querySelector<HTMLButtonElement>("[data-testid='setup-project-button']")?.click();
+      await Promise.resolve();
+    });
+
+    await waitForCondition(() => container.textContent?.includes("tone/orders-api") ?? false);
+
+    expect(mockedCreateProject).toHaveBeenCalledWith(
+      expect.objectContaining({
+        deploymentProvisioning: expect.objectContaining({
+          enabled: true,
+          targets: [
+            expect.objectContaining({
+              provider: "vercel",
+              slot: "frontend",
+              projectName: "orders-api",
+              branchName: "uat",
+            }),
+          ],
+        }),
+      }),
+    );
+    expect(container.textContent).toContain("Current Projects");
+  });
+
+  it("keeps Create GitHub Repository disabled when repo name is empty", async () => {
+    await renderBuilder();
 
     const button = container.querySelector<HTMLButtonElement>("[data-testid='setup-project-button']");
     expect(button).not.toBeNull();
+    // repo name is empty by default — button should be disabled
     expect(button).toBeDisabled();
-    expect(container.textContent).toContain("selected repositories only");
-    expect(mockedCreateProject).not.toHaveBeenCalled();
+    expect(mockedCreateGithubRepo).not.toHaveBeenCalled();
   });
 });

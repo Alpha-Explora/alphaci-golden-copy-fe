@@ -16,6 +16,8 @@ const emptyCatalog: ProjectOptionsResponse = {
   repoShapes: [],
   projectTypes: [],
   recipes: [],
+  nodeVersions: [],
+  enforcedOrg: "",
 };
 
 export const mvpProjectOptionKeys: MvpProjectOptionKey[] = [
@@ -229,10 +231,42 @@ export function useProjectOptionsCatalog() {
     }));
   }, [selectedWorkflowRecipe, tests]);
 
+  const isMicroservicesShape = selectedRepoShapeId === "microservices";
+  const isMultiRepoShape = selectedRepoShapeId === "multi";
+
+  const backendProjectTypes = useMemo(
+    () =>
+      projectTypesForShape.filter((projectType) =>
+        projectType.kind
+          ? projectType.kind === "backend"
+          : ["nestjs", "nodejs"].includes(projectType.id),
+      ),
+    [projectTypesForShape],
+  );
+
+  const frontendProjectTypes = useMemo(
+    () =>
+      projectTypesForShape.filter((projectType) =>
+        projectType.kind
+          ? projectType.kind === "frontend"
+          : ["nextjs", "react"].includes(projectType.id),
+      ),
+    [projectTypesForShape],
+  );
+
+  const defaultNodeVersion = catalog.nodeVersions.at(-1)?.value;
+
   return {
     allRepoShapes: catalog.repoShapes,
+    backendProjectTypes,
+    defaultNodeVersion,
     enabledRepoShapes,
+    enforcedOrg: catalog.enforcedOrg,
+    frontendProjectTypes,
+    isMicroservicesShape,
+    isMultiRepoShape,
     loadingProjectOptions,
+    nodeVersions: catalog.nodeVersions,
     projectOptionsError,
     projectTypesForShape,
     recipesForSelectedProject,

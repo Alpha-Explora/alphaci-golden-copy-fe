@@ -2,37 +2,30 @@
 
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useState } from "react";
+import { motion, useReducedMotion } from "framer-motion";
 
+import { AppNav } from "@/components/layout/app-nav";
 import { FlowBackground } from "@/components/layout/flow-background";
+import { PipelineLoader } from "@/components/layout/pipeline-loader";
+import { WorkspaceProvider } from "@/components/layout/workspace-context";
 import { WorkflowBuilder } from "../../components/product/workflow-builder";
 import { useAuthSession } from "@/hooks/use-auth-session";
 import { logout } from "@/lib/api/client";
-import { hasActiveSubscription } from "@/lib/auth/subscription";
+import { isGuest } from "@/lib/auth/subscription";
+
+/* ── Page ───────────────────────────────────────────────────────────────────── */
 
 export default function WorkflowsPage() {
   const router = useRouter();
+  const prefersReducedMotion = useReducedMotion();
   const { status, session, error, refresh } = useAuthSession();
   const [isLoggingOut, setIsLoggingOut] = useState(false);
   const [logoutMessage, setLogoutMessage] = useState<string | null>(null);
 
-  const hasSubscription = hasActiveSubscription(session);
-
-  useEffect(() => {
-    if (status === "signed-out") {
-      router.replace("/login?next=/workflows");
-      return;
-    }
-
-    if (status === "signed-in" && !hasSubscription) {
-      router.replace("/subscribe");
-    }
-  }, [hasSubscription, router, status]);
-
   async function handleLogout() {
     setIsLoggingOut(true);
     setLogoutMessage(null);
-
     try {
       await logout();
       await refresh();
@@ -44,71 +37,165 @@ export default function WorkflowsPage() {
     }
   }
 
+  /* ── Guard: loading ─────────────────────────────────────────────────────── */
   if (status === "loading") {
-    return (
-      <main className="flow-shell page-shell">
-        <FlowBackground />
-        <section className="section-card glass-panel">
-          <h1>Loading Create Project...</h1>
-        </section>
-      </main>
-    );
+    return <PipelineLoader label="Loading Workflow Studio" />;
   }
 
+  /* ── Guard: error ───────────────────────────────────────────────────────── */
   if (status === "error") {
     return (
-      <main className="flow-shell page-shell">
+      <main className="dash-shell">
         <FlowBackground />
-        <section className="section-card glass-panel">
-          <h1>We could not verify your workflow access.</h1>
-          <p className="helper-text">Retry session check or return to Home.</p>
-          <div className="hero-actions">
-            <button className="primary-button" type="button" onClick={() => void refresh()}>
-              Retry session check
-            </button>
-            <Link className="ghost-button" href="/login?next=/workflows">
-              Go to login
-            </Link>
+        <div className="state-body">
+          <div className="state-card">
+            <div
+              className="state-icon"
+              style={{
+                background: "rgba(255,79,79,0.08)",
+                border: "1px solid rgba(255,79,79,0.2)",
+              }}
+            >
+              <svg
+                width="20"
+                height="20"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="var(--danger)"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                aria-hidden="true"
+              >
+                <circle cx="12" cy="12" r="10" />
+                <line x1="15" y1="9" x2="9" y2="15" />
+                <line x1="9" y1="9" x2="15" y2="15" />
+              </svg>
+            </div>
+            <h1>Session verification failed</h1>
+            <p>
+              We could not verify your workflow access. Retry or sign in again.
+            </p>
+            <div className="hero-actions">
+              <button
+                className="primary-button"
+                type="button"
+                onClick={() => void refresh()}
+              >
+                Retry
+              </button>
+              <Link className="ghost-button" href="/login?next=/workflows">
+                Go to login
+              </Link>
+            </div>
+            {error ? (
+              <p className="error-text" style={{ fontSize: "0.82rem" }}>
+                {error}
+              </p>
+            ) : null}
           </div>
-          {error ? <p className="error-text">{error}</p> : null}
-        </section>
+        </div>
       </main>
     );
   }
 
-  if (status !== "signed-in" || !hasSubscription) {
-    return (
-      <main className="flow-shell page-shell">
-        <FlowBackground />
-        <section className="section-card glass-panel">
-          <h1>Routing you to the right page...</h1>
-        </section>
-      </main>
-    );
-  }
+  /* ── Signed-in or guest preview ─────────────────────────────────────────── */
+  const guest = isGuest(session);
 
   return (
-    <main className="flow-shell page-shell">
-      <FlowBackground />
+    <WorkspaceProvider>
+      <main className="dash-shell" suppressHydrationWarning>
+        <a href="#main-content" className="skip-link">
+          Skip to main content
+        </a>
+        <FlowBackground />
 
-      <header className="marketing-nav glass-panel">
-        <p className="brand-mark">FlowCI Studio</p>
-        <nav aria-label="Primary" className="nav-links">
-          <Link href="/">Home</Link>
-          <Link href="/subscribe">Billing</Link>
-          <Link href="/home">Dashboard</Link>
-        </nav>
-        <button className="ghost-button" type="button" onClick={handleLogout} disabled={isLoggingOut}>
-          {isLoggingOut ? "Signing out..." : "Sign out"}
-        </button>
-      </header>
+        <AppNav
+          guest={guest}
+          session={session}
+          onLogout={() => void handleLogout()}
+          isLoggingOut={isLoggingOut}
+        />
 
-      {logoutMessage ? <p className="error-text">{logoutMessage}</p> : null}
+        {guest && (
+          <div className="guest-banner" role="alert">
+            <p className="guest-banner-text">
+              You are viewing ALPHACI in preview mode. Sign up to unlock all
+              features.
+            </p>
+            <div className="guest-banner-actions">
+              <Link
+                className="primary-button"
+                href="/signup"
+                style={{ padding: "0.4rem 1rem", fontSize: "0.82rem" }}
+              >
+                Sign up free
+              </Link>
+              <Link
+                className="ghost-button"
+                href="/login"
+                style={{ padding: "0.4rem 0.9rem", fontSize: "0.82rem" }}
+              >
+                Log in
+              </Link>
+            </div>
+          </div>
+        )}
 
-      <WorkflowBuilder
-        login={session?.user.login ?? "builder"}
-        plan={session?.subscription.plan ?? "pro"}
-      />
-    </main>
+        {logoutMessage ? <p className="error-text">{logoutMessage}</p> : null}
+
+        <div id="main-content" style={{ padding: 0 }}>
+          {/* Page header — compact single band: breadcrumb + title + studio badge inline */}
+          <motion.div
+            className="workflow-page-header workflow-page-header--compact"
+            initial={prefersReducedMotion ? false : { opacity: 0, y: 8 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{
+              duration: 0.28,
+              ease: [0.25, 0, 0, 1] as [number, number, number, number],
+            }}
+          >
+            <div className="workflow-page-header-left">
+              <p className="workflow-page-breadcrumb">
+                <span style={{ opacity: 0.55 }}>ALPHACI</span>
+                <span className="workflow-page-breadcrumb-sep">/</span>
+                <span>Workflows</span>
+              </p>
+              <div className="workflow-page-title-row">
+                <h1 className="workflow-page-title">
+                  Create &amp; Manage Projects
+                </h1>
+                <div className="workflow-page-studio-badge">
+                  <span className="workflow-studio-led" aria-hidden="true" />
+                  Studio active
+                </div>
+              </div>
+            </div>
+            <div className="workflow-page-signal-strip" aria-label="Workflow operating model">
+              <div>
+                <span>Mode</span>
+                <strong>PR-safe updates</strong>
+              </div>
+              <div>
+                <span>Promotion</span>
+                <strong>test &gt; uat &gt; main</strong>
+              </div>
+              <div>
+                <span>Stages</span>
+                <strong>Access, Quality, Package</strong>
+              </div>
+            </div>
+          </motion.div>
+
+          <WorkflowBuilder
+            login={session?.user.login ?? "builder"}
+            plan={session?.subscription.plan ?? "pro"}
+            guest={guest}
+            session={session}
+            onboardingCompleted={session?.user.onboardingCompleted}
+          />
+        </div>
+      </main>
+    </WorkspaceProvider>
   );
 }

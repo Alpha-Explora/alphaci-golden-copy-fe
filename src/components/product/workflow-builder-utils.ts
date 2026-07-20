@@ -1,9 +1,14 @@
-import type { CatalogTemplate, CategorySummary, SetupProjectRequest } from "@/lib/api/contracts";
+import type {
+  CatalogTemplate,
+  CategorySummary,
+  SetupProjectRequest,
+} from "@/lib/api/contracts";
 import type { ApiError } from "@/lib/api/request";
 
-export type WorkflowTab = "setup" | "current" | "all";
+export type WorkflowTab = "setup" | "current";
 
-export const WORKFLOW_TABS: WorkflowTab[] = ["setup", "current", "all"];
+// Current Projects intentionally comes first — it is the tab users land on.
+export const WORKFLOW_TABS: WorkflowTab[] = ["current", "setup"];
 
 export const enhancementLabels: Array<{
   key: NonNullable<SetupProjectRequest["enhancements"]>[number];
@@ -32,7 +37,9 @@ export const enhancementLabels: Array<{
   },
 ];
 
-export function statusBannerVariant(message: string): "error" | "success" | "info" {
+export function statusBannerVariant(
+  message: string,
+): "error" | "success" | "info" {
   const lower = message.toLowerCase();
   if (lower.includes("fail") || lower.includes("error")) return "error";
   if (
@@ -41,7 +48,8 @@ export function statusBannerVariant(message: string): "error" | "success" | "inf
     lower.includes("download") ||
     lower.includes("completed") ||
     lower.includes("linked")
-  ) return "success";
+  )
+    return "success";
   return "info";
 }
 
@@ -56,7 +64,7 @@ export function toSlug(value: string): string {
 
 export function toSourcePath(path: string): string {
   if (!path) {
-    return "workflow-core/workflow-templates";
+    return "cicd-workflow/workflow-templates";
   }
 
   const normalized = path.replaceAll("\\", "/");
@@ -66,24 +74,24 @@ export function toSourcePath(path: string): string {
     const repoIndex = lower.lastIndexOf(marker);
     if (repoIndex >= 0) {
       const relative = normalized.slice(repoIndex + marker.length);
-      return `workflow-core/${relative}`;
+      return `cicd-workflow/${relative}`;
     }
   }
 
   const trimmed = normalized.replace(/^\/+/, "");
   if (trimmed.startsWith("workflow-core/")) {
-    return trimmed;
+    return `cicd-workflow/${trimmed.slice("workflow-core/".length)}`;
   }
 
   if (trimmed.startsWith("cicd-workflow/")) {
-    return `workflow-core/${trimmed.slice("cicd-workflow/".length)}`;
+    return trimmed;
   }
 
   if (/^[a-zA-Z]:\//.test(normalized)) {
     return normalized;
   }
 
-  return `workflow-core/${trimmed}`;
+  return `cicd-workflow/${trimmed}`;
 }
 
 export function chooseSelectedTemplate(
@@ -104,7 +112,9 @@ export function chooseSelectedTemplate(
   return templates[0];
 }
 
-export function categoryFallbacks(templates: CatalogTemplate[]): CategorySummary[] {
+export function categoryFallbacks(
+  templates: CatalogTemplate[],
+): CategorySummary[] {
   const counts = new Map<string, number>();
 
   for (const template of templates) {
@@ -130,7 +140,26 @@ export function formatDate(value: string): string {
   }).format(date);
 }
 
+export function formatQuotaStatus(input: {
+  current: number;
+  limit: number;
+  upgradeRequired: boolean;
+}): string {
+  if (input.limit <= 0) return "Unavailable";
+  const remaining = Math.max(0, input.limit - input.current);
+  if (remaining === 0) {
+    return input.upgradeRequired
+      ? "Limit reached. Upgrade to continue."
+      : "Limit reached.";
+  }
+  return `${remaining} remaining`;
+}
+
 export function formatApiError(error: unknown, fallback: string): string {
+  if (isQuotaError(error)) {
+    return "Quota reached. Upgrade your plan or remove unused resources.";
+  }
+
   const details = (error as ApiError)?.details;
 
   if (!details) {
@@ -138,19 +167,170 @@ export function formatApiError(error: unknown, fallback: string): string {
   }
 
   if (typeof details === "string") {
-    return `${fallback}: ${details}`;
+    return `${fallback}: ${cleanUserMessage(details)}`;
   }
 
   if (typeof details === "object" && details !== null && "message" in details) {
     const message = (details as { message?: unknown }).message;
     if (Array.isArray(message)) {
-      return `${fallback}: ${message.join(", ")}`;
+      return `${fallback}: ${message.map(cleanUserMessage).join(", ")}`;
     }
 
     if (typeof message === "string") {
-      return `${fallback}: ${message}`;
+      return `${fallback}: ${cleanUserMessage(message)}`;
     }
   }
 
-  return `${fallback}: ${JSON.stringify(details)}`;
+  return `${fallback}: ${cleanUserMessage(JSON.stringify(details))}`;
+}
+
+export function cleanUserMessage(value: unknown): string {
+  const message = String(value);
+  const knownMessage =
+    parseDuplicateRepositoryMessage(message) ??
+    parseRenderProvisioningMessage(message) ??
+    parseProviderIntegrationMessage(message) ??
+    parseGenericServerMessage(message);
+  if (knownMessage) return knownMessage;
+
+  return stripNoisyApiPayload(message);
+}
+
+function parseRenderProvisioningMessage(message: string): string | null {
+  if (
+    /Render billing is not configured|selected instance type requires payment/i.test(
+      message,
+    )
+  ) {
+    return "Render billing is not configured for this workspace or the selected plan requires payment.";
+  }
+
+  if (/A Render service with this name already exists/i.test(message)) {
+    return "A Render service with this name already exists. Choose a different service name or attach the existing service.";
+  }
+
+  if (
+    /Render API key is invalid|missing required workspace access/i.test(message)
+  ) {
+    return "The Render API key cannot access the selected workspace.";
+  }
+
+  if (
+    /Render provider metadata is missing|Render deployment secrets/i.test(
+      message,
+    )
+  ) {
+    return "Render service was created, but ALPHACI could not install the deployment secrets.";
+  }
+
+  if (/image pull|registry|GHCR/i.test(message)) {
+    return "Render could not pull the deployment image. Check registry access and retry.";
+  }
+
+  return null;
+}
+
+function parseDuplicateRepositoryMessage(message: string): string | null {
+  if (
+    message.includes("name already exists on this account") ||
+    message.includes("Repository already exists or name is invalid")
+  ) {
+    return "A repository with this name already exists on this GitHub account. Choose another repository name and try again.";
+  }
+
+  return null;
+}
+
+function parseProviderIntegrationMessage(message: string): string | null {
+  if (
+    message.includes("install the GitHub integration") ||
+    message.includes("Install GitHub App")
+  ) {
+    return "Vercel cannot access this GitHub repository yet. Install or update the Vercel GitHub integration for the repository owner, then retry.";
+  }
+
+  if (
+    message.includes("invalid_root_directory") ||
+    message.includes("Root Directory must be a relative path")
+  ) {
+    return 'The root directory must be a relative path, for example "frontend". Do not use "./" or "../".';
+  }
+
+  if (message.includes("Missing team access")) {
+    return "The configured Vercel token does not have access to the selected team or project.";
+  }
+
+  return null;
+}
+
+function parseGenericServerMessage(message: string): string | null {
+  if (
+    message.includes("quota_exceeded") ||
+    /Usage quota exceeded/i.test(message) ||
+    message.includes("Request failed with status 402")
+  ) {
+    return "Quota reached. Upgrade your plan or remove unused resources.";
+  }
+
+  if (
+    message === "Internal Server Error" ||
+    message.includes("Request failed with status 500")
+  ) {
+    return "Something went wrong while processing the request. Please retry, then check the backend logs if it happens again.";
+  }
+
+  if (message.includes("Request failed with status 401")) {
+    return "Your session has expired. Sign in again and retry.";
+  }
+
+  if (message.includes("Request failed with status 403")) {
+    return "You do not have access to perform this action.";
+  }
+
+  return null;
+}
+
+function isQuotaError(error: unknown): boolean {
+  // Detect quotas by explicit signal, never by bare HTTP status. A 403 usually
+  // means "no access" (e.g. the GitHub App is not installed on the org), not
+  // "quota reached", and mislabeling it as a quota error hides the real,
+  // actionable message and prompts a pointless upgrade.
+  const apiError = error as Partial<ApiError>;
+  const details = apiError.details;
+
+  if (typeof details === "string") {
+    return details.includes("quota_exceeded");
+  }
+
+  if (typeof details === "object" && details !== null) {
+    const record = details as {
+      code?: unknown;
+      message?: unknown;
+      limitCode?: unknown;
+      upgradeRequired?: unknown;
+    };
+
+    // The backend quota guard (BadRequestException) carries these fields.
+    if (record.code === "quota_exceeded") return true;
+    if (typeof record.limitCode === "string") return true;
+    if (typeof record.upgradeRequired === "boolean") return true;
+
+    if (typeof record.message === "string") {
+      return (
+        record.message.includes("quota_exceeded") ||
+        /quota/i.test(record.message)
+      );
+    }
+  }
+
+  return false;
+}
+
+function stripNoisyApiPayload(message: string): string {
+  return message
+    .replaceAll(/https:\/\/docs\.github\.com\/[^\s"'}]+/g, "GitHub API docs")
+    .replaceAll(/"documentation_url":"[^"]+",?/g, "")
+    .replaceAll(/"status":"?\d+"?,?/g, "")
+    .replaceAll(/\s+/g, " ")
+    .trim();
 }

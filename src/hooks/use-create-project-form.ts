@@ -10,15 +10,28 @@ type CreateProjectPayloadResult =
   | { ok: false; message: string };
 
 interface BuildPayloadInput {
-  hasAllRepositoriesInstallation: boolean;
+  isMicroservicesShape: boolean;
+  isMultiRepoShape: boolean;
   repoShapeId: string;
   projectTypeId: string;
   workflowRecipeId: string;
   tests: Record<MvpProjectOptionKey, boolean>;
+  ownerType?: "personal" | "organization";
+  installationId?: number;
+  deploymentProvisioning?: CreateProjectRequest["deploymentProvisioning"];
 }
 
+// GitHub repository names allow letters, digits, '.', '_' and '-'. We keep the
+// existing lowercase convention and now also permit '.' and '_' (previously
+// stripped). Anything else (including '/', which separates owner/repo) is
+// dropped; spaces become hyphens; leading/trailing separators are trimmed.
 function normalizeRepoName(value: string): string {
-  return toSlug(value).replaceAll(/^-+|-+$/g, "");
+  return value
+    .toLowerCase()
+    .trim()
+    .replaceAll(/\s+/g, "-")
+    .replaceAll(/[^a-z0-9._-]/g, "")
+    .replaceAll(/^[-._]+|[-._]+$/g, "");
 }
 
 export function useCreateProjectForm() {
@@ -31,12 +44,26 @@ export function useCreateProjectForm() {
   const [outputFileName, setOutputFileName] = useState("ci.yml");
   const [serviceNameTouched, setServiceNameTouched] = useState(false);
 
+  // Microservices dual-slot state
+  const [backendProjectTypeId, setBackendProjectTypeId] = useState("nestjs");
+  const [backendWorkflowRecipeId, setBackendWorkflowRecipeId] = useState("standard");
+  const [backendServiceName, setBackendServiceNameState] = useState("");
+  const [backendServicePath, setBackendServicePath] = useState("backend/");
+  const [backendServiceNameTouched, setBackendServiceNameTouched] = useState(false);
+  const [frontendProjectTypeId, setFrontendProjectTypeId] = useState("nextjs");
+  const [frontendWorkflowRecipeId, setFrontendWorkflowRecipeId] = useState("standard");
+  const [frontendServiceName, setFrontendServiceNameState] = useState("");
+  const [frontendServicePath, setFrontendServicePath] = useState("frontend/");
+  const [frontendServiceNameTouched, setFrontendServiceNameTouched] = useState(false);
+
   const setRepoName = useCallback(
     (value: string) => {
       const normalized = normalizeRepoName(value);
       setRepoNameState(normalized);
       if (!serviceNameTouched) {
-        setServiceNameState(normalized);
+        // Service name feeds the workflow YAML as an identifier — keep it a
+        // strict slug even though the repo name may contain '.'/'_'.
+        setServiceNameState(toSlug(normalized));
       }
     },
     [serviceNameTouched],
@@ -47,15 +74,28 @@ export function useCreateProjectForm() {
     setServiceNameState(toSlug(value));
   }, []);
 
-  function buildPayload(input: BuildPayloadInput): CreateProjectPayloadResult {
-    if (!input.hasAllRepositoriesInstallation) {
-      return {
-        ok: false,
-        message:
-          "Link a GitHub App installation with all repositories access before creating a project.",
-      };
-    }
+  const setBackendServiceName = useCallback((value: string) => {
+    setBackendServiceNameTouched(true);
+    setBackendServiceNameState(toSlug(value));
+  }, []);
 
+  const setFrontendServiceName = useCallback((value: string) => {
+    setFrontendServiceNameTouched(true);
+    setFrontendServiceNameState(toSlug(value));
+  }, []);
+
+  const effectiveBackendServiceName = backendServiceNameTouched
+    ? backendServiceName
+    : repoName
+      ? `${toSlug(repoName)}-backend`
+      : "";
+  const effectiveFrontendServiceName = frontendServiceNameTouched
+    ? frontendServiceName
+    : repoName
+      ? `${toSlug(repoName)}-frontend`
+      : "";
+
+  function buildPayload(input: BuildPayloadInput): CreateProjectPayloadResult {
     const normalizedRepoName = normalizeRepoName(repoName);
     if (!normalizedRepoName) {
       return { ok: false, message: "Repository name is required." };
@@ -64,16 +104,6 @@ export function useCreateProjectForm() {
     if (!input.repoShapeId) {
       return { ok: false, message: "Choose a repository shape." };
     }
-
-    if (!input.projectTypeId) {
-      return { ok: false, message: "Choose a project type." };
-    }
-
-    if (!input.workflowRecipeId) {
-      return { ok: false, message: "Choose a workflow recipe." };
-    }
-
-    const normalizedServiceName = toSlug(serviceName || normalizedRepoName);
 
     const coverage = Number(coverageThreshold);
     if (!Number.isInteger(coverage) || coverage < 0 || coverage > 100) {
@@ -89,11 +119,124 @@ export function useCreateProjectForm() {
       return { ok: false, message: "Workflow file name must be a .yml or .yaml basename." };
     }
 
+    const ownerType = input.ownerType ?? "personal";
+    if (ownerType === "organization" && !input.installationId) {
+      return { ok: false, message: "Choose a linked GitHub organization." };
+    }
+
+    const ownerFields: Pick<CreateProjectRequest, "ownerType" | "installationId"> =
+      input.ownerType
+        ? {
+            ownerType,
+            ...(ownerType === "organization" && input.installationId
+              ? { installationId: input.installationId }
+              : {}),
+          }
+        : {};
+
+    if (input.isMicroservicesShape) {
+      const normalizedBackendName = toSlug(
+        effectiveBackendServiceName || `${normalizedRepoName}-backend`,
+      );
+      const normalizedFrontendName = toSlug(
+        effectiveFrontendServiceName || `${normalizedRepoName}-frontend`,
+      );
+
+      return {
+        ok: true,
+        payload: {
+          repoName: normalizedRepoName,
+          visibility,
+          ...ownerFields,
+          repoShape: input.repoShapeId,
+          // projectTypeId is required on the contract; use backend as the primary slot.
+          projectTypeId: backendProjectTypeId,
+          workflowRecipeId: backendWorkflowRecipeId,
+          // serviceName/servicePath are satisfied by the primary slot for non-microservices
+          // consumers of the contract — the microservicesConfig carries the full detail.
+          serviceName: normalizedBackendName,
+          servicePath: backendServicePath.trim() || "backend/",
+          nodeVersion: nodeVersion.trim() || "24",
+          coverageThreshold: coverage,
+          tests: input.tests,
+          outputFileName: normalizedOutputFileName,
+          ...(input.deploymentProvisioning ? { deploymentProvisioning: input.deploymentProvisioning } : {}),
+          microservicesConfig: {
+            backend: {
+              projectTypeId: backendProjectTypeId,
+              workflowRecipeId: backendWorkflowRecipeId,
+              serviceName: normalizedBackendName,
+              servicePath: backendServicePath.trim() || "backend/",
+            },
+            frontend: {
+              projectTypeId: frontendProjectTypeId,
+              workflowRecipeId: frontendWorkflowRecipeId,
+              serviceName: normalizedFrontendName,
+              servicePath: frontendServicePath.trim() || "frontend/",
+            },
+          },
+        },
+      };
+    }
+
+    if (input.isMultiRepoShape) {
+      const normalizedBackendName = toSlug(
+        effectiveBackendServiceName || `${normalizedRepoName}-backend`,
+      );
+      const normalizedFrontendName = toSlug(
+        effectiveFrontendServiceName || `${normalizedRepoName}-frontend`,
+      );
+
+      return {
+        ok: true,
+        payload: {
+          repoName: normalizedRepoName,
+          visibility,
+          ...ownerFields,
+          repoShape: input.repoShapeId,
+          projectTypeId: backendProjectTypeId,
+          workflowRecipeId: backendWorkflowRecipeId,
+          serviceName: normalizedBackendName,
+          servicePath: backendServicePath.trim() || "backend/",
+          nodeVersion: nodeVersion.trim() || "24",
+          coverageThreshold: coverage,
+          tests: input.tests,
+          outputFileName: normalizedOutputFileName,
+          ...(input.deploymentProvisioning ? { deploymentProvisioning: input.deploymentProvisioning } : {}),
+          multiRepoConfig: {
+            backend: {
+              projectTypeId: backendProjectTypeId,
+              workflowRecipeId: backendWorkflowRecipeId,
+              serviceName: normalizedBackendName,
+              servicePath: backendServicePath.trim() || "backend/",
+            },
+            frontend: {
+              projectTypeId: frontendProjectTypeId,
+              workflowRecipeId: frontendWorkflowRecipeId,
+              serviceName: normalizedFrontendName,
+              servicePath: frontendServicePath.trim() || "frontend/",
+            },
+          },
+        },
+      };
+    }
+
+    if (!input.projectTypeId) {
+      return { ok: false, message: "Choose a project type." };
+    }
+
+    if (!input.workflowRecipeId) {
+      return { ok: false, message: "Choose a workflow recipe." };
+    }
+
+    const normalizedServiceName = toSlug(serviceName || normalizedRepoName);
+
     return {
       ok: true,
       payload: {
         repoName: normalizedRepoName,
         visibility,
+        ...ownerFields,
         repoShape: input.repoShapeId,
         projectTypeId: input.projectTypeId,
         workflowRecipeId: input.workflowRecipeId,
@@ -103,19 +246,36 @@ export function useCreateProjectForm() {
         coverageThreshold: coverage,
         tests: input.tests,
         outputFileName: normalizedOutputFileName,
+        ...(input.deploymentProvisioning ? { deploymentProvisioning: input.deploymentProvisioning } : {}),
       },
     };
   }
 
   return {
+    backendProjectTypeId,
+    backendServiceName: effectiveBackendServiceName,
+    backendServicePath,
+    backendWorkflowRecipeId,
     buildPayload,
     coverageThreshold,
+    frontendProjectTypeId,
+    frontendServiceName: effectiveFrontendServiceName,
+    frontendServicePath,
+    frontendWorkflowRecipeId,
     nodeVersion,
     outputFileName,
     repoName,
     serviceName,
     servicePath,
+    setBackendProjectTypeId,
+    setBackendServiceName,
+    setBackendServicePath,
+    setBackendWorkflowRecipeId,
     setCoverageThreshold,
+    setFrontendProjectTypeId,
+    setFrontendServiceName,
+    setFrontendServicePath,
+    setFrontendWorkflowRecipeId,
     setNodeVersion,
     setOutputFileName,
     setRepoName,

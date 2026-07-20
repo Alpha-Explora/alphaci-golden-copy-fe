@@ -10,6 +10,7 @@ import {
 } from "@/lib/api/client";
 import type { GithubInstallationAccount, LinkedGitHubRepo } from "@/lib/api/contracts";
 import { formatApiError } from "@/components/product/workflow-builder-utils";
+import { navigateToExternalUrl } from "@/lib/navigation";
 
 export function useGithubInstallations(
   setStatusMessage: (message: string) => void,
@@ -23,10 +24,33 @@ export function useGithubInstallations(
   const [loadingInstallationAccounts, setLoadingInstallationAccounts] = useState(false);
   const [installationAccountsLoaded, setInstallationAccountsLoaded] = useState(false);
   const [installUrl, setInstallUrl] = useState<string | null>(null);
+  const [appSlug, setAppSlug] = useState<string | null>(null);
   const [loadingInstallUrl, setLoadingInstallUrl] = useState(false);
   const [installationId, setInstallationId] = useState("");
+  const [selectedOwner, setSelectedOwner] = useState("personal");
   const [linkingInstallation, setLinkingInstallation] = useState(false);
   const autoLinkFiredRef = useRef(false);
+
+  const applyInstallConfig = useCallback((response: { installUrl: string; appSlug?: string }) => {
+    const url = new URL(response.installUrl);
+    const match = url.pathname.match(/^\/apps\/([a-z0-9-]+)\/installations\/new\/?$/);
+    if (url.protocol !== "https:" || url.hostname !== "github.com" || !match) {
+      throw new Error("Backend returned an invalid GitHub App installation URL.");
+    }
+    const normalizedAppSlug = response.appSlug?.trim().toLowerCase() || match[1];
+    if (normalizedAppSlug !== match[1]) {
+      throw new Error("Backend GitHub App slug does not match its installation URL.");
+    }
+    setInstallUrl(response.installUrl);
+    setAppSlug(normalizedAppSlug);
+  }, []);
+
+  const buildInstallRedirectUrl = useCallback((installUrl: string) => {
+    const url = new URL(installUrl);
+    const returnPath = `${window.location.pathname}${window.location.search}${window.location.hash}`;
+    url.searchParams.set("state", returnPath || "/");
+    return url.toString();
+  }, []);
 
   const loadLinkedRepos = useCallback(async (silent = false) => {
     if (!silent) {
@@ -81,11 +105,12 @@ export function useGithubInstallations(
       try {
         const response = await getGithubAppInstallUrl();
         if (active) {
-          setInstallUrl(response.installUrl);
+          applyInstallConfig(response);
         }
       } catch {
         if (active) {
           setInstallUrl(null);
+          setAppSlug(null);
         }
       } finally {
         if (active) {
@@ -99,7 +124,24 @@ export function useGithubInstallations(
     return () => {
       active = false;
     };
-  }, []);
+  }, [applyInstallConfig]);
+
+  async function handleInstallApp() {
+    setLoadingInstallUrl(true);
+
+    try {
+      const response = await getGithubAppInstallUrl();
+      applyInstallConfig(response);
+      setStatusMessage("");
+      navigateToExternalUrl(buildInstallRedirectUrl(response.installUrl));
+    } catch (error) {
+      setInstallUrl(null);
+      setAppSlug(null);
+      setStatusMessage(formatApiError(error, "GitHub App install link unavailable"));
+    } finally {
+      setLoadingInstallUrl(false);
+    }
+  }
 
   useEffect(() => {
     if (autoLinkFiredRef.current) return;
@@ -112,6 +154,8 @@ export function useGithubInstallations(
     setInstallationId(urlInstallationId);
 
     params.delete("installation_id");
+    params.delete("setup_action");
+    params.delete("state");
     const remaining = params.toString();
     const cleanUrl = remaining ? `${window.location.pathname}?${remaining}` : window.location.pathname;
     window.history.replaceState(null, "", cleanUrl);
@@ -184,8 +228,17 @@ export function useGithubInstallations(
       ? "GitHub App is linked for selected repositories only. Reinstall or update it with all repositories access to create new repos."
       : "Link the GitHub App with all repositories access to create new repos.";
 
+  const selectedInstallationId = selectedOwner.startsWith("organization:")
+    ? Number(selectedOwner.slice("organization:".length))
+    : undefined;
+  const selectedOwnerType: "organization" | "personal" = selectedInstallationId
+    ? "organization"
+    : "personal";
+
   return {
     allRepositoriesAccount,
+    appSlug,
+    handleInstallApp,
     handleLinkInstallation,
     handleRepoSelect,
     hasAllRepositoriesInstallation,
@@ -203,7 +256,11 @@ export function useGithubInstallations(
     loadingInstallUrl,
     loadingLinkedRepos,
     selectedRepoFullName,
+    selectedInstallationId,
+    selectedOwner,
+    selectedOwnerType,
     setInstallationId,
+    setSelectedOwner,
   };
 }
 

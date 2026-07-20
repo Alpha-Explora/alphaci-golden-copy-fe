@@ -2,44 +2,23 @@
 
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
-import { useEffect, useMemo, type MouseEvent } from "react";
-import { motion, useMotionValue, useReducedMotion, useSpring, useTransform } from "framer-motion";
+import { useEffect, useMemo, useState } from "react";
+import { motion, useReducedMotion } from "framer-motion";
 
+import { DitherBackground } from "@/components/layout/dither-background";
 import { FlowBackground } from "@/components/layout/flow-background";
+import { PublicSiteNav } from "@/components/layout/public-site-nav";
 import { useAuthSession } from "@/hooks/use-auth-session";
-import { createGitHubLoginUrl, createGoogleLoginUrl } from "@/lib/api/client";
-import { hasActiveSubscription } from "@/lib/auth/subscription";
+import { createGitHubLoginUrl, warmupBackend } from "@/lib/api/client";
+import { getAuthenticatedRedirectPath } from "@/lib/auth/subscription";
 
 interface OAuthAuthPageProps {
   mode: "login" | "signup";
   title: string;
   subtitle: string;
-  switchText: string;
-  switchHref: string;
-  switchCta: string;
-}
-
-function GoogleGlyph() {
-  return (
-    <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
-      <path
-        d="M22 12.23c0-.84-.08-1.63-.21-2.4h-9.74v4.55h5.58a4.76 4.76 0 0 1-2.07 3.12v2.59h3.34c1.95-1.8 3.1-4.46 3.1-7.86Z"
-        fill="#4285F4"
-      />
-      <path
-        d="M12.05 22.33c2.79 0 5.13-.92 6.84-2.5l-3.34-2.59c-.93.62-2.12 1-3.5 1-2.68 0-4.95-1.81-5.76-4.24H2.83v2.67a10.31 10.31 0 0 0 9.22 5.66Z"
-        fill="#34A853"
-      />
-      <path
-        d="M6.29 14c-.2-.61-.31-1.26-.31-1.94 0-.67.11-1.33.31-1.93V7.46H2.83A10.3 10.3 0 0 0 1.75 12c0 1.67.4 3.25 1.08 4.54L6.29 14Z"
-        fill="#FBBC05"
-      />
-      <path
-        d="M12.05 5.76c1.52 0 2.89.52 3.96 1.54l2.97-2.97a9.96 9.96 0 0 0-6.93-2.67A10.31 10.31 0 0 0 2.83 7.46l3.46 2.67c.81-2.42 3.08-4.37 5.76-4.37Z"
-        fill="#EA4335"
-      />
-    </svg>
-  );
+  switchText?: string;
+  switchHref?: string;
+  switchCta?: string;
 }
 
 function GitHubGlyph() {
@@ -54,14 +33,8 @@ function GitHubGlyph() {
 }
 
 function toSafeNextPath(raw: string | null): string {
-  if (!raw) {
-    return "/home";
-  }
-
-  if (raw.startsWith("/") && !raw.startsWith("//")) {
-    return raw;
-  }
-
+  if (!raw) return "/home";
+  if (raw.startsWith("/") && !raw.startsWith("//")) return raw;
   return "/home";
 }
 
@@ -77,114 +50,86 @@ export function OAuthAuthPage({
   const searchParams = useSearchParams();
   const prefersReducedMotion = useReducedMotion();
 
-  const { status, session, error } = useAuthSession();
+  const [isWarming, setIsWarming] = useState<boolean>(false);
+  const [browserOrigin, setBrowserOrigin] = useState<string | null>(null);
 
-  const nextPath = useMemo(() => toSafeNextPath(searchParams.get("next")), [searchParams]);
+  const { status, session } = useAuthSession();
+
+  const nextPath = useMemo(
+    () => toSafeNextPath(searchParams.get("next")),
+    [searchParams],
+  );
   const githubCallbackReturnTo = useMemo(() => {
     const callbackPath = new URLSearchParams({
       intent: mode,
       next: nextPath,
       provider: "github",
     });
+    const relativeCallbackPath = `/auth/callback?${callbackPath.toString()}`;
+    return browserOrigin
+      ? `${browserOrigin}${relativeCallbackPath}`
+      : relativeCallbackPath;
+  }, [browserOrigin, mode, nextPath]);
 
-    return `/auth/callback?${callbackPath.toString()}`;
-  }, [mode, nextPath]);
-
-  const googleCallbackReturnTo = useMemo(() => {
-    const callbackPath = new URLSearchParams({
-      intent: mode,
-      next: nextPath,
-      provider: "google",
-    });
-
-    return `/auth/callback?${callbackPath.toString()}`;
-  }, [mode, nextPath]);
-
-  const githubLoginHref = useMemo(() => createGitHubLoginUrl(githubCallbackReturnTo), [githubCallbackReturnTo]);
-  const googleLoginHref = useMemo(() => createGoogleLoginUrl(googleCallbackReturnTo), [googleCallbackReturnTo]);
-
-  const pointerX = useMotionValue(0);
-  const pointerY = useMotionValue(0);
-
-  const rotateX = useSpring(useTransform(pointerY, [-0.5, 0.5], [3.2, -3.2]), {
-    stiffness: 190,
-    damping: 24,
-    mass: 0.45,
-  });
-  const rotateY = useSpring(useTransform(pointerX, [-0.5, 0.5], [-3.2, 3.2]), {
-    stiffness: 190,
-    damping: 24,
-    mass: 0.45,
-  });
+  const githubLoginHref = useMemo(
+    () => createGitHubLoginUrl(githubCallbackReturnTo),
+    [githubCallbackReturnTo],
+  );
 
   useEffect(() => {
-    if (status !== "signed-in") {
-      return;
-    }
+    setBrowserOrigin(window.location.origin);
+  }, []);
 
-    if (hasActiveSubscription(session)) {
-      router.replace(nextPath);
-      return;
-    }
-
-    router.replace("/subscribe");
+  useEffect(() => {
+    if (status !== "signed-in") return;
+    const redirectPath = getAuthenticatedRedirectPath(session, nextPath);
+    if (redirectPath) router.replace(redirectPath);
   }, [nextPath, router, session, status]);
 
-  function handleCardPointerMove(event: MouseEvent<HTMLDivElement>) {
-    if (prefersReducedMotion) {
-      return;
-    }
-
-    const bounds = event.currentTarget.getBoundingClientRect();
-    const x = (event.clientX - bounds.left) / bounds.width - 0.5;
-    const y = (event.clientY - bounds.top) / bounds.height - 0.5;
-
-    pointerX.set(Math.max(-0.5, Math.min(0.5, x)));
-    pointerY.set(Math.max(-0.5, Math.min(0.5, y)));
-  }
-
-  function handleCardPointerLeave() {
-    pointerX.set(0);
-    pointerY.set(0);
-  }
 
   return (
-    <main className="flow-shell page-shell auth-shell">
-      <FlowBackground />
+    <main className="auth-shell-split auth-shell-minimal relative bg-zinc-50 text-zinc-950 dark:bg-zinc-950 dark:text-zinc-100">
+      <FlowBackground variant="calm" />
+      <DitherBackground />
+      <PublicSiteNav active="pricing" fixed showActions={false} />
 
-      <header className="marketing-nav glass-panel">
-        <p className="brand-mark">FlowCI Studio</p>
-        <nav aria-label="Primary" className="nav-links">
-          <Link href="/">Home</Link>
-          <Link href="/subscribe">Pricing</Link>
-        </nav>
-        <Link className="ghost-button" href={mode === "login" ? "/signup" : "/login"}>
-          {mode === "login" ? "Sign up" : "Login"}
-        </Link>
-      </header>
+      <div className="auth-left-panel">
+        <div className="auth-internal-welcome">
+          <motion.div
+            className="auth-internal-copy"
+            initial={prefersReducedMotion ? undefined : { opacity: 0, y: 16 }}
+            animate={prefersReducedMotion ? undefined : { opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: 0.2 }}
+          >
+            <p className="auth-internal-kicker">Internal workspace</p>
+            <h2>Alphaexplora internal access</h2>
+            <p>
+              Sign in with your company GitHub to manage governed delivery
+              workflows, organization repositories, provider connections, and
+              deployments — all from one secure place.
+            </p>
+          </motion.div>
 
-      <section className="section-card auth-card glass-panel auth-card-modern">
+          <p className="auth-minimal-note">
+            Access is gated on Alphaexplora organization membership — external
+            accounts can&apos;t get in.
+          </p>
+        </div>
+      </div>
+
+      <div className="auth-right-panel">
         <motion.div
-          className="auth-card-shell"
-          initial={prefersReducedMotion ? undefined : { opacity: 0, y: 14, scale: 0.985 }}
-          animate={prefersReducedMotion ? undefined : { opacity: 1, y: 0, scale: 1 }}
-          transition={{ duration: 0.42, ease: [0.22, 1, 0.36, 1] }}
-          onMouseMove={handleCardPointerMove}
-          onMouseLeave={handleCardPointerLeave}
-          style={
+          className="auth-card-shell bg-white dark:bg-zinc-900"
+          initial={
             prefersReducedMotion
               ? undefined
-              : {
-                  transformPerspective: 1100,
-                  rotateX,
-                  rotateY,
-                }
+              : { opacity: 0, y: 14, scale: 0.985 }
           }
+          animate={
+            prefersReducedMotion ? undefined : { opacity: 1, y: 0, scale: 1 }
+          }
+          transition={{ duration: 0.42, ease: [0.22, 1, 0.36, 1] }}
         >
-          <span className="auth-card-glint" aria-hidden="true" />
-          <span className="auth-depth-orb auth-depth-orb-a" aria-hidden="true" />
-          <span className="auth-depth-orb auth-depth-orb-b" aria-hidden="true" />
-
           <div className="auth-header">
             <motion.p
               className="hero-kicker"
@@ -203,53 +148,103 @@ export function OAuthAuthPage({
             <p className="auth-subtitle">{subtitle}</p>
           </div>
 
-          <fieldset className="auth-provider-grid" aria-label="Authentication providers">
-            <Link className="auth-provider-button provider-google" href={googleLoginHref}>
-              <span className="auth-provider-icon" aria-hidden="true">
-                <GoogleGlyph />
-              </span>
-              <span className="auth-provider-copy">
-                <span className="auth-provider-label">
-                  {mode === "login" ? "Continue with Google" : "Sign up with Google"}
-                </span>
-                <span className="auth-provider-meta">Fastest sign in for product teams</span>
-              </span>
-            </Link>
-
-            <Link className="auth-provider-button provider-github" href={githubLoginHref}>
-              <span className="auth-provider-icon" aria-hidden="true">
+          <div className="auth-provider-single">
+            <motion.a
+              href={githubLoginHref}
+              aria-disabled={isWarming}
+              className="auth-github-cta"
+              style={{
+                display: "flex",
+                alignItems: "center",
+                gap: "0.75rem",
+                width: "100%",
+                padding: "0.9rem 1.5rem",
+                background: "rgba(255,255,255,0.05)",
+                border: "1px solid rgba(255,255,255,0.12)",
+                borderRadius: "0.75rem",
+                textDecoration: "none",
+                transition: "border-color 0.2s ease, box-shadow 0.2s ease",
+                cursor: "pointer",
+                ...(isWarming ? { pointerEvents: "none", opacity: 0.6 } : {}),
+              }}
+              onMouseEnter={(e) => {
+                const el = e.currentTarget as HTMLAnchorElement;
+                el.style.borderColor = "rgba(162, 162, 172, 0.44)";
+                el.style.boxShadow = "0 12px 24px rgba(10, 10, 14, 0.2)";
+              }}
+              onMouseLeave={(e) => {
+                const el = e.currentTarget as HTMLAnchorElement;
+                const isLight =
+                  document.documentElement.getAttribute("data-theme") ===
+                  "light";
+                el.style.borderColor = isLight
+                  ? "rgba(0,0,0,0.12)"
+                  : "rgba(255,255,255,0.12)";
+                el.style.boxShadow = "none";
+              }}
+              onClick={async (e) => {
+                e.preventDefault();
+                setIsWarming(true);
+                try {
+                  await warmupBackend();
+                } catch {
+                  // Intentionally swallowed — warmup failure must not block login.
+                } finally {
+                  setIsWarming(false);
+                }
+                window.location.href = githubLoginHref;
+              }}
+            >
+              <span
+                aria-hidden="true"
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  flexShrink: 0,
+                  width: "20px",
+                  height: "20px",
+                  color: "var(--text-primary)",
+                }}
+              >
                 <GitHubGlyph />
               </span>
-              <span className="auth-provider-copy">
-                <span className="auth-provider-label">
-                  {mode === "login" ? "Continue with GitHub" : "Sign up with GitHub"}
-                </span>
-                <span className="auth-provider-meta">Best path for workflow templates</span>
+              <span
+                style={{
+                  fontWeight: 700,
+                  fontSize: "1rem",
+                  color: "var(--text-primary)",
+                  letterSpacing: "0.02em",
+                }}
+              >
+                {isWarming
+                  ? "Connecting..."
+                  : mode === "login"
+                    ? "Continue with GitHub"
+                    : "Sign up with GitHub"}
               </span>
-            </Link>
-          </fieldset>
-
-          <div className="auth-support-row">
-            <Link className="ghost-button auth-support-link" href="/subscribe">
-              View 300 pesos plan
-            </Link>
-            <Link className="ghost-button auth-support-link" href="/">
-              Go to Home
-            </Link>
+            </motion.a>
           </div>
 
-          {status === "loading" ? <p className="helper-text">Checking current session...</p> : null}
-          {error ? (
-            <p className="error-text" role="alert">
-              {error}
-            </p>
+          {status === "loading" ? (
+            <p className="helper-text">Checking current session...</p>
           ) : null}
 
-          <p className="auth-switch-text">
-            {switchText} <Link href={switchHref}>{switchCta}</Link>
-          </p>
+          <div
+            className="auth-trust-strip"
+            aria-label="ALPHACI sign in protections"
+          >
+            <span>GitHub OAuth</span>
+            <span>Branch-safe setup</span>
+            <span>Encrypted provider tokens</span>
+          </div>
+
+          {switchText && switchHref && switchCta ? (
+            <p className="auth-switch-text">
+              {switchText} <Link href={switchHref}>{switchCta}</Link>
+            </p>
+          ) : null}
         </motion.div>
-      </section>
+      </div>
     </main>
   );
 }

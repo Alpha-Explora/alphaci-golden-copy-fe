@@ -21,7 +21,10 @@ export function useProvisionedProjects(setStatusMessage: (message: string) => vo
     }
 
     try {
-      const response = await getProjects(25);
+      // Current Projects is group-centric: it needs every project the user can
+      // see so the selected group's count and repository list remain correct.
+      // The API enforces group/assignment visibility for this unfiltered query.
+      const response = await getProjects(100);
       setProjects(response.items);
     } catch {
       if (!silent) {
@@ -42,10 +45,12 @@ export function useProvisionedProjects(setStatusMessage: (message: string) => vo
     setProjects((current) => [
       {
         id: response.id,
+        workspaceId: payload.workspaceId,
         repoFullName: response.repoFullName,
         templateId: payload.templateId,
         serviceName: payload.serviceName,
         workflowPath: response.workflowPath,
+        workflowFiles: response.workflowFiles,
         status: response.status,
         githubCommitSha: response.githubCommitSha,
         githubCommitUrl: response.githubCommitUrl,
@@ -59,6 +64,7 @@ export function useProvisionedProjects(setStatusMessage: (message: string) => vo
     setProjects((current) => [
       {
         id: response.id,
+        workspaceId: payload.workspaceId,
         repoFullName: response.repoFullName,
         repoUrl: response.repoUrl,
         visibility: payload.visibility,
@@ -69,6 +75,7 @@ export function useProvisionedProjects(setStatusMessage: (message: string) => vo
         templateId: response.projectTypeId,
         serviceName: payload.serviceName,
         workflowPath: response.workflowPath,
+        workflowFiles: response.workflowFiles,
         status: response.status,
         githubCommitSha: response.githubCommitSha,
         githubCommitUrl: response.githubCommitUrl,

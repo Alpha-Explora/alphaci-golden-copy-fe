@@ -18,6 +18,7 @@ import {
   getWorkflowHistory,
   listProviderConnections,
 } from "../../src/lib/api/client";
+import { getMyWorkspaces } from "../../src/lib/api/workspaces";
 import type { ProjectOptionsResponse } from "../../src/lib/api/contracts";
 
 jest.mock("framer-motion", () => {
@@ -71,6 +72,13 @@ jest.mock("../../src/lib/api/client", () => ({
   listProviderConnections: jest.fn(),
 }));
 
+// Every project belongs to a team, so the Setup tab has to name one. Default to
+// a single team: that is the unambiguous case, and it keeps every pre-existing
+// test in this file on the path where nothing has to be chosen.
+jest.mock("../../src/lib/api/workspaces", () => ({
+  getMyWorkspaces: jest.fn(),
+}));
+
 const mockedCreateProject = createProject as jest.MockedFunction<typeof createProject>;
 const mockedCreateGithubRepo = createGithubRepo as jest.MockedFunction<typeof createGithubRepo>;
 const mockedGenerateWorkflow = generateWorkflow as jest.MockedFunction<typeof generateWorkflow>;
@@ -86,6 +94,9 @@ const mockedGetLinkedGithubRepos = getLinkedGithubRepos as jest.MockedFunction<
   typeof getLinkedGithubRepos
 >;
 const mockedGetMyUsage = getMyUsage as jest.MockedFunction<typeof getMyUsage>;
+const mockedGetMyWorkspaces = getMyWorkspaces as jest.MockedFunction<
+  typeof getMyWorkspaces
+>;
 const mockedGetProjectOptions = getProjectOptions as jest.MockedFunction<typeof getProjectOptions>;
 const mockedGetProjects = getProjects as jest.MockedFunction<typeof getProjects>;
 const mockedGetTemplates = getTemplates as jest.MockedFunction<typeof getTemplates>;
@@ -285,6 +296,12 @@ describe("WorkflowBuilder project setup", () => {
         modes: ["flowci_managed", "byo"],
       },
     });
+    mockedGetMyWorkspaces.mockResolvedValue({
+      enabled: true,
+      items: [
+        { id: "workspace-1", name: "Platform", kind: "team", role: "admin" },
+      ],
+    });
     mockedGetCategories.mockResolvedValue({ categories: [] });
     mockedGetTemplates.mockResolvedValue({ templates: [template] });
     mockedGetWorkflowHistory.mockResolvedValue({ items: [] });
@@ -478,6 +495,76 @@ describe("WorkflowBuilder project setup", () => {
     expect(container.textContent).toContain("10-alphaci-quality.yml");
     expect(container.textContent).toContain("20-alphaci-package.yml");
     expect(container.textContent).toContain("3 gated workflow stages");
+  });
+
+  /* A project always belongs to a team. With one team there is nothing to
+   * choose, so the create carries it without asking. */
+  it("sends the caller's only team with the created project", async () => {
+    await renderBuilder();
+
+    await advanceToReview({
+      projectTypeId: "nextjs-app",
+      repoName: "demo-next-app",
+    });
+
+    await act(async () => {
+      container
+        .querySelector<HTMLButtonElement>("[data-testid='setup-project-button']")
+        ?.click();
+      await Promise.resolve();
+    });
+
+    await waitForCondition(
+      () => container.textContent?.includes("tone/demo-next-app") ?? false,
+    );
+
+    expect(mockedCreateProject).toHaveBeenCalledWith(
+      expect.objectContaining({ workspaceId: "workspace-1" }),
+    );
+  });
+
+  /* With several teams the choice is the caller's, not a sort order's. Creating
+   * used to send nothing here and let the server take the caller's oldest
+   * workspace — reliably the personal one, invisible to every teammate. */
+  it("blocks creation until a team is chosen when the caller has several", async () => {
+    mockedGetMyWorkspaces.mockResolvedValue({
+      enabled: true,
+      items: [
+        { id: "workspace-1", name: "Platform", kind: "team", role: "admin" },
+        { id: "workspace-2", name: "Payments", kind: "team", role: "member" },
+      ],
+    });
+    await renderBuilder();
+
+    await advanceToReview({
+      projectTypeId: "nextjs-app",
+      repoName: "demo-next-app",
+    });
+
+    const createButton = container.querySelector<HTMLButtonElement>(
+      "[data-testid='setup-project-button']",
+    );
+    expect(createButton?.disabled).toBe(true);
+
+    const teamSelect = container.querySelector<HTMLSelectElement>(
+      "[data-testid='setup-workspace-select']",
+    );
+    expect(teamSelect).not.toBeNull();
+    await act(async () => {
+      changeValue(teamSelect as HTMLSelectElement, "workspace-2");
+      await Promise.resolve();
+    });
+
+    await act(async () => {
+      container
+        .querySelector<HTMLButtonElement>("[data-testid='setup-project-button']")
+        ?.click();
+      await Promise.resolve();
+    });
+
+    expect(mockedCreateProject).toHaveBeenCalledWith(
+      expect.objectContaining({ workspaceId: "workspace-2" }),
+    );
   });
 
   it("shows project quota and disables repository creation when the limit is reached", async () => {

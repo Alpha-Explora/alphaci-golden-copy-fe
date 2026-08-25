@@ -18,7 +18,7 @@ import { WorkspaceSwitcher } from "../../src/components/layout/workspace-switche
 const workspaces = {
   enabled: true,
   items: [
-    { id: "workspace-1", name: "Personal workspace", kind: "personal" as const, role: "admin" as const },
+    { id: "workspace-1", name: "Design team", kind: "team" as const, role: "admin" as const },
     { id: "workspace-2", name: "Team workspace", kind: "team" as const, role: "member" as const },
   ],
 };
@@ -51,7 +51,7 @@ describe("WorkspaceSwitcher", () => {
       );
     });
 
-    expect(container.textContent).toContain("Personal workspace");
+    expect(container.textContent).toContain("Design team");
     expect(container.querySelector("select")).not.toBeNull();
   });
 

@@ -41,7 +41,7 @@ This table lists every current catalog capability in package order. Status is de
 | `identity.edu-provisioning` | `not-applicable` | Not part of this pack composition. |
 | `identity.ferpa-workflows` | `not-applicable` | Not part of this pack composition. |
 | `identity.edition-entitlements` | `not-implemented` | Runtime edition and pack entitlement resolution. No frontend surface. Not implemented in the backend catalog. |
-| `identity.self-serve-auth` | `not-implemented` | Self-serve sign-in and registration: email and password credentials, Google sign-in, and the public signup flow. Frontend surface: `/signup`. Not implemented in the backend catalog. |
+| `identity.self-serve-auth` | `configuration-gated` | Self-serve sign-in and registration: email and password credentials, Google sign-in, and the public signup flow. Frontend surface: `/login`, `/signup`. SaaS-only email-code delivery via AUTH_EMAIL_CODE_DELIVERY; optional Google OAuth via GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET, and GOOGLE_CALLBACK_URL. Billing checkout remains deferred. |
 | `platform.audit-events` | `available` | Project audit event recording through the application outbox. Compatibility flag is loaded by the capabilities view-model. No dedicated route yet hides or shows a panel from this flag. Configuration: auditEvents.enabled. |
 | `platform.notifications` | `available` | In-app notification requests and persistence. Frontend surface: `/inbox`, `/settings`. Configuration: notifications.enabled. |
 | `platform.data-residency` | `not-applicable` | Not part of this pack composition. |

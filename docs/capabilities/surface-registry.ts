@@ -98,6 +98,7 @@ export const CAPABILITY_SURFACES = [
     "viewFlag": "selfServeAuthEnabled",
     "domains": [],
     "routes": [
+      "/login",
       "/signup"
     ],
     "featureBarrels": [

@@ -12,7 +12,7 @@ sources:
 
 # Frontend route map
 
-The current App Router exposes **22 pages**. Routes under `src/app/` are a routing table. Feature code lives in `src/features/`.
+The current App Router exposes **29 pages**. Routes under `src/app/` are a routing table. Feature code lives in `src/features/`.
 
 | Route | Page module | Feature composition |
 |---|---|---|
@@ -21,6 +21,8 @@ The current App Router exposes **22 pages**. Routes under `src/app/` are a routi
 | `/admin/feedback` | `src/app/(platform)/admin/feedback/page.tsx` | `@/features/admin/feedback` |
 | `/admin/users/[id]` | `src/app/(platform)/admin/users/[id]/page.tsx` | `@/features/admin/user-detail` |
 | `/auth/callback` | `src/app/(access)/auth/callback/page.tsx` | `@/features/auth/callback` |
+| `/auth/reset-password` | `src/app/auth/reset-password/page.tsx` | `@/features/auth/edu-password-recovery` |
+| `/connect-github` | `src/app/connect-github/page.tsx` | `@/features/auth/edu-connect-github` |
 | `/groups/[groupId]` | `src/app/(platform)/groups/[groupId]/page.tsx` | `@/features/groups/detail` |
 | `/groups/[groupId]/activity` | `src/app/(platform)/groups/[groupId]/activity/page.tsx` | `@/features/groups/activity` |
 | `/groups/[groupId]/delivery-projects/[deliveryProjectId]` | `src/app/(platform)/groups/[groupId]/delivery-projects/[deliveryProjectId]/page.tsx` | `@/features/groups/delivery-project` |
@@ -35,7 +37,12 @@ The current App Router exposes **22 pages**. Routes under `src/app/` are a routi
 | `/projects/[projectId]` | `src/app/(platform)/projects/[projectId]/page.tsx` | `@/features/projects/detail` |
 | `/runs` | `src/app/(platform)/runs/page.tsx` | `@/features/runs/list` |
 | `/settings` | `src/app/(platform)/settings/page.tsx` | `@/features/settings/account` |
-| `/signup` | `src/app/(access)/signup/page.tsx` | `inline route composition` |
+| `/signin` | `src/app/signin/page.tsx` | `@/features/auth/edu-signin` |
+| `/signin/create-account` | `src/app/signin/create-account/page.tsx` | `@/features/auth/edu-signup` |
+| `/signin/forgot-password` | `src/app/signin/forgot-password/page.tsx` | `@/features/auth/edu-password-recovery` |
+| `/signin/staff` | `src/app/signin/staff/page.tsx` | `@/features/auth/edu-signin` |
+| `/signin/student` | `src/app/signin/student/page.tsx` | `@/features/auth/edu-signin` |
+| `/signup` | `src/app/(access)/signup/page.tsx` | `@/features/auth/self-serve` |
 | `/teams` | `src/app/(platform)/teams/page.tsx` | `@/features/teams/detail` |
 | `/workflows` | `src/app/(platform)/workflows/page.tsx` | `@/features/workflows/studio` |
 

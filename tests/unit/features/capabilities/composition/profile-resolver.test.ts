@@ -20,7 +20,7 @@ const root = path.resolve(__dirname, "../../../../../");
 const catalogPackage = loadCatalogPackage();
 const surfaces = readSurfaceRegistry();
 
-function project(profile: "hosted" | "enterprise") {
+function project(profile: "hosted-saas" | "hosted-edu" | "enterprise") {
   return resolveProfile(profile, {
     catalog: catalogPackage.catalog,
     manifests: catalogPackage.manifests,
@@ -29,27 +29,34 @@ function project(profile: "hosted" | "enterprise") {
 }
 
 describe("frontend build profile resolver", () => {
-  it("projects hosted as saas plus edu deterministically", () => {
-    const first = project("hosted");
-    const second = project("hosted");
+  it("projects SaaS as a physically isolated profile", () => {
+    const first = project("hosted-saas");
+    const second = project("hosted-saas");
 
     expect(first).toEqual(second);
-    expect(first.packs).toEqual(["saas", "edu"]);
-    expect(first.excludedCapabilityKeys).toEqual([
-      "identity.sso-scim",
-      "platform.data-residency",
-      "runtime.managed-secrets",
-      "runtime.air-gap-packaging",
-      "runtime.customer-isolation",
-      "runtime.client-composition",
-      "pipelines.github-enterprise-server",
-    ]);
-    expect(first.excludedFeatureBarrels).toEqual([
-      "@/features/settings/client-composition",
-    ]);
-    expect(first.excludedArtifactSymbols).toEqual([
+    expect(first.packs).toEqual(["saas"]);
+    expect(first.includedCapabilityKeys).toContain("identity.self-serve-auth");
+    expect(first.excludedCapabilityKeys).toEqual(expect.arrayContaining([
+      "identity.edu-auth",
+      "identity.lms-lti",
+      "identity.cohort-policy",
+      "identity.edu-provisioning",
+      "identity.ferpa-workflows",
+    ]));
+    expect(first.excludedFeatureBarrels).toContain("@/features/auth/edu-signin");
+    expect(first.excludedArtifactSymbols).toContain(
       "EnterpriseClientCompositionSettingsView",
-    ]);
+    );
+  });
+
+  it("projects EDU as a physically isolated profile", () => {
+    const projection = project("hosted-edu");
+
+    expect(projection.packs).toEqual(["edu"]);
+    expect(projection.includedCapabilityKeys).toContain("identity.edu-auth");
+    expect(projection.excludedCapabilityKeys).not.toContain("identity.edu-auth");
+    expect(projection.excludedCapabilityKeys).toContain("identity.self-serve-auth");
+    expect(projection.excludedFeatureBarrels).toContain("@/features/auth/self-serve");
   });
 
   it("projects enterprise deterministically and keeps current surfaces included", () => {
@@ -61,23 +68,34 @@ describe("frontend build profile resolver", () => {
       "identity.cohort-policy",
       "identity.edu-provisioning",
       "identity.ferpa-workflows",
+      "identity.self-serve-auth",
+      "identity.edu-auth",
       "platform.public-site",
       "billing.checkout",
     ]);
     expect(projection.includedFeatureBarrels).toContain("@/features/projects");
-    expect(projection.excludedFeatureBarrels).toEqual(["@/features/public-site"]);
+    expect(projection.excludedFeatureBarrels).toEqual([
+      "@/features/auth/self-serve",
+      "@/features/auth/edu-signin",
+      "@/features/auth/edu-signup",
+      "@/features/auth/edu-password-recovery",
+      "@/features/auth/edu-connect-github",
+      "@/features/auth/edu-labs",
+      "@/features/auth/edu-session",
+      "@/features/public-site",
+    ]);
     expect(projection.includedArtifactSymbols).toContain(
       "EnterpriseClientCompositionSettingsView",
     );
     expect(projection.excludedArtifactSymbols).toEqual([]);
   });
 
-  it("rejects a hosted output containing the Enterprise implementation symbol", () => {
-    const projection = project("hosted");
+  it("rejects a SaaS output containing the Enterprise implementation symbol", () => {
+    const projection = project("hosted-saas");
     const outputDirectory = path.join(
       root,
       ".next",
-      "test-hosted-client-composition-artifact",
+      "test-hosted-saas-client-composition-artifact",
     );
     fs.rmSync(outputDirectory, { recursive: true, force: true });
     fs.mkdirSync(outputDirectory, { recursive: true });
@@ -129,8 +147,8 @@ describe("frontend build profile resolver", () => {
   });
 
   it("does not scan the generated stub but still rejects the implementation symbol", () => {
-    const projection = project("hosted");
-    const outputDirectory = path.join(root, ".next", "test-hosted-client-composition-stub");
+    const projection = project("hosted-saas");
+    const outputDirectory = path.join(root, ".next", "test-hosted-saas-client-composition-stub");
     fs.rmSync(outputDirectory, { recursive: true, force: true });
     fs.mkdirSync(outputDirectory, { recursive: true });
 
@@ -158,7 +176,11 @@ describe("frontend build profile resolver", () => {
   });
 
   it("keeps profile membership data-driven", () => {
-    expect(PROFILE_PACKS).toEqual({ hosted: ["saas", "edu"], enterprise: ["enterprise"] });
+    expect(PROFILE_PACKS).toEqual({
+      "hosted-saas": ["saas"],
+      "hosted-edu": ["edu"],
+      enterprise: ["enterprise"],
+    });
   });
 
   it("rejects a dependency that crosses the selected profile ceiling", () => {
@@ -172,14 +194,14 @@ describe("frontend build profile resolver", () => {
         : record,
     );
 
-    expect(() => resolveProfile("hosted", { catalog, manifests, surfaces })).toThrow(
+    expect(() => resolveProfile("hosted-saas", { catalog, manifests, surfaces })).toThrow(
       "dependency closure exceeds its pack ceiling",
     );
   });
 
   it("does not exclude a barrel still needed by an included capability", () => {
     const sharedBarrel = "@/features/shared-surface";
-    const projection = resolveProfile("hosted", {
+    const projection = resolveProfile("hosted-saas", {
       catalog: catalogPackage.catalog,
       manifests: catalogPackage.manifests,
       surfaces: [

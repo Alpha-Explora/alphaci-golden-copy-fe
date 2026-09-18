@@ -1,5 +1,6 @@
 import type { CapabilitiesResponse, EnvOwnershipMode } from "@/shared/api/contracts";
 import {
+  BUILD_EDITION,
   PUBLIC_SITE_ENABLED,
   SELF_SERVE_AUTH_ENABLED,
 } from "@/shared/composition/build-profile";
@@ -23,6 +24,7 @@ export type CapabilityViewFlags = {
   notificationsEnabled: boolean;
   publicSiteEnabled: boolean;
   selfServeAuthEnabled: boolean;
+  eduAuthEnabled: boolean;
   hierarchyEnabled: boolean;
   hierarchyGithubSyncMode: "stub" | "live";
 };
@@ -46,6 +48,7 @@ const DISABLED_CAPABILITY_FLAGS: CapabilityViewFlags = {
   notificationsEnabled: false,
   publicSiteEnabled: false,
   selfServeAuthEnabled: false,
+  eduAuthEnabled: false,
   hierarchyEnabled: false,
   hierarchyGithubSyncMode: "stub",
 };
@@ -92,6 +95,8 @@ export function capabilityViewFlags(
     notificationsEnabled: optionalEnabled(capabilities.notifications),
     publicSiteEnabled: PUBLIC_SITE_ENABLED,
     selfServeAuthEnabled: SELF_SERVE_AUTH_ENABLED,
+    eduAuthEnabled:
+      BUILD_EDITION === "edu" && capabilityKeys.includes("identity.edu-auth"),
     hierarchyEnabled: optionalEnabled(capabilities.hierarchy),
     hierarchyGithubSyncMode: hierarchySyncMode(capabilities.hierarchy),
   };

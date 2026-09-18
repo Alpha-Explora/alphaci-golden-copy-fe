@@ -41,6 +41,7 @@ This table lists every current catalog capability in package order. Status is de
 | `identity.edu-provisioning` | `not-implemented` | Education-specific identity provisioning. No frontend surface. Not implemented in the backend catalog. |
 | `identity.ferpa-workflows` | `not-implemented` | FERPA-oriented education workflow automation. No frontend surface. Not implemented in the backend catalog. |
 | `identity.edition-entitlements` | `not-implemented` | Runtime edition and pack entitlement resolution. No frontend surface. Not implemented in the backend catalog. |
+| `identity.self-serve-auth` | `not-applicable` | Not part of this pack composition. |
 | `platform.audit-events` | `available` | Project audit event recording through the application outbox. Compatibility flag is loaded by the capabilities view-model. No dedicated route yet hides or shows a panel from this flag. Configuration: auditEvents.enabled. |
 | `platform.notifications` | `available` | In-app notification requests and persistence. Frontend surface: `/inbox`, `/settings`. Configuration: notifications.enabled. |
 | `platform.data-residency` | `not-applicable` | Not part of this pack composition. |
@@ -85,5 +86,5 @@ No additional non-registry product areas. Catalog rows with status `not-implemen
 ## Ownership and verification
 
 - Feature owners: the domains in the [feature map](/architecture/feature-map.generated.md).
-- Source: `@alphaci/capability-catalog@0.2.0`, `docs/capabilities/catalog.snapshot.json`, and `docs/capabilities/surface-registry.ts`.
+- Source: `@alphaci/capability-catalog@0.3.0`, `docs/capabilities/catalog.snapshot.json`, and `docs/capabilities/surface-registry.ts`.
 - Verification: `npm run check:documentation`.

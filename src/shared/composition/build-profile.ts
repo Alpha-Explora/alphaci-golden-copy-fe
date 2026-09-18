@@ -39,3 +39,10 @@ export const BUILD_EDITION = resolveBuildEdition(
 );
 
 export const PUBLIC_SITE_ENABLED = BUILD_EDITION === BUILD_EDITIONS.saas;
+
+/**
+ * Self-serve sign-in and registration compose into the SaaS edition only.
+ * Enterprise and EDU keep provider-only sign-in, so the registration surface
+ * is never part of their build.
+ */
+export const SELF_SERVE_AUTH_ENABLED = BUILD_EDITION === BUILD_EDITIONS.saas;

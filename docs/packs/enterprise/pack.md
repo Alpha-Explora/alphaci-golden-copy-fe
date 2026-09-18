@@ -24,7 +24,7 @@ sources:
 
 - Build profile: `enterprise` (`enterprise`)
 - Runtime selection behavior: The build-time profile resolver projects the versioned catalog and aliases excluded feature barrels to fail-closed `notFound()` stubs. Runtime capability truth still comes from `/api/v1/capabilities`.
-- Excluded frontend feature barrels: `@/features/public-site`
+- Excluded frontend feature barrels: `@/features/auth/self-serve`, `@/features/public-site`
 - Current frontend applicability: The same Next.js application exposes the shared capability catalog under the Enterprise evidence bar. A customer-managed deployment target remains separate from edition identity.
 
 ## Capability status
@@ -41,6 +41,7 @@ This table lists every current catalog capability in package order. Status is de
 | `identity.edu-provisioning` | `not-applicable` | Not part of this pack composition. |
 | `identity.ferpa-workflows` | `not-applicable` | Not part of this pack composition. |
 | `identity.edition-entitlements` | `not-implemented` | Runtime edition and pack entitlement resolution. No frontend surface. Not implemented in the backend catalog. |
+| `identity.self-serve-auth` | `not-applicable` | Not part of this pack composition. |
 | `platform.audit-events` | `available` | Project audit event recording through the application outbox. Compatibility flag is loaded by the capabilities view-model. No dedicated route yet hides or shows a panel from this flag. Configuration: auditEvents.enabled. |
 | `platform.notifications` | `available` | In-app notification requests and persistence. Frontend surface: `/inbox`, `/settings`. Configuration: notifications.enabled. |
 | `platform.data-residency` | `not-implemented` | Customer-specific data-location controls. No frontend surface. Not implemented in the backend catalog. |
@@ -67,7 +68,7 @@ This table lists every current catalog capability in package order. Status is de
 
 ## Build and exclusion
 
-- Excluded capability keys: 6
+- Excluded capability keys: 7
 - The build resolver aliases any excluded feature barrel to a `notFound()` stub. Route names may remain in the build manifest; implementation code is the excluded unit.
 
 ## Deployment scope
@@ -85,5 +86,5 @@ No additional non-registry product areas. Catalog rows with status `not-implemen
 ## Ownership and verification
 
 - Feature owners: the domains in the [feature map](/architecture/feature-map.generated.md).
-- Source: `@alphaci/capability-catalog@0.2.0`, `docs/capabilities/catalog.snapshot.json`, and `docs/capabilities/surface-registry.ts`.
+- Source: `@alphaci/capability-catalog@0.3.0`, `docs/capabilities/catalog.snapshot.json`, and `docs/capabilities/surface-registry.ts`.
 - Verification: `npm run check:documentation`.

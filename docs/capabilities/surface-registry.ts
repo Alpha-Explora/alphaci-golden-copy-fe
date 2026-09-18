@@ -107,6 +107,31 @@ export const CAPABILITY_SURFACES = [
     "artifactSymbols": []
   },
   {
+    "key": "identity.edu-auth",
+    "apiField": null,
+    "viewFlag": "eduAuthEnabled",
+    "domains": [
+      "auth"
+    ],
+    "routes": [
+      "/signin",
+      "/signin/staff",
+      "/signin/create-account",
+      "/signin/forgot-password",
+      "/auth/reset-password",
+      "/connect-github"
+    ],
+    "featureBarrels": [
+      "@/features/auth/edu-signin",
+      "@/features/auth/edu-signup",
+      "@/features/auth/edu-password-recovery",
+      "@/features/auth/edu-connect-github",
+      "@/features/auth/edu-labs",
+      "@/features/auth/edu-session"
+    ],
+    "artifactSymbols": []
+  },
+  {
     "key": "platform.audit-events",
     "apiField": "auditEvents",
     "viewFlag": "auditEventsEnabled",

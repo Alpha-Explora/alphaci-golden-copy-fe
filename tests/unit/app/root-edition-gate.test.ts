@@ -2,8 +2,8 @@
  * The root route is the only place the public marketing landing is served, and
  * the gate it uses is edition-only on purpose.
  *
- * PROFILE_PACKS.hosted covers BOTH saas and edu, so a build-profile test would
- * hand EDU the SaaS marketing site, and a bare re-export of the feature barrel
+ * A build profile is edition-specific, so a profile test must not hand EDU the
+ * SaaS marketing site, and a bare re-export of the feature barrel
  * would make Enterprise return the excluded-barrel notFound stub instead of the
  * login redirect it had before. Both of those were real defects during the port.
  * This test exists so neither can come back quietly.
@@ -56,10 +56,10 @@ describe("root route edition gate", () => {
   it.each([
     ["edu", { NEXT_PUBLIC_ALPHACI_EDITION: "edu" }],
     [
-      "edu on the hosted profile it shares with saas",
+      "edu on the hosted-edu profile",
       {
         NEXT_PUBLIC_ALPHACI_EDITION: "edu",
-        NEXT_PUBLIC_ALPHACI_BUILD_PROFILE: "hosted",
+        NEXT_PUBLIC_ALPHACI_BUILD_PROFILE: "hosted-edu",
       },
     ],
     ["enterprise", { NEXT_PUBLIC_ALPHACI_EDITION: "enterprise" }],

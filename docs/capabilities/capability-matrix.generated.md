@@ -33,7 +33,8 @@ This matrix is generated from the versioned `@alphaci/capability-catalog` packag
 | `identity.edu-provisioning` | `identity-access` | not-implemented | none | none | none |
 | `identity.ferpa-workflows` | `identity-access` | not-implemented | none | none | none |
 | `identity.edition-entitlements` | `identity-access` | not-implemented | none | none | none |
-| `identity.self-serve-auth` | `identity-access` | not-implemented | none | `selfServeAuthEnabled` | `/signup` |
+| `identity.self-serve-auth` | `identity-access` | limited | none | `selfServeAuthEnabled` | `/login`, `/signup` |
+| `identity.edu-auth` | `identity-access` | limited | none | `eduAuthEnabled` | `/signin`, `/signin/staff`, `/signin/create-account`, `/signin/forgot-password`, `/auth/reset-password`, `/connect-github` |
 | `platform.audit-events` | `platform-ops` | stable | `auditEvents` | `auditEventsEnabled` | none |
 | `platform.notifications` | `platform-ops` | stable | `notifications` | `notificationsEnabled` | `/inbox`, `/settings` |
 | `platform.data-residency` | `platform-ops` | not-implemented | none | none | none |

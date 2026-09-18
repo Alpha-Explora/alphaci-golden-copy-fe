@@ -1,8 +1,9 @@
-export type BuildProfile = "hosted" | "enterprise";
+export type BuildProfile = "hosted-saas" | "hosted-edu" | "enterprise";
 export type BuildEdition = "saas" | "edu" | "enterprise" | "unknown";
 
 const BUILD_PROFILES = {
-  hosted: "hosted",
+  "hosted-saas": "hosted-saas",
+  "hosted-edu": "hosted-edu",
   enterprise: "enterprise",
 } as const satisfies Record<BuildProfile, BuildProfile>;
 
@@ -15,7 +16,13 @@ const BUILD_EDITIONS = {
 
 function resolveBuildProfile(value: string | undefined): BuildProfile {
   if (value === undefined || value === "") return BUILD_PROFILES.enterprise;
-  if (value === BUILD_PROFILES.hosted || value === BUILD_PROFILES.enterprise) return value;
+  if (
+    value === BUILD_PROFILES["hosted-saas"] ||
+    value === BUILD_PROFILES["hosted-edu"] ||
+    value === BUILD_PROFILES.enterprise
+  ) {
+    return value;
+  }
   throw new Error(`Unknown build profile ${JSON.stringify(value)}`);
 }
 

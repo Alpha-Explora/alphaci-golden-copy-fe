@@ -87,7 +87,7 @@ const DOMAIN_OWNERS = [
 const PACKS = [
   {
     edition: 'saas',
-    profile: 'hosted',
+    profile: 'hosted-saas',
     displayName: 'SaaS',
     file: 'docs/packs/saas/pack.md',
     composition:
@@ -101,13 +101,13 @@ const PACKS = [
   },
   {
     edition: 'edu',
-    profile: 'hosted',
+    profile: 'hosted-edu',
     displayName: 'EDU',
     file: 'docs/packs/edu/pack.md',
     composition:
-      'The same Next.js application exposes the shared capability catalog. An institution-hosted or shared deployment target remains a separate deployment value.',
+      'The EDU Next.js artifact is composed from the EDU-only build profile. Deployment target and tenant policy remain separate runtime concerns.',
     deployment:
-      'EDU is an edition composition reference. This frontend is one deployable and does not fork screens by edition.',
+      'EDU is an edition composition reference with a physically isolated hosted-EDU artifact. Shared screens remain governed by the capability catalog.',
     entitlements:
       'The narrowing order is `build -> edition manifest -> deployment configuration -> tenant override`. This frontend does not resolve EDU-specific entitlements at runtime.',
     nonSupport:
@@ -387,6 +387,11 @@ Pack profiles list every key in package order. Pack status is derived from matur
   });
 }
 
+function sentence(value) {
+  const trimmed = value.trim();
+  return /[.!?]$/u.test(trimmed) ? trimmed : `${trimmed}.`;
+}
+
 function packEvidence(capability, edition, surface) {
   const status = expectedPackStatus(capability, edition);
   if (status === 'not-applicable') return 'Not part of this pack composition.';
@@ -396,18 +401,18 @@ function packEvidence(capability, edition, surface) {
     return `${capability.description} ${surfaceText} Not implemented in the backend catalog.`;
   }
   if (capability.key === 'identity.hierarchy') {
-    return `${capability.description} ${surfaceText} The hierarchy compatibility flag is loaded; Teams and group routes currently remain visible to authenticated users. Configuration: ${capability.configuration}.`;
+    return `${capability.description} ${surfaceText} The hierarchy compatibility flag is loaded; Teams and group routes currently remain visible to authenticated users. Configuration: ${sentence(capability.configuration)}`;
   }
   if (capability.key === 'billing.subscription-gate') {
-    return `${capability.description} No paywall or \`/subscribe\` route. Access gating is enforced by the backend session. Configuration: ${capability.configuration}.`;
+    return `${capability.description} No paywall or \`/subscribe\` route. Access gating is enforced by the backend session. Configuration: ${sentence(capability.configuration)}`;
   }
   if (capability.key === 'runtime.gcp-deployments') {
-    return `${capability.description} Advertised through \`envProvisioning.providers\` when GCP is registered. Configuration: ${capability.configuration}.`;
+    return `${capability.description} Advertised through \`envProvisioning.providers\` when GCP is registered. Configuration: ${sentence(capability.configuration)}`;
   }
   if (capability.key === 'platform.audit-events' || capability.key === 'billing.usage-quotas') {
-    return `${capability.description} Compatibility flag is loaded by the capabilities view-model. No dedicated route yet hides or shows a panel from this flag. Configuration: ${capability.configuration}.`;
+    return `${capability.description} Compatibility flag is loaded by the capabilities view-model. No dedicated route yet hides or shows a panel from this flag. Configuration: ${sentence(capability.configuration)}`;
   }
-  return `${capability.description} ${surfaceText} Configuration: ${capability.configuration}.`;
+  return `${capability.description} ${surfaceText} Configuration: ${sentence(capability.configuration)}`;
 }
 
 function generatePack(pack, capabilities, manifests, surfaces, packageVersion) {

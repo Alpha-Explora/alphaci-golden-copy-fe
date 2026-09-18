@@ -22,10 +22,10 @@ sources:
 
 ## Current composition
 
-- Build profile: `hosted` (`saas`, `edu`)
+- Build profile: `hosted-edu` (`edu`)
 - Runtime selection behavior: The build-time profile resolver projects the versioned catalog and aliases excluded feature barrels to fail-closed `notFound()` stubs. Runtime capability truth still comes from `/api/v1/capabilities`.
-- Excluded frontend feature barrels: `@/features/settings/client-composition`
-- Current frontend applicability: The same Next.js application exposes the shared capability catalog. An institution-hosted or shared deployment target remains a separate deployment value.
+- Excluded frontend feature barrels: `@/features/auth/self-serve`, `@/features/public-site`, `@/features/settings/client-composition`
+- Current frontend applicability: The EDU Next.js artifact is composed from the EDU-only build profile. Deployment target and tenant policy remain separate runtime concerns.
 
 ## Capability status
 
@@ -42,6 +42,7 @@ This table lists every current catalog capability in package order. Status is de
 | `identity.ferpa-workflows` | `not-implemented` | FERPA-oriented education workflow automation. No frontend surface. Not implemented in the backend catalog. |
 | `identity.edition-entitlements` | `not-implemented` | Runtime edition and pack entitlement resolution. No frontend surface. Not implemented in the backend catalog. |
 | `identity.self-serve-auth` | `not-applicable` | Not part of this pack composition. |
+| `identity.edu-auth` | `configuration-gated` | EDU authentication, recovery, staff GitHub linking, and lab context. Frontend surface: `/signin`, `/signin/staff`, `/signin/create-account`, `/signin/forgot-password`, `/auth/reset-password`, `/connect-github`. Configuration: EDU-only authentication via the Supabase Auth adapter; lab administration and broader EDU provisioning remain deferred. |
 | `platform.audit-events` | `available` | Project audit event recording through the application outbox. Compatibility flag is loaded by the capabilities view-model. No dedicated route yet hides or shows a panel from this flag. Configuration: auditEvents.enabled. |
 | `platform.notifications` | `available` | In-app notification requests and persistence. Frontend surface: `/inbox`, `/settings`. Configuration: notifications.enabled. |
 | `platform.data-residency` | `not-applicable` | Not part of this pack composition. |
@@ -68,12 +69,12 @@ This table lists every current catalog capability in package order. Status is de
 
 ## Build and exclusion
 
-- Excluded capability keys: 7
+- Excluded capability keys: 10
 - The build resolver aliases any excluded feature barrel to a `notFound()` stub. Route names may remain in the build manifest; implementation code is the excluded unit.
 
 ## Deployment scope
 
-EDU is an edition composition reference. This frontend is one deployable and does not fork screens by edition.
+EDU is an edition composition reference with a physically isolated hosted-EDU artifact. Shared screens remain governed by the capability catalog.
 
 ## Configuration and entitlements
 

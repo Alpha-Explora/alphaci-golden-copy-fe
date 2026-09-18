@@ -13,7 +13,8 @@ const ROOT = path.resolve(__dirname, '..', '..');
 const PACKAGE_DIR = path.join(ROOT, 'vendor', '@alphaci', 'capability-catalog');
 const EXPECTED_PROVENANCE = path.join(ROOT, 'docs', 'capabilities', 'catalog.provenance.json');
 const PROFILE_PACKS = Object.freeze({
-  hosted: Object.freeze(['saas', 'edu']),
+  'hosted-saas': Object.freeze(['saas']),
+  'hosted-edu': Object.freeze(['edu']),
   enterprise: Object.freeze(['enterprise']),
 });
 
@@ -45,7 +46,10 @@ function readSurfaceRegistry() {
 
 function resolveBuildProfile(value = process.env.ALPHACI_BUILD_PROFILE || 'enterprise') {
   if (Object.prototype.hasOwnProperty.call(PROFILE_PACKS, value)) return value;
-  throw new Error(`Unknown ALPHACI_BUILD_PROFILE ${JSON.stringify(value)}; expected hosted or enterprise`);
+  throw new Error(
+    `Unknown ALPHACI_BUILD_PROFILE ${JSON.stringify(value)}; ` +
+      'expected hosted-saas, hosted-edu, or enterprise',
+  );
 }
 
 function dependencyClosure(keys, catalog) {

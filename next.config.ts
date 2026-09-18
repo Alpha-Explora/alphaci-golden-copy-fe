@@ -1,6 +1,6 @@
 import type { NextConfig } from "next";
 import { createRequire } from "node:module";
-import { dirname } from "node:path";
+import { dirname, relative } from "node:path";
 import { fileURLToPath } from "node:url";
 
 import { BUILD_EDITION, BUILD_PROFILE } from "./src/shared/composition/build-profile";
@@ -22,9 +22,22 @@ const profileProjection = resolveProfile(buildProfile, {
   manifests: catalogPackage.manifests,
   surfaces: readSurfaceRegistry(),
 });
+// Next owns `.next` and may clear it after this config is evaluated. Keep
+// generated capability stubs outside that directory so both dev and build
+// resolvers can rely on the files for the lifetime of the process.
+const capabilityStubDirectory = `${rootDir}/.cache/capability-stubs`;
 const capabilityAliases = writeCapabilityStubs(
   profileProjection,
-  `${rootDir}/.next/capability-stubs`,
+  capabilityStubDirectory,
+) as Record<string, string>;
+// Turbopack's Windows resolver does not accept the backslash-containing
+// absolute targets that Webpack accepts. Project-relative POSIX paths work in
+// both the Windows and non-Windows Turbopack resolvers.
+const turbopackCapabilityAliases = Object.fromEntries(
+  Object.entries(capabilityAliases).map(([specifier, target]) => [
+    specifier,
+    `./${relative(rootDir, target).replaceAll("\\", "/")}`,
+  ]),
 );
 
 const nextConfig: NextConfig = {
@@ -41,7 +54,7 @@ const nextConfig: NextConfig = {
   },
   turbopack: {
     root: rootDir,
-    resolveAlias: capabilityAliases,
+    resolveAlias: turbopackCapabilityAliases,
   },
   webpack(config) {
     config.resolve ??= {};

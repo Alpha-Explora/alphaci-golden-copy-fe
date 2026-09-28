@@ -5,7 +5,7 @@ import type {
 
 export type SubscriptionPlan = "free" | "pro";
 export type SubscriptionStatus = "inactive" | "active" | "canceled";
-export type EnvProvider = "render" | "vercel";
+export type EnvProvider = "render" | "vercel" | "onprem-compose";
 /**
  * Render's own environment naming on a deployment target. NOT the env-var lane
  * — that is EnvLane. The two used to be one type, which made a Render service
@@ -228,6 +228,8 @@ export interface CreateProviderConnectionRequest {
 export interface DeploymentTarget {
   id: string;
   projectId: string;
+  /** Project environment this target deploys; null on the legacy branch path. */
+  environmentId?: string | null;
   slot: EnvTargetSlot;
   ownershipMode: EnvOwnershipMode;
   provider: EnvProvider;
